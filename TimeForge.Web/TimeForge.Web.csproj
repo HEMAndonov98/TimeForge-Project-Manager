@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-TimeForge-d9bff4d0-bd1a-45a8-8b3f-1c34ef1ca7c3</UserSecretsId>
+        <RootNamespace>TimeForge.Web</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Areas\Admin\" />
+      <Folder Include="Areas\Users\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TimeForge.Infrastructure\TimeForge.Infrastructure.csproj" />
+      <ProjectReference Include="..\TimeForge.ViewModels\TimeForge.ViewModels.csproj" />
+    </ItemGroup>
+
+</Project>
