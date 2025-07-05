@@ -14,4 +14,8 @@ public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : 
     public DbSet<TimeEntry> TimeEntries { get; set; }
 
     public DbSet<Task> Tasks { get; set; }
+
+    public DbSet<ProjectTag> ProjectTags { get; set; }
+    
+    //TODO Set up joining table relationship in a configuration
 }
