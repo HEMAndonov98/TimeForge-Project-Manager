@@ -11,6 +11,6 @@ public class User : IdentityUser
     [InverseProperty(nameof(Tag.CreatedBy))]
     public virtual List<Tag> Tags { get; set; } = new();
 
-    [InverseProperty(nameof(TimeEntry.User))]
+    [InverseProperty(nameof(TimeEntry.CreatedBy))]
     public virtual List<TimeEntry> TimeEntries { get; set; } = new();
 }

@@ -10,9 +10,7 @@ public class Task: BaseDeletableModel<string>
     [Required]
     [MaxLength(TaskValidationConstants.NameMaxLength)]
     public string Name { get; set; } = null!;
-
-    public virtual List<TimeEntry> TimeEntries { get; set; } = new();
-
+    
     //TODO Implement billing later
     public bool IsBillable { get; set; } = false;
 
@@ -24,4 +22,8 @@ public class Task: BaseDeletableModel<string>
     public string ProjectId { get; set; } = null!;
 
     public Project Project { get; set; } = null!;
+    
+    [InverseProperty(nameof(TimeEntry.Task))]
+    public virtual List<TimeEntry> TimeEntries { get; set; } = new();
+
 }

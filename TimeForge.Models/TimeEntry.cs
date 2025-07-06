@@ -16,8 +16,8 @@ public class TimeEntry : BaseDeletableModel<string>
 
    public Task Task { get; set; }
 
-   [ForeignKey(nameof(User))]
+   [ForeignKey(nameof(CreatedBy))]
    public string UserId { get; set; }
 
-   public User User { get; set; }
+   public User CreatedBy { get; set; }
 }

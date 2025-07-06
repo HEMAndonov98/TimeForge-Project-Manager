@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Infrastructure;
 using TimeForge.Models;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 

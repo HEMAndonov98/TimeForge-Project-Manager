@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace TimeForge.Models.Common;
 
-public class BaseDeletableModel<TId> : BaseModel<TId>
+[Index(nameof(IsDeleted))]
+public abstract class BaseDeletableModel<TId> : BaseModel<TId>
 {
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
 
     public DateTime DeletedAt { get; set; }
 
