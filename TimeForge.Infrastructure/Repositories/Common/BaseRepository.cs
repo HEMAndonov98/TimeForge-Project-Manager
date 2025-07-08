@@ -26,7 +26,9 @@ public abstract class BaseRepository<TContext>(TContext context) : IRepository
     }
 
     public void Update<T>(T entity) where T : class
-        => this.Context.Set<T>().Entry(entity).State = EntityState.Modified;
+    {
+        this.Context.Set<T>().Update(entity);
+    }
 
     //TODO Don't forget to add a query interceptor to modify command to safe delete entity when called
     public void Delete<T>(T entity) where T : class
