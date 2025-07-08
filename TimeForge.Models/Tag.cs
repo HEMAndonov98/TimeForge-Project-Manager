@@ -6,6 +6,11 @@ namespace TimeForge.Models;
 
 public class Tag : BaseDeletableModel<string>
 {
+    public Tag()
+    {
+        this.Id = Guid.NewGuid().ToString();
+    }
+    
     [Required]
     public string Name { get; set; } = null!;
 

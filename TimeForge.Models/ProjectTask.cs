@@ -5,8 +5,13 @@ using TimeForge.Models.Common;
 
 namespace TimeForge.Models;
 
-public class Task: BaseDeletableModel<string>
+public class ProjectTask: BaseDeletableModel<string>
 {
+    public ProjectTask()
+    {
+        this.Id = Guid.NewGuid().ToString();
+    }
+    
     [Required]
     [MaxLength(TaskValidationConstants.NameMaxLength)]
     public string Name { get; set; } = null!;
@@ -23,7 +28,7 @@ public class Task: BaseDeletableModel<string>
 
     public Project Project { get; set; } = null!;
     
-    [InverseProperty(nameof(TimeEntry.Task))]
+    [InverseProperty(nameof(TimeEntry.ProjectTask))]
     public virtual List<TimeEntry> TimeEntries { get; set; } = new();
 
 }
