@@ -7,6 +7,11 @@ namespace TimeForge.Models;
 
 public class Project : BaseDeletableModel<string>
 {
+    public Project()
+    {
+        this.Id = Guid.NewGuid().ToString();
+    }
+    
     [Required]
     [MaxLength(ProjectValidationConstants.NameMaxLength)]
     public string Name { get; set; } = null!;
@@ -20,8 +25,8 @@ public class Project : BaseDeletableModel<string>
 
     public User CreatedBy { get; set; } = null!;
 
-    [InverseProperty(nameof(Task.Project))]
-    public virtual List<Task> Tasks { get; set; } = new();
+    [InverseProperty(nameof(ProjectTask.Project))]
+    public virtual List<ProjectTask> Tasks { get; set; } = new();
 
     [InverseProperty(nameof(ProjectTag.Project))]
     public virtual List<ProjectTag> ProjectTags { get; set; } = new();
