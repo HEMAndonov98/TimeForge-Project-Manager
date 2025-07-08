@@ -11,7 +11,7 @@ public class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntry>
 
         // Relationships
         builder
-            .HasOne(te => te.Task)
+            .HasOne(te => te.ProjectTask)
             .WithMany(t => t.TimeEntries)
             .HasForeignKey(te => te.TaskId)
             .OnDelete(DeleteBehavior.Restrict);

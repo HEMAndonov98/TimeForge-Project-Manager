@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Task = TimeForge.Models.Task;
+using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Configurations;
 
-public class TaskConfiguration : IEntityTypeConfiguration<Task>
+public class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTask>
 {
-    public void Configure(EntityTypeBuilder<Task> builder)
+    public void Configure(EntityTypeBuilder<ProjectTask> builder)
     {
         // Configure relationship with Project
         builder.HasOne(t => t.Project)
@@ -14,9 +14,9 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
             .HasForeignKey(t => t.ProjectId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Configure relationship with TimeEntries
+        // Configure a relationship with TimeEntries
         builder.HasMany(t => t.TimeEntries)
-            .WithOne(te => te.Task)
+            .WithOne(te => te.ProjectTask)
             .HasForeignKey(te => te.TaskId)
             .OnDelete(DeleteBehavior.Cascade);
 

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Models;
-using Task = System.Threading.Tasks.Task;
 
 namespace TimeForge.Infrastructure;
 
@@ -13,9 +12,15 @@ public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : 
 
     public DbSet<TimeEntry> TimeEntries { get; set; }
 
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<ProjectTask> Tasks { get; set; }
 
     public DbSet<ProjectTag> ProjectTags { get; set; }
+
+    public DbSet<User> Users { get; set; }
     
-    //TODO Set up joining table relationship in a configuration
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(typeof(TimeForgeDbContext).Assembly);
+    }
 }
