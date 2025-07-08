@@ -21,7 +21,8 @@ public class ProjectTask: BaseDeletableModel<string>
 
     public bool IsCompleted { get; set; } = false;
 
-    public DateTime CompletionDate { get; set; }
+    //TODO implement new migration
+    public DateTime? CompletionDate { get; set; }
 
     [ForeignKey(nameof(Project))]
     public string ProjectId { get; set; } = null!;
