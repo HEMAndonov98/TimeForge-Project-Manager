@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TimeForge.Infrastructure\TimeForge.Infrastructure.csproj" />
+      <ProjectReference Include="..\TimeForge.ViewModels\TimeForge.ViewModels.csproj" />
+    </ItemGroup>
+
 </Project>
