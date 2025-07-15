@@ -1,0 +1,14 @@
+@model TimeForge.ViewModels.Tag.TagInputModel
+
+<form asp-controller="Tag" asp-action="Create" method="post" id="createTagForm">
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="ProjectId" />
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Tag Name</label>
+        <input asp-for="Name" class="form-control" placeholder="Enter tag name" />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Add Tag</button>
+    </div>
+</form>
