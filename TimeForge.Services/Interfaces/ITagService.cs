@@ -8,5 +8,7 @@ public interface ITagService
 
     Task<TagViewModel> GetTagByIdAsync(string tagId);
 
+    Task<IEnumerable<TagViewModel>> GetAllTagsAsync(string userId);
+
     void DeleteTag(string tagId);
 }
