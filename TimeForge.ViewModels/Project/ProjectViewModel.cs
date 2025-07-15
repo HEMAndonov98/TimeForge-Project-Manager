@@ -11,6 +11,8 @@ public class ProjectViewModel
     public string? DueDate { get; set; }
 
     public string CreatedBy { get; set; }
+
+    public string UserId { get; set; }
     
     public List<TaskViewModel> Tasks { get; set; }
     
