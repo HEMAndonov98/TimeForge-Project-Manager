@@ -4,8 +4,9 @@ using TimeForge.Models;
 
 namespace TimeForge.Infrastructure;
 
-public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : IdentityDbContext(options)
+public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : IdentityDbContext<User>(options)
 {
+    
     public DbSet<Project> Projects { get; set; }
 
     public DbSet<Tag> Tags { get; set; }
