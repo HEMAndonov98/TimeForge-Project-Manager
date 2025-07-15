@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
@@ -5,7 +6,6 @@ using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Tag;
 
 namespace TimeForge.Services;
-
 public class TagService : ITagService
 {
     private readonly ITimeForgeRepository timeForgeRepository;
@@ -80,10 +80,53 @@ public class TagService : ITagService
         }
         catch (Exception e)
         {
-            this.logger.LogError(e, "Error occurred while deleting tag with ID: {TagId}", tagId);
+            this.logger.LogError(e, "Error occurred while retrieving tag with ID: {TagId}", tagId);
             throw;
         }
         
+    }
+    
+    public async Task<IEnumerable<TagViewModel>> GetAllTagsAsync(string userId)
+    {
+        try
+        {
+            this.logger.LogInformation("Retrieving tag with for User with ID: {userId}", userId);
+            
+            if (string.IsNullOrEmpty(userId))
+            {
+                this.logger.LogError("User ID is null or empty");
+                throw new ArgumentNullException("User ID cannot be null or empty");
+            }
+
+            var tags = await this.timeForgeRepository.All<Tag>(t => t.UserId == userId)
+                .AsNoTracking()
+                .OrderByDescending(t => t.CreatedAt)
+                .Select(t => new
+                {
+                    t.Id,
+                    t.Name
+                })
+                .ToListAsync();
+
+            if (tags == null)
+            {
+                this.logger.LogWarning("An unexpected error occured while retrieving tags from database for User with ID: {userId}", userId);
+                throw new ArgumentNullException("Tags cannot be null");
+            }
+
+            var tagViewModelList = tags.Select(t => new TagViewModel()
+            {
+                Name = t.Name,
+                Id = t.Id
+            });
+
+            return tagViewModelList;
+        }
+        catch (Exception e)
+        {
+            this.logger.LogError(e, "Error occurred while retrieving tags with User ID: {userId}", userId);
+            throw;
+        }
     }
 
     public async void DeleteTag(string tagId)
