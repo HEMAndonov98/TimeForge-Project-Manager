@@ -1,19 +1,36 @@
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Infrastructure;
+using TimeForge.Infrastructure.Repositories;
+using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
+using TimeForge.Services;
+using TimeForge.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<ITimeForgeRepository, TimeForgeRepository>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITagService, TagService>();
+
+
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<TimeForgeDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<User>(options =>
+    {
+        //TODO remove after testing
+        options.SignIn.RequireConfirmedAccount = false;
+    })
     .AddEntityFrameworkStores<TimeForgeDbContext>();
 builder.Services.AddControllersWithViews();
+
+
 
 var app = builder.Build();
 
