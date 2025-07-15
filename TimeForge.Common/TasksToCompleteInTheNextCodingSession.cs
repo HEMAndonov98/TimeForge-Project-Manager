@@ -7,4 +7,9 @@ public class TasksToCompleteInTheNextCodingSession
     //TODO Implement repository pattern
     
     //TODO Start work on Services
+    
+    
+    //Test user
+    //Email: testUser@testUser.com
+    //Passowrd: testUser123_
 }
