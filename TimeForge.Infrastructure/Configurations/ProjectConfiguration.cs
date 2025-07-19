@@ -24,5 +24,8 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.HasIndex(p => p.UserId);
         builder.HasIndex(p => p.IsDeleted);
+
+        //Filter out soft deleted entities unless explicitly asked for
+        builder.HasQueryFilter(p => p.IsDeleted == false);
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Infrastructure;
+using TimeForge.Infrastructure.Interceptors;
 using TimeForge.Infrastructure.Repositories;
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
@@ -14,12 +15,20 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITagService, TagService>();
 
 
-
+// Interceptors
+builder.Services.AddSingleton<SoftDeleteInterceptor>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<TimeForgeDbContext>(options =>
-    options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<TimeForgeDbContext>(
+    (sp ,options) => options
+        .UseSqlServer(connectionString)
+        .AddInterceptors(
+            sp.GetRequiredService<SoftDeleteInterceptor>()));
+
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<User>(options =>
