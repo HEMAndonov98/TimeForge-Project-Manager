@@ -86,6 +86,7 @@ public class ProjectService : IProjectService
                 Name = project.Name,
                 DueDate = project.DueDate?.ToString("dd/MM/yyyy"),
                 CreatedBy = project.CreatedBy.UserName ?? string.Empty,
+                UserId = project.UserId,
                 Tags = tags,
                 IsPublic = project.IsPublic
             };
