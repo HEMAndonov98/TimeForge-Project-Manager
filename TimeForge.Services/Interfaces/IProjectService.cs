@@ -12,7 +12,7 @@ public interface IProjectService
 
     void DeleteProject(string projectId);
 
-    void UpdateProject(ProjectInputModel inputModel);
+    Task UpdateProject(ProjectInputModel inputModel);
 
     Task AddTaskToProject(string projectId, string taskId);
 

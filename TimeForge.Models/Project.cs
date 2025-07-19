@@ -18,7 +18,7 @@ public class Project : BaseDeletableModel<string>
 
     public bool IsPublic { get; set; } = true;
 
-    public DateTime? DueDate { get; set; }
+    public DateOnly? DueDate { get; set; }
 
     [ForeignKey(nameof(CreatedBy))]
     public string UserId { get; set; } = null!;

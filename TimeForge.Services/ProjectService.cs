@@ -35,6 +35,8 @@ public class ProjectService : IProjectService
                 IsPublic = inputModel.IsPublic,
                 DueDate = inputModel.DueDate,
                 UserId = inputModel.UserId,
+                CreatedAt = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
             };
 
             await this.timeForgeRepository.AddAsync(newProject);
@@ -84,7 +86,8 @@ public class ProjectService : IProjectService
                 Name = project.Name,
                 DueDate = project.DueDate?.ToString("dd/MM/yyyy"),
                 CreatedBy = project.CreatedBy.UserName ?? string.Empty,
-                Tags = tags
+                Tags = tags,
+                IsPublic = project.IsPublic
             };
 
             this.logger.LogInformation("Successfully retrieved project with Id: {ProjectId}.", projectId);
@@ -119,7 +122,8 @@ public class ProjectService : IProjectService
                     p.Name,
                     p.DueDate,
                     CreatedBy = p.CreatedBy.UserName,
-                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList()
+                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
+                    p.IsPublic
                 })
                 .ToListAsync();
 
@@ -134,7 +138,8 @@ public class ProjectService : IProjectService
                 {
                     Id = tag.Id,
                     Name = tag.Name
-                }).ToList()
+                }).ToList(),
+                IsPublic = p.IsPublic
             }).ToList();
 
             this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
@@ -177,7 +182,7 @@ public class ProjectService : IProjectService
         }
     }
 
-    public async void UpdateProject(ProjectInputModel inputModel)
+    public async Task UpdateProject(ProjectInputModel inputModel)
     {
         try
         {
