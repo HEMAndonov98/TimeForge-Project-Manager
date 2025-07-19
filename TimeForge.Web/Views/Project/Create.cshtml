@@ -17,6 +17,7 @@
                         @* Hidden Fields *@
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="Tags" />
 
                         <!-- Project Name -->
                         <div class="form-floating mb-3">
@@ -40,29 +41,7 @@
                         
                         <!-- Tags -->
                         <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-label fw-semibold text-muted">Tags</label>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addTagModal">
-                                    + Add Tag
-                                </button>
-                            </div>
-
-                            @if (Model.Tags.Any())
-                            {
-                                <div class="d-flex flex-wrap gap-2">
-                                    @foreach (var tag in Model.Tags)
-                                    {
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="SelectedTags" value="@tag.Name" id="tag_@tag.Name" />
-                                            <label class="form-check-label" for="tag_@tag.Name">@tag.Name</label>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <p class="text-muted fst-italic">You don’t have any tags yet.</p>
-                            }
+                            <partial name="_TagInputPartial" model="Model.Tags"/>
                         </div>
 
                         <!-- Submit -->
@@ -73,23 +52,6 @@
         </div>
     </div>
 </div>
-
-<!-- Add Tag Modal -->
-<div class="modal fade" id="addTagModal" tabindex="-1" aria-labelledby="addTagModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content shadow-sm">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="addTagModalLabel">Add New Tag</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body" id="createTagContainer">
-                @await Component.InvokeAsync("CreateTag", new { userId = Model.UserId, projectId = Model.Id })
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

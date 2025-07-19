@@ -1,5 +1,5 @@
-@using System.Collections.Specialized
-@model TimeForge.ViewModels.Project.ProjectViewModel
+@using TimeForge.ViewModels.Project
+@model ProjectViewModel
 @{
     ViewData["Title"] = "Project Details";
 }
@@ -7,6 +7,10 @@
 <div class="container mt-4">
 
     <!-- Header -->
+    <div class="text-center bg-light border rounded shadow-sm mb-4">
+        <a class="btn btn-primary btn-md m-2" asp-controller="Project" asp-action="Edit" asp-route-projectId="@Model.Id">Edit Project</a>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h2 class="fw-bold mb-0">@Model.Name</h2>
@@ -39,48 +43,6 @@
                     }
                 </ul>
             }
-        </div>
-    </div>
-
-    <!-- Tags Section + Modal Trigger -->
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="card-title text-muted mb-0">Tags</h5>
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTagModal">
-                    + Add Tag
-                </button>
-            </div>
-
-            @if (Model.Tags == null || !Model.Tags.Any())
-            {
-                <p class="fst-italic text-muted">No tags assigned to this project.</p>
-            }
-            else
-            {
-                <div>
-                    @foreach (var tag in Model.Tags)
-                    {
-                        <span class="badge bg-secondary me-1">@tag.Name</span>
-                    }
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<!-- Add Tag Modal -->
-<div class="modal fade" id="addTagModal" tabindex="-1" aria-labelledby="addTagModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content shadow-sm">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="addTagModalLabel">Add New Tag</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body" id="createTagContainer">
-                @await Component.InvokeAsync("CreateTag", new { userId = Model.UserId })
-            </div>
         </div>
     </div>
 </div>
