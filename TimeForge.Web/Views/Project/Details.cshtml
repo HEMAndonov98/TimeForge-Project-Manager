@@ -2,18 +2,20 @@
 @model ProjectViewModel
 @{
     ViewData["Title"] = "Project Details";
+    var currentUserId = (string)ViewData["UserId"]!;
 }
 
 <div class="container mt-4">
 
-    <!-- Header -->
-    <div class="text-center bg-light border rounded shadow-sm mb-4">
-        <a class="btn btn-primary btn-md m-2" asp-controller="Project" asp-action="Edit" asp-route-projectId="@Model.Id">Edit Project</a>
-    </div>
-
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="fw-bold mb-0">@Model.Name</h2>
+        <div class="w-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">@Model.Name</h2>
+                @if (currentUserId == Model.UserId)
+                {
+                    <a class="btn btn-primary btn-md m-2" asp-controller="Project" asp-action="Edit" asp-route-projectId="@Model.Id">Edit </a>
+                }
+            </div>
             <p class="text-muted mb-1">Created by: <span class="fw-medium">@Model.CreatedBy</span></p>
             @if (!string.IsNullOrWhiteSpace(Model.DueDate))
             {
@@ -25,25 +27,21 @@
     <!-- Tasks Section -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <h5 class="card-title text-muted">Tasks</h5>
-
-            @if (Model.Tasks == null || !Model.Tasks.Any())
-            {
-                <p class="fst-italic text-muted">No tasks yet for this project.</p>
-            }
-            else
-            {
-                <ul class="list-group list-group-flush">
-                    @foreach (var task in Model.Tasks)
-                    {
-                        <li class="list-group-item d-flex align-items-center ps-0">
-                            <input class="form-check-input me-2" type="checkbox" disabled @(task.IsCompleted ? "checked" : "") />
-                            <span class="@(task.IsCompleted ? "text-decoration-line-through text-muted" : "")">@task.Name</span>
-                        </li>
-                    }
-                </ul>
-            }
+            <div>
+                @await Html.PartialAsync("_ProjectTaskList", Model.Tasks, new ViewDataDictionary(ViewData)
+                {
+                    { "ProjectId", Model.Id }
+                })
+            </div>
         </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="text-center bg-light border rounded shadow-sm mb-4">
+        @if (currentUserId == Model.UserId)
+        {
+            <a class="btn btn-danger btn-md m-2" asp-controller="Project" asp-action="Delete" asp-route-projectId="@Model.Id">Deletet</a>
+        }
     </div>
 </div>
 
