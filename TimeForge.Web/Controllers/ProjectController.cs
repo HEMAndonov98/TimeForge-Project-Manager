@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,9 +49,17 @@ public class ProjectController : Controller
             await this.projectService.CreateProjectAsync(inputModel);
             foreach (TagViewModel tag in inputModel.Tags)
             {
-                await this.projectService.AddTagToProject(inputModel.Id, tag.Id);
+                TagInputModel newTag = new TagInputModel()
+                {
+                    Name = tag.Name,
+                    UserId = inputModel.UserId,
+                    ProjectId = inputModel.Id
+                };
+
+                await this.tagService.CreateTagAsync(newTag);
+                await this.projectService.AddTagToProject(inputModel.Id, newTag.Id);
             }
-            return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
+            return RedirectToAction("Index", "Home");
         }
         catch (Exception e)
         {
@@ -64,5 +73,34 @@ public class ProjectController : Controller
         var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
 
         return View(viewModel);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(string projectId)
+    {
+        var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+        var inputModel = new ProjectInputModel()
+        {
+            Id = viewModel.Id,
+            UserId = viewModel.UserId,
+            DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
+            Name = viewModel.Name,
+            IsPublic = viewModel.IsPublic
+        };
+
+        return View(inputModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(ProjectInputModel inputModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(inputModel);
+        }
+        
+        await this.projectService.UpdateProject(inputModel);
+        return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
     }
 }
