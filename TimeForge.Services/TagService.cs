@@ -34,7 +34,9 @@ public class TagService : ITagService
             var newTag = new Tag()
             {
                 Name = inputModel.Name,
-                UserId = inputModel.UserId
+                UserId = inputModel.UserId,
+                CreatedAt = DateTime.UtcNow,
+                LastModified = DateTime.UtcNow
             };
 
             var createdTag = await this.timeForgeRepository.AddAsync(newTag);
