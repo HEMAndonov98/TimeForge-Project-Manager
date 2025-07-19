@@ -13,4 +13,15 @@ public class User : IdentityUser
 
     [InverseProperty(nameof(TimeEntry.CreatedBy))]
     public virtual List<TimeEntry> TimeEntries { get; set; } = new();
+    
+    
+    //Manager properties
+
+    public bool IsManager { get; set; }
+
+    public virtual List<User> ManagedUsers { get; set; } = new();
+
+    public string? ManagerId { get; set; } = null!;
+
+    public User? Manager { get; set; } = null!;
 }
