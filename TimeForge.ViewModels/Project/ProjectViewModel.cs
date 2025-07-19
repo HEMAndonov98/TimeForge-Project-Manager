@@ -13,6 +13,8 @@ public class ProjectViewModel
     public string CreatedBy { get; set; }
 
     public string UserId { get; set; }
+
+    public bool IsPublic { get; set; }
     
     public List<TaskViewModel> Tasks { get; set; }
     
