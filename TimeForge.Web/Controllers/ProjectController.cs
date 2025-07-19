@@ -71,6 +71,7 @@ public class ProjectController : Controller
     public async Task<IActionResult> Details(string projectId)
     {
         var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+        ViewData["UserId"] = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
         return View(viewModel);
     }
@@ -102,5 +103,20 @@ public class ProjectController : Controller
         
         await this.projectService.UpdateProject(inputModel);
         return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
+    }
+
+    [HttpGet]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(string projectId)
+    {
+        try
+        {
+            var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+            return PartialView("Delete", viewModel);
+        }
+        catch (Exception e)
+        {
+            return NotFound();
+        }
     }
 }
