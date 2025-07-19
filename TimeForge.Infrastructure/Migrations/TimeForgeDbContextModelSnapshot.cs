@@ -170,8 +170,8 @@ namespace TimeForge.Infrastructure.Migrations
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DueDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("DueDate")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

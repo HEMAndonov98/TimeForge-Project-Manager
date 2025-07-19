@@ -33,4 +33,8 @@
       <ProjectReference Include="..\TimeForge.ViewModels\TimeForge.ViewModels.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Shared\Components\CreateTag\Default.cshtml" />
+    </ItemGroup>
+
 </Project>
