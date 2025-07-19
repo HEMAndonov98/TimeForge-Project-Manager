@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Manager Dashboard";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Welcome, Manager</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <!-- Active Users -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>3</h3>
+                        <p>Active Users</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a asp-controller="Manager" asp-action="Users" asp-area="Manager" class="small-box-footer">
+                        View Users <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Projects -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>12</h3>
+                        <p>Projects</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <a asp-controller="Project" asp-action="Index" asp-area="Manager"  class="small-box-footer">
+                        View Projects <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Logged Time Today -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>18h</h3>
+                        <p>Logged Time Today</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <a asp-controller="TimeEntry" asp-action="Entries" asp-area="Manager" class="small-box-footer">
+                        Time Entries <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

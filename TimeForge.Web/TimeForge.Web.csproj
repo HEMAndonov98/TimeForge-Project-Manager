@@ -23,11 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Areas\Admin\" />
-      <Folder Include="Areas\Users\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\TimeForge.Infrastructure\TimeForge.Infrastructure.csproj" />
       <ProjectReference Include="..\TimeForge.Services\TimeForge.Services.csproj" />
       <ProjectReference Include="..\TimeForge.ViewModels\TimeForge.ViewModels.csproj" />
