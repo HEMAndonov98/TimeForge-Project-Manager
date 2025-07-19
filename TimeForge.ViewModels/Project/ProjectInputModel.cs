@@ -16,7 +16,7 @@ public class ProjectInputModel
 
     public bool IsPublic { get; set; }
 
-    public DateTime? DueDate { get; set; }
+    public DateOnly? DueDate { get; set; }
 
     public string UserId { get; set; }
     
