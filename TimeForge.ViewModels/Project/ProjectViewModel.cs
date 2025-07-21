@@ -17,6 +17,6 @@ public class ProjectViewModel
     public bool IsPublic { get; set; }
     
     public List<TaskViewModel> Tasks { get; set; }
-    
-    public List<TagViewModel> Tags { get; set; }
+
+    public List<TagViewModel> Tags { get; set; } = new();
 }
