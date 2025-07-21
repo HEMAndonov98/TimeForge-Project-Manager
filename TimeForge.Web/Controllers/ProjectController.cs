@@ -30,7 +30,14 @@ public class ProjectController : Controller
         var inputModel = new ProjectInputModel()
         {
             UserId = userId!,
-            Tags = tags.ToList()
+            Tags = tags
+                .Select(t => new TagInputModel()
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    UserId = userId
+                })
+                .ToList()
         };
         return View(inputModel);
     }
@@ -39,6 +46,11 @@ public class ProjectController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ProjectInputModel inputModel)
     {
+        foreach (TagInputModel tag in inputModel.Tags)
+        {
+            tag.UserId = inputModel.UserId;
+        }
+        
         if (!ModelState.IsValid)
         {
             return View(inputModel);
@@ -47,17 +59,10 @@ public class ProjectController : Controller
         try
         {
             await this.projectService.CreateProjectAsync(inputModel);
-            foreach (TagViewModel tag in inputModel.Tags)
+            foreach (TagInputModel tag in inputModel.Tags)
             {
-                TagInputModel newTag = new TagInputModel()
-                {
-                    Name = tag.Name,
-                    UserId = inputModel.UserId,
-                    ProjectId = inputModel.Id
-                };
-
-                await this.tagService.CreateTagAsync(newTag);
-                await this.projectService.AddTagToProject(inputModel.Id, newTag.Id);
+                await this.tagService.CreateTagAsync(tag);
+                await this.projectService.AddTagToProject(inputModel.Id, tag.Id);
             }
             return RedirectToAction("Index", "Home");
         }
@@ -67,7 +72,7 @@ public class ProjectController : Controller
             throw;
         }
     }
-
+    [HttpGet]
     public async Task<IActionResult> Details(string projectId)
     {
         var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
@@ -106,7 +111,6 @@ public class ProjectController : Controller
     }
 
     [HttpGet]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string projectId)
     {
         try
@@ -118,5 +122,13 @@ public class ProjectController : Controller
         {
             return NotFound();
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
+    {
+        await this.projectService.DeleteProject(viewModel.Id);
+        return RedirectToAction("Index", "Home");
     }
 }
