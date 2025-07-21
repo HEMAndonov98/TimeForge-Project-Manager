@@ -1,28 +1,51 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="#" class="brand-link">
-        <span class="brand-text font-weight-light">TimeForge Manager</span>
-    </a>
-    <div class="sidebar">
+<!-- Sidebar Partial View -->
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <!--begin::Sidebar Brand-->
+    <div class="sidebar-brand">
+        <a href="~/index.html" class="brand-link">
+            <img
+                src="~/assets/img/AdminLTELogo.png"
+                alt="AdminLTE Logo"
+                class="brand-image opacity-75 shadow"
+            />
+            <span class="brand-text fw-light">AdminLTE 4</span>
+        </a>
+    </div>
+    <!--end::Sidebar Brand-->
+    <div class="sidebar-wrapper">
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
-                <li class="nav-item">
-                    <a asp-area="Manager" asp-controller="Dashboard" asp-action="Index" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
+            <ul
+                class="nav sidebar-menu flex-column"
+                data-lte-toggle="treeview"
+                role="navigation"
+                aria-label="Main navigation"
+                data-accordion="false"
+                id="navigation"
+            >
+                <li class="nav-item menu-open">
+                    <a href="#" class="nav-link active">
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>
+                            Dashboard
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
                     </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-controller="Manager" asp-action="Index" asp-area="Manager" class="nav-link active">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Statistics</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-area="Manager" asp-action="Index" asp-controller="Project" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>Projects</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a asp-controller="Users" asp-action="Index" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Managed Users</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="Projects" asp-action="Index" class="nav-link">
-                        <i class="nav-icon fas fa-tasks"></i>
-                        <p>Projects</p>
-                    </a>
-                </li>
+                <!-- ...rest of sidebar menu items... -->
             </ul>
         </nav>
     </div>

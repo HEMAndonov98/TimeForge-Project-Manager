@@ -33,6 +33,12 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Manager" asp-controller="Manager" asp-action="Index">Manager Page</a>
+                        </li>
+                    }
                 </ul>
 
                 <!-- Timer Placeholder -->
