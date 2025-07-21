@@ -10,7 +10,7 @@ public interface IProjectService
 
     Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId);
 
-    void DeleteProject(string projectId);
+    Task DeleteProject(string projectId);
 
     Task UpdateProject(ProjectInputModel inputModel);
 

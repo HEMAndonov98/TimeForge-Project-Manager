@@ -153,7 +153,7 @@ public class ProjectService : IProjectService
         }
     }
 
-    public async void DeleteProject(string projectId)
+    public async Task DeleteProject(string projectId)
     {
         try
         {
@@ -171,7 +171,7 @@ public class ProjectService : IProjectService
                 throw new ArgumentException($"Project with Id {projectId} not found.");
             }
 
-            this.timeForgeRepository.Delete(projectId);
+            this.timeForgeRepository.Delete(project);
             await this.timeForgeRepository.SaveChangesAsync();
 
             this.logger.LogInformation("Successfully deleted project with Id: {ProjectId}.", projectId);
