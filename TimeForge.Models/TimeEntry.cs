@@ -25,4 +25,6 @@ public class TimeEntry : BaseDeletableModel<string>
    public string UserId { get; set; } = null!;
 
    public User CreatedBy { get; set; } = null!;
+
+   public bool IsRunning { get; set; }
 }
