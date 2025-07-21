@@ -1,69 +1,125 @@
 @{
-    ViewData["Title"] = "Manager Dashboard";
+    ViewData["Title"] = "Dashboard";
 }
 
-<section class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1>Welcome, Manager</h1>
+<div class="row">        
+    <!-- /.col -->
+    <div class="col-md-3 col-sm-6 col-12">
+        <div class="info-box text-bg-success bg-gradient">
+            <span class="info-box-icon"> <i class="bi bi-hand-thumbs-up"></i> </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Likes</span>
+                <span class="info-box-number">41,410</span>
+                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
+                <span class="progress-description"> 70% Increase in 30 Days </span>
+            </div>
+            <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="small-box text-bg-primary">
+            <div class="inner">
+                <h3>150</h3>
+                <p>New Orders</p>
+            </div>
+            <svg
+                class="small-box-icon"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+            >
+                <path
+                    d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
+                ></path>
+            </svg>
+            <a
+                href="#"
+                class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+            >
+                More info <i class="bi bi-link-45deg"></i>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Browser Usage</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <div class="col-12"><div id="pie-chart"></div></div>
+                        <!-- /.col -->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer p-0">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                United States of America
+                                <span class="float-end text-danger">
+                                    <i class="bi bi-arrow-down fs-7"></i>
+                                    12%
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                India
+                                <span class="float-end text-success">
+                                    <i class="bi bi-arrow-up fs-7"></i> 4%
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                China
+                                <span class="float-end text-info">
+                                    <i class="bi bi-arrow-left fs-7"></i> 0%
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.footer -->
             </div>
         </div>
     </div>
-</section>
+</div>
+<script
+    src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+    integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
+    crossorigin="anonymous"
+></script>
 
-<section class="content">
-    <div class="container-fluid">
+<script>
+    const pie_chart_options = {
+        series: [700, 500, 400, 600, 300, 100],
+        chart: {
+            type: 'donut',
+        },
+        labels: ['Chrome', 'Edge', 'FireFox', 'Safari', 'Opera', 'IE'],
+        dataLabels: {
+            enabled: false,
+        },
+        colors: ['#0d6efd', '#20c997', '#ffc107', '#d63384', '#6f42c1', '#adb5bd'],
+    };
 
-        <div class="row">
-            <!-- Active Users -->
-            <div class="col-lg-4 col-6">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3>3</h3>
-                        <p>Active Users</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <a asp-controller="Manager" asp-action="Users" asp-area="Manager" class="small-box-footer">
-                        View Users <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Projects -->
-            <div class="col-lg-4 col-6">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3>12</h3>
-                        <p>Projects</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <a asp-controller="Project" asp-action="Index" asp-area="Manager"  class="small-box-footer">
-                        View Projects <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Logged Time Today -->
-            <div class="col-lg-4 col-6">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3>18h</h3>
-                        <p>Logged Time Today</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <a asp-controller="TimeEntry" asp-action="Entries" asp-area="Manager" class="small-box-footer">
-                        Time Entries <i class="fas fa-arrow-circle-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
+    const pie_chart = new ApexCharts(document.querySelector('#pie-chart'), pie_chart_options);
+    pie_chart.render();
+</script>
