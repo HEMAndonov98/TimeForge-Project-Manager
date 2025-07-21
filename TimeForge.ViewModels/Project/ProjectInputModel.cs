@@ -20,5 +20,5 @@ public class ProjectInputModel
 
     public string UserId { get; set; }
     
-    public List<TagViewModel> Tags { get; set; }
+    public List<TagInputModel> Tags { get; set; }
 }

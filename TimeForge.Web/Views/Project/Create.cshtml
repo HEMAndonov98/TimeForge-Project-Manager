@@ -17,7 +17,6 @@
                         @* Hidden Fields *@
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="UserId" />
-                        <input type="hidden" asp-for="Tags" />
 
                         <!-- Project Name -->
                         <div class="form-floating mb-3">
@@ -41,7 +40,7 @@
                         
                         <!-- Tags -->
                         <div class="mb-4">
-                            <partial name="_TagInputPartial" model="Model.Tags"/>
+                            <partial name="_TagInputPartial" model="Model"/>
                         </div>
 
                         <!-- Submit -->

@@ -1,5 +1,5 @@
-@using TimeForge.ViewModels.Tag
-@model List<TagViewModel> 
+@using TimeForge.ViewModels.Project
+@model ProjectInputModel
 
 
 <div class="mb-4">
@@ -11,18 +11,18 @@
 
     <!-- Tag List -->
     <div id="tagList">
-        @if (Model != null)
+        @if (Model.Tags != null)
         {
-            for (int i = 0; i < Model.Count; i++)
+            for (int i = 0; i < Model.Tags.Count; i++)
             {
                 <div class="d-inline-block me-1 mb-1 tag-wrapper">
                     <span class="badge bg-secondary">
-                        @Model[i].Name
+                        @Model.Tags[i].Name
                         <button type="button" class="btn btn-sm btn-close ms-2" aria-label="Remove"
                                 onclick="removeTag(this)" style="font-size: 0.6rem; line-height: 0.8;">
                         </button>
                     </span>
-                    <input type="hidden" name="Tags[@i].Name" value="@Model[i].Name" />
+                    <input type="hidden" name="Tags[@i].Name" value="@Model.Tags[i].Name" />
                 </div>
             }
         }
@@ -46,11 +46,11 @@
 
             const index = tagList.querySelectorAll('.tag-wrapper').length;
 
-            // Create tag wrapper
+            // Create a tag wrapper
             const wrapper = document.createElement('div');
             wrapper.className = 'd-inline-block me-1 mb-1 tag-wrapper';
 
-            // Badge with remove button
+            // Badge with the remove button
             const badge = document.createElement('span');
             badge.className = 'badge bg-secondary';
             badge.innerHTML = `${tagName}
