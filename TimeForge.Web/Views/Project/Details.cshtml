@@ -23,7 +23,6 @@
             }
         </div>
     </div>
-
     <!-- Tasks Section -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
@@ -40,10 +39,22 @@
     <div class="text-center bg-light border rounded shadow-sm mb-4">
         @if (currentUserId == Model.UserId)
         {
-            <a class="btn btn-danger btn-md m-2" asp-controller="Project" asp-action="Delete" asp-route-projectId="@Model.Id">Deletet</a>
+            <a class="btn btn-danger btn-md m-2" onclick="showDeleteModal('@Model.Id')">Delete</a>
         }
     </div>
+    
+    <div id="modal-placeholder"></div>
 </div>
+
+
+<script>
+    function showDeleteModal(projectId){
+        $.get(`/Project/Delete/?projectId=${projectId}`, function(html) {
+            $('#modal-placeholder').html(html)
+            $('#deleteProjectModal').modal('show')
+        });
+    }
+</script>>
 
 @section Scripts
 {
