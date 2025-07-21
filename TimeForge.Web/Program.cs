@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Infrastructure;
 using TimeForge.Infrastructure.Interceptors;
 using TimeForge.Infrastructure.Repositories;
 using TimeForge.Infrastructure.Repositories.Interfaces;
+using TimeForge.Infrastructure.Seeders;
 using TimeForge.Models;
 using TimeForge.Services;
 using TimeForge.Services.Interfaces;
@@ -36,12 +38,20 @@ builder.Services.AddDefaultIdentity<User>(options =>
         //TODO remove after testing
         options.SignIn.RequireConfirmedAccount = false;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<TimeForgeDbContext>();
 builder.Services.AddControllersWithViews();
 
 
 
 var app = builder.Build();
+
+//Seeder
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentitySeeder.SeedManagerAsync(services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -60,11 +70,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+// app.MapControllerRoute(
+//     name: "MyArea",
+//     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();
