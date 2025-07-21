@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace TimeForge.Web.Areas.Manager.Controllers;
 
 [Area("Manager")]
-[Authorize(Roles = "Manager")]
 public class ManagerController : Controller
 {
     // GET
