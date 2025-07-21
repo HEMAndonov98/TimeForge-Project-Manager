@@ -7,14 +7,12 @@ namespace TimeForge.Infrastructure.Interceptors;
 
 public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
 {
-    public override ValueTask<int> SavedChangesAsync(
-        SaveChangesCompletedEventData eventData,
-        int result,
+    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result,
         CancellationToken cancellationToken = new CancellationToken())
     {
         if (eventData.Context is null)
         {
-            return base.SavedChangesAsync(
+            return base.SavingChangesAsync(
                 eventData, result, cancellationToken);
         }
 
@@ -32,7 +30,7 @@ public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
             deletable.Entity.DeletedAt = DateTime.UtcNow;
         }
         
-        return base.SavedChangesAsync(
+        return base.SavingChangesAsync(
             eventData, result, cancellationToken);
     }
 }
