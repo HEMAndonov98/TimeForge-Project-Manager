@@ -17,9 +17,9 @@ public class ProjectTask: BaseDeletableModel<string>
     public string Name { get; set; } = null!;
     
     //TODO Implement billing later
-    public bool IsBillable { get; set; } = false;
+    public bool IsBillable { get; set; }
 
-    public bool IsCompleted { get; set; } = false;
+    public bool IsCompleted { get; set; }
 
     //TODO implement new migration
     public DateTime? CompletionDate { get; set; }
