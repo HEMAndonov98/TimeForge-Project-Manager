@@ -12,12 +12,14 @@ public class ProjectController : Controller
 {
     private readonly IProjectService projectService;
     private readonly ITagService tagService;
+    private readonly ITaskService taskService;
     private readonly ILogger<ProjectController> logger;
 
-    public ProjectController(IProjectService projectService, ITagService tagService, ILogger<ProjectController> logger)
+    public ProjectController(IProjectService projectService, ITagService tagService, ITaskService taskService, ILogger<ProjectController> logger)
     {
         this.projectService = projectService;
         this.tagService = tagService;
+        this.taskService = taskService;
         this.logger = logger;
     }
 
@@ -76,8 +78,10 @@ public class ProjectController : Controller
     public async Task<IActionResult> Details(string projectId)
     {
         var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+        var tasks = await this.taskService.GetTasksByProjectIdAsync(projectId);
         ViewData["UserId"] = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
+        viewModel.Tasks = tasks.ToList();
+        
         return View(viewModel);
     }
 
