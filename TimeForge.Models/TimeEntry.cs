@@ -12,10 +12,8 @@ public class TimeEntry : BaseDeletableModel<string>
    
    public DateTime Start { get; set; }
 
-   public DateTime End { get; set; }
-
-   public double Duration => (this.End - this.Start).TotalHours;
-
+   public DateTime? End { get; set; }
+   
    [ForeignKey(nameof(ProjectTask))]
    public string TaskId { get; set; } = null!;
 
