@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
@@ -11,11 +12,13 @@ namespace TimeForge.Web.Controllers;
 public class HomeController : Controller
 {
     private readonly IProjectService projectService;
+    private readonly ITaskService taskService;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger, IProjectService projectService)
+    public HomeController(ILogger<HomeController> logger, IProjectService projectService, ITaskService taskService)
     {
         _logger = logger;
+        this.taskService = taskService;
         this.projectService = projectService;
     }
 
@@ -29,6 +32,13 @@ public class HomeController : Controller
         if (!string.IsNullOrEmpty(user))
         {
             var data = await this.projectService.GetAllProjectsAsync(user);
+
+            foreach (ProjectViewModel project in data)
+            {
+                string projectId = project.Id;
+                project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
+            }
+            
             projects = data.ToList();
         }
         return View("Index", projects);
