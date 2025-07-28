@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ITimeForgeRepository, TimeForgeRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 
 // Interceptors
