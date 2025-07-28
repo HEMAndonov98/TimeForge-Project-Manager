@@ -99,6 +99,7 @@ public class TaskService : ITaskService
 
             TaskViewModel viewModel = new TaskViewModel()
             {
+                Id = task.Id,
                 Name = task.Name,
                 IsCompleted = task.IsCompleted,
                 TimeEntries = task.TimeEntries
@@ -139,7 +140,7 @@ public class TaskService : ITaskService
 
             var tasks = await this.timeForgeRepository.All<ProjectTask>(t => t.ProjectId == projectId)
                 .Include(t => t.TimeEntries)
-                .ThenInclude(te => te.CreatedBy.UserName)
+                .ThenInclude(te => te.CreatedBy)
                 .AsNoTracking()
                 .Select(t => new TaskViewModel()
                 {
@@ -151,7 +152,7 @@ public class TaskService : ITaskService
                         {
                             Start = te.Start,
                             End = te.End,
-                            TaskId = t.Id,
+                            TaskId = te.TaskId,
                             CreatedBy = te.CreatedBy.UserName ?? string.Empty,
                             IsRunning = te.IsRunning,
                         })
