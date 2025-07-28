@@ -31,6 +31,7 @@ public class ProjectService : IProjectService
 
             var newProject = new Project()
             {
+                Id = inputModel.Id!,
                 Name = inputModel.Name,
                 IsPublic = inputModel.IsPublic,
                 DueDate = inputModel.DueDate,
