@@ -33,6 +33,7 @@ public class TagService : ITagService
 
             var newTag = new Tag()
             {
+                Id = inputModel.Id,
                 Name = inputModel.Name,
                 UserId = inputModel.UserId,
                 CreatedAt = DateTime.UtcNow,
