@@ -1,8 +1,15 @@
 @using TimeForge.ViewModels.Task
-@model IEnumerable<TaskViewModel>
+@model TaskListAndFormModel
 
 @{
-    var projectId = ViewData["ProjectId"]?.ToString() ?? "";
+    var projectId = @Model.ProjectId ?? "";
+    var activeTasks = @Model.Tasks
+        .Where(t => !t.IsCompleted)
+        .ToList();
+
+    var completedTasks = @Model.Tasks
+        .Where(t => t.IsCompleted)
+        .ToList();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -12,18 +19,35 @@
     </button>
 </div>
 
-@if (Model == null || !Model.Any())
+@if (Model.Tasks == null || !Model.Tasks.Any())
 {
     <p class="text-muted fst-italic">No tasks yet for this project.</p>
 }
 else
 {
     <ul class="list-group list-group-flush mb-4">
-        @foreach (var task in Model)
+        @foreach (var task in activeTasks)
         {
-            <li class="list-group-item d-flex align-items-center ps-0">
-                <input class="form-check-input me-2" type="checkbox" disabled />
+            <li class="list-group-item d-flex align-items-center" data-task-id="@task.Id">
+                <input type="checkbox" 
+                       class="form-check-input me-2 task-toggle",
+                       name="@task.Name" 
+                       data-task-id="@task.Id"
+                       data-project-id="@projectId"/>
                 <span>@task.Name</span>
+            </li>
+        }
+    </ul>
+}
+
+@if (completedTasks.Any())
+{
+    <h5 class="mt-4 text-muted">Completed Tasks</h5>
+    <ul class="list-group list-group-flush mb-4">
+        @foreach (var task in completedTasks)
+        {
+            <li class="list-group-item ps-0 text-muted">
+                <span style="text-decoration: line-through;">@task.Name</span>
             </li>
         }
     </ul>
@@ -39,12 +63,15 @@ else
             </div>
 
             <form asp-controller="Task" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
                 <div class="modal-body">
-                    <input type="hidden" name="ProjectId" value="@projectId" />
+                    <input type="hidden" asp-for="TaskInputModel.ProjectId" value="@projectId" />
 
                     <div class="mb-3">
-                        <label for="TaskNameInput" class="form-label">Task Name</label>
-                        <input type="text" name="Name" id="TaskNameInput" class="form-control" placeholder="Enter task name" required />
+                        <label asp-for="TaskInputModel.Name" class="form-label">Task Name</label>
+                        <input asp-for="TaskInputModel.Name" class="form-control" placeholder="Enter task name" />
+                        <span asp-validation-for="TaskInputModel.Name" class="text-danger"></span>
                     </div>
                 </div>
 
