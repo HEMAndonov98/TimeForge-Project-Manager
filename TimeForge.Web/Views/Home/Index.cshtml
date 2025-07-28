@@ -1,4 +1,5 @@
 ﻿@using TimeForge.ViewModels.Project
+@using TimeForge.ViewModels.Task
 @model IEnumerable<ProjectViewModel>
 
 @{
@@ -25,53 +26,61 @@
                 <div class="text-center bg-light border rounded shadow-sm">
                     <a class="btn btn-primary btn-md m-2" asp-controller="Project" asp-action="Create">Create Project</a>
                 </div>
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h4 class="fw-semibold mb-1">@project.Name</h4>
-                                    <div class="text-muted small">
-                                        Created by: @project.CreatedBy |
-                                        Due: @(string.IsNullOrEmpty(project.DueDate) ? "N/A" : project.DueDate)
-                                    </div>
-
-                                    <div class="mt-2">
-                                        @foreach (var tag in project.Tags)
-                                        {
-                                            <span class="badge rounded-pill bg-secondary me-1">@tag.Name</span>
-                                        }
-                                    </div>
-                                </div>
-                                <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Project" asp-action="Details" asp-route-projectId="@project.Id">Details</a>
-                            </div>
-
-                            <hr/>
-
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
-                                @await Html.PartialAsync("_ProjectTaskList", project.Tasks, new ViewDataDictionary(ViewData)
-                                {
-                                    { "ProjectId", project.Id }
-                                })
+                                <h4 class="fw-semibold mb-1">@project.Name</h4>
+                                <div class="text-muted small">
+                                    Created by: @project.CreatedBy |
+                                    Due: @(string.IsNullOrEmpty(project.DueDate) ? "N/A" : project.DueDate)
+                                </div>
+
+                                <div class="mt-2">
+                                    @foreach (var tag in project.Tags)
+                                    {
+                                        <span class="badge rounded-pill bg-secondary me-1">@tag.Name</span>
+                                    }
+                                </div>
                             </div>
+                            <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Project" asp-action="Details" asp-route-projectId="@project.Id">Details</a>
+                        </div>
+
+                        <hr/>
+
+                        <div id="task-list-container-@project.Id">
+                            @await Html.PartialAsync("_ProjectTaskList", new TaskListAndFormModel()
+                            {
+                                ProjectId = @project.Id,
+                                Tasks = @project.Tasks,
+                                TaskInputModel = new TaskInputModel()
+                            })
                         </div>
                     </div>
-                    }
-                    }
-                    }
-                    else
-                    {
-                    <!-- Welcome Banner -->
-                    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
-                        <div class="container-fluid py-5 text-center">
-                            <h1 class="display-5 fw-bold">Welcome to TimeForge</h1>
-                            <p class="col-md-8 mx-auto fs-5 text-muted">
-                                Organize your projects, track your tasks, and forge your time with precision.
-                            </p>
-                            <div class="mt-4">
-                                <a href="/Identity/Account/Login" class="btn btn-primary btn-lg me-2">Sign In</a>
-                                <a href="/Identity/Account/Register" class="btn btn-outline-secondary btn-lg">Register</a>
-                            </div>
-                        </div>
-                    </div>
-                    }
                 </div>
+            }
+        }
+    }
+    else
+    {
+        <!-- Welcome Banner -->
+        <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+            <div class="container-fluid py-5 text-center">
+                <h1 class="display-5 fw-bold">Welcome to TimeForge</h1>
+                <p class="col-md-8 mx-auto fs-5 text-muted">
+                    Organize your projects, track your tasks, and forge your time with precision.
+                </p>
+                <div class="mt-4">
+                    <a href="/Identity/Account/Login" class="btn btn-primary btn-lg me-2">Sign In</a>
+                    <a href="/Identity/Account/Register" class="btn btn-outline-secondary btn-lg">Register</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial"/>
+    <partial name="_TaskCompletionScriptsPartial"/>
+}
