@@ -51,7 +51,26 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await IdentitySeeder.SeedManagerAsync(services);
+    try
+    {
+        //Get TimeForgeDbContext for IoC
+        var context = services.GetRequiredService<TimeForgeDbContext>();
+
+        //Apply any pending migrations to ensure database is up to date
+        await context.Database.MigrateAsync(); 
+        
+        
+        //Seed Manager if it doesent exist
+        await IdentitySeeder.SeedManagerAsync(services);
+        
+        //Seed projects with their own tags and tasks if none exist
+        await DbInitializer.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
 }
 
 // Configure the HTTP request pipeline.
