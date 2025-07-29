@@ -59,6 +59,7 @@ using (var scope = app.Services.CreateScope())
         //Apply any pending migrations to ensure database is up to date
         await context.Database.MigrateAsync(); 
         
+        //TODO Add IdentitySeeder to DbInitializer
         
         //Seed Manager if it doesent exist
         await IdentitySeeder.SeedManagerAsync(services);
@@ -80,7 +81,8 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error/500");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
