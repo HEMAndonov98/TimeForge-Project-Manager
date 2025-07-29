@@ -68,37 +68,74 @@ public class ProjectController : Controller
             }
             return RedirectToAction("Index", "Home");
         }
-        catch (Exception e)
+        catch (ArgumentNullException)
         {
-            Console.WriteLine(e);
-            throw;
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
         }
     }
     [HttpGet]
     public async Task<IActionResult> Details(string projectId)
     {
-        var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
-        var tasks = await this.taskService.GetTasksByProjectIdAsync(projectId);
-        ViewData["UserId"] = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        viewModel.Tasks = tasks.ToList();
-        
-        return View(viewModel);
+        try
+        {
+            var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+            var tasks = await this.taskService.GetTasksByProjectIdAsync(projectId);
+            ViewData["UserId"] = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            viewModel.Tasks = tasks.ToList();
+
+            return View(viewModel);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(string projectId)
     {
-        var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
-        var inputModel = new ProjectInputModel()
+        try
         {
-            Id = viewModel.Id,
-            UserId = viewModel.UserId,
-            DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
-            Name = viewModel.Name,
-            IsPublic = viewModel.IsPublic
-        };
+            var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
+            var inputModel = new ProjectInputModel()
+            {
+                Id = viewModel.Id,
+                UserId = viewModel.UserId,
+                DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
+                Name = viewModel.Name,
+                IsPublic = viewModel.IsPublic
+            };
 
-        return View(inputModel);
+            return View(inputModel);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 
     [HttpPost]
@@ -110,8 +147,23 @@ public class ProjectController : Controller
             return View(inputModel);
         }
         
-        await this.projectService.UpdateProject(inputModel);
-        return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
+        try
+        {
+            await this.projectService.UpdateProject(inputModel);
+            return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 
     [HttpGet]
@@ -132,7 +184,22 @@ public class ProjectController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
     {
-        await this.projectService.DeleteProject(viewModel.Id);
-        return RedirectToAction("Index", "Home");
+        try
+        {
+            await this.projectService.DeleteProject(viewModel.Id);
+            return RedirectToAction("Index", "Home");
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 }
