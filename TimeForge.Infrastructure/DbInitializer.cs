@@ -6,7 +6,8 @@ namespace TimeForge.Infrastructure;
 
 public static class DbInitializer
 {
-    private const string SEED_USER_ID = "your_stable_seed_user_id_here";
+    //TODO Testing purposes delete in production
+    private const string SEED_USER_ID = "42859591-f3e5-4c80-9f28-3310bafe4c3e";
 
     public static async Task SeedAsync(TimeForgeDbContext context)
     {
