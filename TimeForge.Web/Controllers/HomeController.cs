@@ -22,26 +22,66 @@ public class HomeController : Controller
         this.projectService = projectService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1)
     {
-        var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
-        this.ViewData["IsLoggedIn"] = isLoggedIn;
-        
-        var projects = new List<ProjectViewModel>();
-        if (!string.IsNullOrEmpty(user))
+        try
         {
-            var data = await this.projectService.GetAllProjectsAsync(user);
-
-            foreach (ProjectViewModel project in data)
+            int totalPages = 0;
+            List<ProjectViewModel> projectsList = new List<ProjectViewModel>();
+            
+            var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+            this.ViewData["IsLoggedIn"] = isLoggedIn;
+        
+            if (!string.IsNullOrEmpty(user))
             {
-                string projectId = project.Id;
-                project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
+                int pageSize = 4;
+
+                int projectsCount = await projectService.GetProjectsCountAsync(user);
+                totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
+
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (page > totalPages)
+                {
+                    page = totalPages;
+                }
+                
+                
+                IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
+                foreach (ProjectViewModel project in projects)
+                {
+                    string projectId = project.Id;
+                    project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
+                }
+                
+                projectsList = projects.ToList();
             }
             
-            projects = data.ToList();
+            
+            var viewModel = new PagedProjectViewModel()
+            {
+                Projects = projectsList,
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
+            return View("Index", viewModel);
         }
-        return View("Index", projects);
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 
     public IActionResult Privacy()
@@ -49,9 +89,9 @@ public class HomeController : Controller
         return View();
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+    // [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    // public IActionResult Error()
+    // {
+    //     return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    // }
 }
