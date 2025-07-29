@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm border-0">
+                <div class="card-body py-5">
+                    <h1 class="display-4 text-danger fw-bold">404</h1>
+                    <p class="lead text-muted">Oops! The page you're looking for doesn't exist.</p>
+                    <p class="text-muted">It might have been moved, deleted, or never existed.</p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">
+                        ⬅ Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
