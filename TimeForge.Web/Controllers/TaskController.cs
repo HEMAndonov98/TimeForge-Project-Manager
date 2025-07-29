@@ -30,32 +30,77 @@ public class TaskController : Controller
             this.logger.LogWarning("Model state is invalid for Task with description: {TaskDescription}", inputModel.Name);
             return RedirectToAction("Details", "Project", new { projectId = inputModel.ProjectId });
         }
-        await this.taskService.CreateTaskAsync(inputModel);
-        
-        this.logger.LogInformation("Task added for project {ProjectId}", inputModel.ProjectId);
-        return RedirectToAction("Details", "Project", new { projectId = inputModel.ProjectId });
+
+        try
+        {
+            await this.taskService.CreateTaskAsync(inputModel);
+
+            this.logger.LogInformation("Task added for project {ProjectId}", inputModel.ProjectId);
+            return RedirectToAction("Details", "Project", new { projectId = inputModel.ProjectId });
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
     
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Complete(string taskId)
     {
-        await this.taskService.CompleteTask(taskId);
-
-        return Ok();
+        try
+        {
+            await this.taskService.CompleteTask(taskId);
+            return Ok();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
     
     [HttpGet]
     public async Task<IActionResult> GetTaskListPartial(string projectId)
     {
-        var model = await this.taskService.GetTasksByProjectIdAsync(projectId);
-        var taskListAndFormModel = new TaskListAndFormModel()
+        try
         {
-            Tasks = model.ToList(),
-            TaskInputModel = new TaskInputModel(),
-            ProjectId = projectId
-        };
-        return PartialView("_ProjectTaskList", taskListAndFormModel);
+            var model = await this.taskService.GetTasksByProjectIdAsync(projectId);
+            var taskListAndFormModel = new TaskListAndFormModel()
+            {
+                Tasks = model.ToList(),
+                TaskInputModel = new TaskInputModel(),
+                ProjectId = projectId
+            };
+            return PartialView("_ProjectTaskList", taskListAndFormModel);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
     }
 
 }
