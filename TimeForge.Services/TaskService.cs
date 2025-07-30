@@ -23,8 +23,6 @@ public class TaskService : ITaskService
     
     public async Task CreateTaskAsync(TaskInputModel inputModel)
     {
-        this.logger.LogInformation("Creating task with input model {InputModel}", inputModel);
-
         try
         {
             if (inputModel == null)
@@ -33,6 +31,8 @@ public class TaskService : ITaskService
                 throw new ArgumentNullException();
             }
 
+            this.logger.LogInformation("Creating task with input model {InputModel}", inputModel);
+
             var newTask = new ProjectTask()
             {
                 ProjectId = inputModel.ProjectId,
@@ -40,10 +40,15 @@ public class TaskService : ITaskService
                 CreatedAt = DateTime.UtcNow,
                 LastModified = DateTime.UtcNow
             };
-            
+
             await this.timeForgeRepository.AddAsync(newTask);
             await this.timeForgeRepository.SaveChangesAsync();
             this.logger.LogInformation("Successfully created task with ID: {TaskId}", newTask.Id);
+        }
+        catch (ArgumentNullException)
+        {
+            this.logger.LogError("Input model is null");
+            throw new ArgumentNullException();
         }
         catch (Exception e)
         {
