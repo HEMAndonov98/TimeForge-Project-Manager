@@ -119,7 +119,10 @@ public class ProjectController : Controller
                 UserId = viewModel.UserId,
                 DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
                 Name = viewModel.Name,
-                IsPublic = viewModel.IsPublic
+                IsPublic = viewModel.IsPublic,
+                Tags = viewModel.Tags
+                    .Select(t => new TagInputModel() { Id = t.Id, Name = t.Name})
+                .ToList()
             };
 
             return View(inputModel);
@@ -146,10 +149,35 @@ public class ProjectController : Controller
         {
             return View(inputModel);
         }
-        
+
         try
         {
             await this.projectService.UpdateProject(inputModel);
+
+            var previousTags = await this.tagService.GetAllTagsByProjectIdAsync(inputModel.Id);
+
+            var currentTags = inputModel.Tags;
+            
+            //Add new tags to project
+            foreach (var currentTag in currentTags)
+            {
+                if (!previousTags.Any(t => t.Name == currentTag.Name))
+                {
+                    currentTag.UserId = inputModel.UserId;
+                    await this.tagService.CreateTagAsync(currentTag);
+                    await this.projectService.AddTagToProject(inputModel.Id, currentTag.Id);
+                }
+            }
+
+            // Remove tags not in current input model
+            foreach (var previousTag in previousTags)
+            {
+                if (!currentTags.Any(t => t.Name != previousTag.Name))
+                {
+                    await this.projectService.RemoveTagFromProjectAsync(inputModel.Id, previousTag.Id);
+                }
+            }
+
             return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
         }
         catch (ArgumentNullException)
@@ -160,11 +188,13 @@ public class ProjectController : Controller
         {
             return NotFound();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            // Consider logging ex here
             return StatusCode(500);
         }
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Delete(string projectId)
