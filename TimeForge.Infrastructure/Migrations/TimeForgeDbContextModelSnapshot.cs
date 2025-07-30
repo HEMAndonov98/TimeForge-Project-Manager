@@ -314,18 +314,24 @@ namespace TimeForge.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRunning")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastPausedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("State")
+                        .HasColumnType("int");
+
                     b.Property<string>("TaskId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeSpan>("TotalPausedDuration")
+                        .HasColumnType("time");
 
                     b.Property<string>("UserId")
                         .IsRequired()

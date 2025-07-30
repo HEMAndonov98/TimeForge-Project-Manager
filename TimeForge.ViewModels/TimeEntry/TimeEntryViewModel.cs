@@ -1,3 +1,5 @@
+using TimeForge.Common.Enums;
+
 namespace TimeForge.ViewModels.TimeEntry;
 
 public class TimeEntryViewModel
@@ -10,5 +12,8 @@ public class TimeEntryViewModel
 
     public string CreatedBy { get; set; }
 
-    public bool IsRunning { get; set; }
+    public TimeSpan? Duration { get; set; }
+
+    public TimeEntryState State { get; set; }
+
 }
