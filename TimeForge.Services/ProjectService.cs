@@ -263,6 +263,13 @@ public class ProjectService : IProjectService
                 this.logger.LogWarning("Project with Id {Id} not found in UpdateProject.", inputModel.Id);
                 throw new ArgumentException($"Project with Id {inputModel.Id} not found.");
             }
+            
+            project.Name = inputModel.Name;
+            project.DueDate = inputModel.DueDate;
+            project.IsPublic = inputModel.IsPublic;
+            project.LastModified = DateTime.UtcNow;
+            project.UserId = inputModel.UserId;
+            
 
             this.timeForgeRepository.Update(project);
             await this.timeForgeRepository.SaveChangesAsync();
@@ -373,6 +380,38 @@ public class ProjectService : IProjectService
         catch (Exception ex)
         {
             this.logger.LogError(ex, "An error occurred in AddTagToProject for projectId: {ProjectId}, tagId: {TagId}.", projectId, tagId);
+            throw;
+        }
+    }
+
+    public async Task RemoveTagFromProjectAsync(string projectId, string tagId)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(tagId))
+            {
+                this.logger.LogWarning("RemoveTagFromProjectAsync was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.", projectId, tagId);
+                throw new ArgumentNullException(projectId, tagId);
+            }
+            
+            var projectTag = this.timeForgeRepository.All<ProjectTag>(
+                pt => pt.ProjectId == projectId && pt.TagId == tagId)
+                .FirstOrDefault();
+
+            if (projectTag == null)
+            {
+                this.logger.LogWarning("A ProjectTag with a projectId of {projectId} and a tagId of {tagId} does not exist", projectId, tagId);
+                throw new ArgumentException("Both project and tag must exist.");
+            }
+            
+            this.timeForgeRepository.Delete(projectTag);
+            await this.timeForgeRepository.SaveChangesAsync();
+
+            this.logger.LogInformation("Successfully removed tag with Id {TagId} from project with Id {ProjectId}.", tagId, projectId);
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "An error occurred in RemoveTagFromProjectAsync for projectId: {ProjectId}, tagId: {TagId}.", projectId, tagId);
             throw;
         }
     }

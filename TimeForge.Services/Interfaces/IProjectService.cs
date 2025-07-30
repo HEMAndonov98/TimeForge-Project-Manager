@@ -17,9 +17,7 @@ public interface IProjectService
 
     Task UpdateProject(ProjectInputModel inputModel);
 
-    Task AddTaskToProject(string projectId, string taskId);
-
-    Task RemoveTaskFromProject(string projectId, string taskId);
-
     Task AddTagToProject(string projectId, string tagId);
+    
+    Task RemoveTagFromProjectAsync(string projectId, string tagId);
 }
