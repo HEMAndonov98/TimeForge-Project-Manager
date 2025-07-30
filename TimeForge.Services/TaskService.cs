@@ -114,7 +114,8 @@ public class TaskService : ITaskService
                         End = te.End,
                         TaskId = taskId,
                         CreatedBy = te.CreatedBy.UserName ?? string.Empty,
-                        IsRunning = te.IsRunning,
+                        Duration = te.Duration,
+                        State = te.State
                     })
                     .ToList()
             };
@@ -159,7 +160,8 @@ public class TaskService : ITaskService
                             End = te.End,
                             TaskId = te.TaskId,
                             CreatedBy = te.CreatedBy.UserName ?? string.Empty,
-                            IsRunning = te.IsRunning,
+                            Duration = te.Duration,
+                            State = te.State
                         })
                         .ToList()
                 })
