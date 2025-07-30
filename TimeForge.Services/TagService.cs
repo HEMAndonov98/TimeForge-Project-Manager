@@ -23,13 +23,14 @@ public class TagService : ITagService
     {
         try
         {
-            this.logger.LogInformation("Creating new tag with name: {TagName}", inputModel.Name);
-
             if (inputModel == null)
             {
                 this.logger.LogError("TagInputModel is null");
                 throw new ArgumentNullException(nameof(inputModel));
             }
+            
+            this.logger.LogInformation("Creating new tag with name: {TagName}", inputModel.Name);
+
 
             var newTag = new Tag()
             {
@@ -104,13 +105,8 @@ public class TagService : ITagService
             var tags = await this.timeForgeRepository.All<Tag>(t => t.UserId == userId)
                 .AsNoTracking()
                 .OrderByDescending(t => t.CreatedAt)
-                .Select(t => new
-                {
-                    t.Id,
-                    t.Name
-                })
                 .ToListAsync();
-
+            
             if (tags == null)
             {
                 this.logger.LogWarning("An unexpected error occured while retrieving tags from database for User with ID: {userId}", userId);
@@ -132,17 +128,62 @@ public class TagService : ITagService
         }
     }
 
-    public async void DeleteTag(string tagId)
+    public async Task<IEnumerable<TagViewModel>> GetAllTagsByProjectIdAsync(string projectId)
     {
         try
         {
-            this.logger.LogInformation("Deleting tag with ID: {TagId}", tagId);
 
+            if (string.IsNullOrEmpty(projectId))
+            {
+                this.logger.LogError("User ID is null or empty");
+                throw new ArgumentNullException("Project ID cannot be null or empty");
+            }
+
+            this.logger.LogInformation("Retrieving tag with for User with ID: {projectId}", projectId);
+
+
+            var existingTags = await this.timeForgeRepository.All<ProjectTag>(pt => pt.ProjectId == projectId)
+                .Include(pt => pt.Tag)
+                .AsNoTracking()
+                .OrderBy(pt => pt.Tag.Name)
+                .ToListAsync();
+
+            if (existingTags == null)
+            {
+                this.logger.LogWarning(
+                    "An unexpected error occured while retrieving tags from database for Project with ID: {projectId}",
+                    projectId);
+                throw new ArgumentNullException("Tags cannot be null");
+            }
+
+            var tagViewModelList = existingTags.Select(pt => new TagViewModel()
+            {
+                Name = pt.Tag.Name,
+                Id = pt.Tag.Id
+            });
+
+            return tagViewModelList;
+        }
+        catch (Exception)
+        {
+            this.logger.LogError("Error occurred while retrieving tags with User ID: {projectId}", projectId);
+            throw;
+        }
+    }
+    
+
+    public async Task DeleteTagAsync(string tagId)
+    {
+        try
+        {
             if (string.IsNullOrEmpty(tagId))
             {
                 this.logger.LogError("Tag ID is null or empty");
                 throw new ArgumentNullException("Tag ID cannot be null or empty", nameof(tagId));
             }
+            
+            this.logger.LogInformation("Deleting tag with ID: {TagId}", tagId);
+
 
             var tag = await timeForgeRepository
                 .GetByIdAsync<Tag>(tagId);
