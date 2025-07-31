@@ -1,0 +1,50 @@
+@using TimeForge.Common.Enums
+@using TimeForge.ViewModels.TimeEntry
+@model TimeEntryViewModel
+
+<div class="d-flex align-items-center me-3">
+    <span class="text-muted me-2">Timer:</span>
+    <div id="timer-display" class="badge bg-light text-dark border rounded-pill px-3 py-2 shadow-sm"
+         style="min-width:100px; text-align:center;">
+        @Model.Duration.ToString()
+    </div>
+    
+    
+    <button id="timer-pause" class="btn btn-sm btn-outline-secondary ms-1" 
+            @(Model.State == TimeEntryState.Running ? "" : "disabled")>
+        <i class="fas fa-pause"></i>
+    </button>
+    <button id="timer-stop"  class="btn btn-sm btn-outline-danger ms-1" 
+            @(Model.State == TimeEntryState.Running || Model.State == TimeEntryState.Paused ? "disabled" : "")>
+        <i class="fas fa-stop"></i>
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        function formatDuration(totalSeconds){
+            if (typeof totalSeconds !== 'number') {
+                return '00:00:00';
+            }
+            
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+            const seconds = Math.floor(totalSeconds - (hours * 3600) - (minutes * 60));
+            
+            const hh = String(hours).padStart(2, '0');
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+            
+            return `${hh}:${mm}:${ss}`;
+        }
+        
+        $.ready(() => {
+            const el = $('timer-display');
+            const totalSeconds = @Model.Duration == null ? 0 : @Model.Duration!.Value.Seconds;
+            
+            if(el){
+                el.text(formatDuration(totalSeconds))
+            }
+        })
+    </script>
+}

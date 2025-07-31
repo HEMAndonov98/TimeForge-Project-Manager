@@ -54,6 +54,7 @@ public class HomeController : Controller
                 IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
                 foreach (ProjectViewModel project in projects)
                 {
+                    project.UserId = user;
                     string projectId = project.Id;
                     project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
                 }
