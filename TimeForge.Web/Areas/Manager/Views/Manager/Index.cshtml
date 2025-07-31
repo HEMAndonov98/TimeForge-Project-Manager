@@ -1,125 +1,99 @@
 @{
-    ViewData["Title"] = "Dashboard";
+ViewData["Title"] = "Manager Dashboard";
 }
 
-<div class="row">        
-    <!-- /.col -->
-    <div class="col-md-3 col-sm-6 col-12">
-        <div class="info-box text-bg-success bg-gradient">
-            <span class="info-box-icon"> <i class="bi bi-hand-thumbs-up"></i> </span>
-            <div class="info-box-content">
-                <span class="info-box-text">Likes</span>
-                <span class="info-box-number">41,410</span>
-                <div class="progress"><div class="progress-bar" style="width: 70%"></div></div>
-                <span class="progress-description"> 70% Increase in 30 Days </span>
-            </div>
-            <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-    </div>
-    <div class="col-lg-3 col-6">
-        <div class="small-box text-bg-primary">
-            <div class="inner">
-                <h3>150</h3>
-                <p>New Orders</p>
-            </div>
-            <svg
-                class="small-box-icon"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-            >
-                <path
-                    d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"
-                ></path>
-            </svg>
-            <a
-                href="#"
-                class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
-            >
-                More info <i class="bi bi-link-45deg"></i>
-            </a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3 class="card-title">Browser Usage</h3>
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                        </button>
-                        <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <!--begin::Row-->
-                    <div class="row">
-                        <div class="col-12"><div id="pie-chart"></div></div>
-                        <!-- /.col -->
-                    </div>
-                    <!--end::Row-->
-                </div>
-                <!-- /.card-body -->
-                <div class="card-footer p-0">
-                    <ul class="nav nav-pills flex-column">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                United States of America
-                                <span class="float-end text-danger">
-                                    <i class="bi bi-arrow-down fs-7"></i>
-                                    12%
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                India
-                                <span class="float-end text-success">
-                                    <i class="bi bi-arrow-up fs-7"></i> 4%
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                China
-                                <span class="float-end text-info">
-                                    <i class="bi bi-arrow-left fs-7"></i> 0%
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.footer -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
             </div>
         </div>
     </div>
 </div>
-<script
-    src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
-    integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
-    crossorigin="anonymous"
-></script>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box">
+                    <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Projects Started</span>
+                        <span id="projects-count" class="info-box-number">@ViewData["ProjectsCount"]</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Task Completion</span>
+                        <span id="task-completion-percentage" class="info-box-number">@ViewData["CompletionTaskPercentage"]</span>
+                    </div>
+                </div>
+            </div><div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Task Completion</span>
+                        <span id="task-completion-count" class="info-box-number">@ViewData["TaskCompletionCount"]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Monthly Task Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart">
+                            <canvas id="tasksChart" style="height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div></section>
+@section Scripts {
+<script src="~/adminlte/plugins/chart.js/chart.min.js"></script>
 
 <script>
-    const pie_chart_options = {
-        series: [700, 500, 400, 600, 300, 100],
-        chart: {
-            type: 'donut',
-        },
-        labels: ['Chrome', 'Edge', 'FireFox', 'Safari', 'Opera', 'IE'],
-        dataLabels: {
-            enabled: false,
-        },
-        colors: ['#0d6efd', '#20c997', '#ffc107', '#d63384', '#6f42c1', '#adb5bd'],
-    };
+    $(function () {
+        'use strict'
 
-    const pie_chart = new ApexCharts(document.querySelector('#pie-chart'), pie_chart_options);
-    pie_chart.render();
+        // --- Initialize Chart ---
+        var tasksChartCanvas = $('#tasksChart').get(0).getContext('2d');
+        var tasksChart = new Chart(tasksChartCanvas, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [
+                    {
+                        label: 'Completed Tasks',
+                        backgroundColor: 'rgba(40, 167, 69, 0.7)', // Green
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        data: [70, 85, 90, 81, 76, 75, 80]
+                    },
+                    {
+                        label: 'New Tasks',
+                        backgroundColor: 'rgba(0, 123, 255, 0.7)', // Blue
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        data: [100, 120, 110, 95, 85, 90, 105]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { // Note: 'yAxes' is deprecated, use 'y'
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
 </script>
+}
