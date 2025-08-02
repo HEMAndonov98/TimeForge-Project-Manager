@@ -5,6 +5,7 @@ using TimeForge.Models;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
 using TimeForge.ViewModels.Tag;
+using TimeForge.ViewModels.Task;
 
 namespace TimeForge.Services;
 
@@ -117,6 +118,7 @@ public class ProjectService : IProjectService
                 .Include(p => p.ProjectTags)
                 .ThenInclude(pt => pt.Tag)
                 .Include(p => p.CreatedBy)
+                .Include(p => p.Tasks)
                 .AsNoTracking()
                 .Select(p => new
                 {
@@ -125,6 +127,7 @@ public class ProjectService : IProjectService
                     p.DueDate,
                     CreatedBy = p.CreatedBy.UserName,
                     Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
+                    Tasks = p.Tasks.Select(t => new {t.Name, t.IsCompleted}).ToList(),
                     p.IsPublic
                 })
                 .ToListAsync();
@@ -140,6 +143,11 @@ public class ProjectService : IProjectService
                 {
                     Id = tag.Id,
                     Name = tag.Name
+                }).ToList(),
+                Tasks = p.Tasks.Select(task => new TaskViewModel()
+                {
+                    Name = task.Name,
+                    IsCompleted = task.IsCompleted
                 }).ToList(),
                 IsPublic = p.IsPublic
             }).ToList();
@@ -180,7 +188,8 @@ public class ProjectService : IProjectService
                     p.DueDate,
                     CreatedBy = p.CreatedBy.UserName,
                     Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
-                    p.IsPublic
+                    p.IsPublic,
+                    userId = p.UserId
                 })
                 .ToListAsync();
 
@@ -196,7 +205,8 @@ public class ProjectService : IProjectService
                     Id = tag.Id,
                     Name = tag.Name
                 }).ToList(),
-                IsPublic = p.IsPublic
+                IsPublic = p.IsPublic,
+                UserId = p.userId
             }).ToList();
 
             this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
