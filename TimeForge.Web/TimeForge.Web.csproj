@@ -10,15 +10,16 @@
 
     <ItemGroup>
         <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+        <None Remove="wwwroot\adminlte\plugins\webfonts\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.17" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     </ItemGroup>
 
@@ -492,10 +493,37 @@
       <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\chart.js\helpers\helpers.js" />
       <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\chart.js\helpers\helpers.min.js" />
       <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\chart.js\helpers\package.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-brands-400.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-brands-400.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-brands-400.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-brands-400.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-brands-400.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-regular-400.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-regular-400.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-regular-400.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-regular-400.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-regular-400.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-solid-900.eot" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-solid-900.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-solid-900.ttf" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-solid-900.woff" />
+      <_ContentIncludedByDefault Remove="wwwroot\adminlte\plugins\webfonts\fa-solid-900.woff2" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="wwwroot\adminlte\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="wwwroot\adminlte\plugins\webfonts\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="wwwroot\adminlte\plugins\webfonts\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="wwwroot\adminlte\plugins\webfonts\**" />
     </ItemGroup>
 
 </Project>
