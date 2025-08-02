@@ -1,0 +1,11 @@
+{
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "jsdelivr",
+      "library": "admin-lte@latest",
+      "destination": "wwwroot/lib/admin-lte"
+    }
+  ]
+}
