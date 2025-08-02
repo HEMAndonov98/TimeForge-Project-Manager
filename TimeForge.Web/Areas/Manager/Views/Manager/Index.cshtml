@@ -1,3 +1,6 @@
+@using TimeForge.Web.Areas.Manager.ViewModels
+@model DashboardViewModel
+
 @{
 ViewData["Title"] = "Manager Dashboard";
 }
@@ -11,15 +14,20 @@ ViewData["Title"] = "Manager Dashboard";
         </div>
     </div>
 </div>
-<section class="content">
+<section id="personal-data">
     <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="m-0">Personal Statistics</h3>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12 col-sm-6 col-md-3">
                 <div class="info-box">
                     <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Projects Started</span>
-                        <span id="projects-count" class="info-box-number">@ViewData["ProjectsCount"]</span>
+                        <span id="projects-count" class="info-box-number">@Model.ManagerProjectsCount</span>
                     </div>
                 </div>
             </div>
@@ -28,72 +36,168 @@ ViewData["Title"] = "Manager Dashboard";
                     <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">Task Completion</span>
-                        <span id="task-completion-percentage" class="info-box-number">@ViewData["CompletionTaskPercentage"]</span>
-                    </div>
-                </div>
-            </div><div class="col-12 col-sm-6 col-md-3">
-                <div class="info-box mb-3">
-                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Task Completion</span>
-                        <span id="task-completion-count" class="info-box-number">@ViewData["TaskCompletionCount"]</span>
+                        <span id="task-completion-percentage" class="info-box-number">@Model.TaskCompletionPercentage</span>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Monthly Task Report</h5>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                    <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Managed Users Count</span>
+                        <span id="task-completion-count" class="info-box-number">@Model.ManagedUsersCount</span>
                     </div>
-                    <div class="card-body">
-                        <div class="chart">
-                            <canvas id="tasksChart" style="height: 250px;"></canvas>
+                </div>
+            </div>
+            <div class="row-cols-6 pb-5">
+                <div class="card card-success col-sm-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Due Projects</h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                        <!-- /.card-tools -->
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body" style="display: block;">
+                        <ul id="projects-list">
+                            @if (Model.DueProjects.Count() == 0)
+                            {
+                                <span>No due projects</span>
+                            }
+                            else
+                            {
+                                <ul>
+                                    @foreach (var project in Model.DueProjects)
+                                    {
+                                        <li><span>@project.Name Due :</span><span class="fa-bold">@project.DueDate</span></li>
+                                    }
+                                </ul>
+                            }
+                        </ul>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="container-fluid">
+        <div class="row g-3">
+            <!-- User Projects Chart Card -->
+            <div class="col-md-6">
+                <div class="card card-success  w-auto h-auto">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">User Projects</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-3 ">
+                        <div class="chart-container">
+                            <canvas id="userProjectsCount"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Task Completion Chart Card -->
+            <div class="col-md-6">
+                <div class="card card-success w-auto h-auto">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">User Task Completion</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="chart-container">
+                            <canvas id="usersTaskCompletion"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div></section>
+    </div>
 @section Scripts {
-<script src="~/adminlte/plugins/chart.js/chart.min.js"></script>
+    <script>
+        const userProjectsCount = @Html.Raw(Json.Serialize(Model.UsersProjects))
+        
+        const userNamesLabels = Object.keys(userProjectsCount);
+        const userProjectsCountValues = Object.values(userProjectsCount);
 
-<script>
-    $(function () {
-        'use strict'
-
-        // --- Initialize Chart ---
-        var tasksChartCanvas = $('#tasksChart').get(0).getContext('2d');
-        var tasksChart = new Chart(tasksChartCanvas, {
+        const ctx = $('#userProjectsCount');
+        new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                    {
-                        label: 'Completed Tasks',
-                        backgroundColor: 'rgba(40, 167, 69, 0.7)', // Green
-                        borderColor: 'rgba(40, 167, 69, 1)',
-                        data: [70, 85, 90, 81, 76, 75, 80]
-                    },
-                    {
-                        label: 'New Tasks',
-                        backgroundColor: 'rgba(0, 123, 255, 0.7)', // Blue
-                        borderColor: 'rgba(0, 123, 255, 1)',
-                        data: [100, 120, 110, 95, 85, 90, 105]
-                    }
-                ]
+                labels: userNamesLabels,
+                datasets: [{
+                    label: 'Projects Count',
+                    data: userProjectsCountValues,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1,
+                    fill: true
+                }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
                 scales: {
-                    y: { // Note: 'yAxes' is deprecated, use 'y'
-                        beginAtZero: true
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
                     }
                 }
             }
         });
-    });
+        
+        
+        const usersTaskCompletionPercentage = @Html.Raw(Json.Serialize(Model.UsersTasksCompletionPercentage))
+        const usersTaskCompletionLabels = Object.keys(usersTaskCompletionPercentage);
+        const usersTaskCompletionValues = Object.values(usersTaskCompletionPercentage);
+        const ctx2 = $('#usersTaskCompletion');
+        
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: usersTaskCompletionLabels,
+                datasets: [{
+                    label: 'Task Completion',
+                    data: usersTaskCompletionValues,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                cutoutPercentage: 50,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        })
 </script>
 }
