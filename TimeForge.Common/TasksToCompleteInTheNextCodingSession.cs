@@ -2,10 +2,12 @@ namespace TimeForge.Common;
 
 public class TasksToCompleteInTheNextCodingSession
 {
-    //TODO 2.Continue work on adding tasks to projects check POST method if  data is sent in a valid state
-    //TODO 3.Follow task creation service to ensure tasks are being added correctly
+    //TODO 1. Start work on TimerFunctionality
     
-    //TODO 4.Start work on TimerFunctionality
+    //TODO 2. Work on ManagerController(Assign Project to user)
+    //TODO 3. Work on ManagerService(Assign Project to user)
+    
+    //TODO 4. Work on system to promote users to managers
     
     //Test user
     //Email: testUser@testUser.com
