@@ -1,3 +1,5 @@
+using TimeForge.ViewModels.TimeEntry;
+
 namespace TimeForge.Services.Interfaces;
 
 public interface ITimeEntryService
@@ -9,4 +11,6 @@ public interface ITimeEntryService
     public Task PauseEntryAsync(string entryId);
     
     public Task StopEntryAsync(string entryId);
+
+    public Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId);
 }
