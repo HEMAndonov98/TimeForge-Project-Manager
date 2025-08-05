@@ -5,6 +5,7 @@ using TimeForge.Common.Enums;
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
+using TimeForge.ViewModels.TimeEntry;
 
 namespace TimeForge.Services;
 
@@ -189,6 +190,37 @@ public class TimeEntryService : ITimeEntryService
             this.logger.LogError("Error occurred while stopping time entry with ID: {EntryId}", entryId);
             throw;
         }
+    }
+
+
+    public async Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+            throw new ArgumentNullException(userId, "User ID cannot be null or empty");
+
+        string createdBy = (await this.userManager.FindByIdAsync(userId))?.UserName ?? string.Empty;
+
+        var timeEntry = await this.timeForgeRepository
+            .All<TimeEntry>(te => te.UserId == userId &&
+                                  te.State == TimeEntryState.Running)
+            .Include(te => te.ProjectTask)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (timeEntry == null)
+            return null;
+
+        var viewModel = new TimeEntryViewModel()
+        {
+            Id = timeEntry.Id,
+            Start = timeEntry.Start,
+            End = timeEntry.End,
+            TaskName = timeEntry.ProjectTask.Name,
+            Duration = timeEntry.Duration ?? TimeSpan.Zero,
+            State = timeEntry.State,
+            CreatedBy = createdBy,
+        };
+        return viewModel;
     }
 
     private async Task<TimeEntry> ValidateTimeEntryAsync(string entryId)
