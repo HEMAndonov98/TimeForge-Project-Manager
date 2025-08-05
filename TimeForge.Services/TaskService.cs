@@ -114,7 +114,7 @@ public class TaskService : ITaskService
                         End = te.End,
                         TaskId = taskId,
                         CreatedBy = te.CreatedBy.UserName ?? string.Empty,
-                        Duration = te.Duration,
+                        Duration = te.Duration ?? TimeSpan.Zero,
                         State = te.State
                     })
                     .ToList()
@@ -160,7 +160,7 @@ public class TaskService : ITaskService
                             End = te.End,
                             TaskId = te.TaskId,
                             CreatedBy = te.CreatedBy.UserName ?? string.Empty,
-                            Duration = te.Duration,
+                            Duration = te.Duration ?? TimeSpan.Zero,
                             State = te.State
                         })
                         .ToList()
