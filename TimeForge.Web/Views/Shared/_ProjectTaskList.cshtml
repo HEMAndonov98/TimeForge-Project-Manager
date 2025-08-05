@@ -28,13 +28,21 @@ else
     <ul class="list-group list-group-flush mb-4">
         @foreach (var task in activeTasks)
         {
-            <li class="list-group-item d-flex align-items-center" data-task-id="@task.Id">
-                <input type="checkbox" 
+            <li class="list-group-item d-flex justify-content-between align-items-center" data-task-id="@task.Id">
+                <div id="task-group-checkbox-name">
+                <input type="checkbox"
                        class="form-check-input me-2 task-toggle",
-                       name="@task.Name" 
+                       name="@task.Name"
                        data-task-id="@task.Id"
                        data-project-id="@projectId"/>
                 <span>@task.Name</span>
+                </div>
+
+                <form asp-action="Start" asp-controller="TimeEntry">
+                    <button class="btn btn-outline-primary btn-sm" data-toggle="button" aria-pressed="False">
+                        <i class="bi bi-play"></i>
+                    </button>
+                </form>
             </li>
         }
     </ul>
