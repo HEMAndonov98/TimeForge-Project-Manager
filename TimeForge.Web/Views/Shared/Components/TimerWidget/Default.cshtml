@@ -1,0 +1,66 @@
+@using TimeForge.ViewModels.TimeEntry;
+@model NavbarTimerViewModel
+
+<div class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+       id="navbarTimerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <span id="timer-display" class="badge bg-light text-dark border rounded-pill px-2">
+            @if (Model.IsRunning)
+            {
+                <span class="fs-4">@Model.TaskName <span id="timer-text" class="fs-4"> 00:00:00 </span></span>
+            }
+            else
+            {
+                <span class="text-muted">No timer running</span>
+            }
+        </span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="navbarTimerDropdown">
+        @if (Model.IsRunning)
+        {
+            <li>
+                <form method="post" asp-controller="TimeEntry" asp-action="Pause">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Pause</button>
+                </form>
+            </li>
+            <li class="mt-1">
+                <form method="post" asp-controller="TimeEntry" asp-action="Stop">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">Stop</button>
+                </form>
+            </li>
+        }
+        else
+        {
+            <li class="text-muted px-2">No active timer</li>
+        }
+    </ul>
+</div>
+
+@if (Model.IsRunning)
+{
+    @section Scripts {
+        <script>
+        $(document).ready(function () {
+            let durationMs = @Model.DurationInMiliseconds;
+            const displayEl = $('#timer-text');
+
+            function formatDuration(ms) {
+                const totalSeconds = Math.floor(ms / 1000);
+                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+                return `${hours}:${minutes}:${seconds}`;
+            }
+
+            displayEl.textContent = formatDuration(durationMs);
+
+            setInterval(() => {
+                durationMs += 1000;
+                displayEl.textContent = formatDuration(durationMs);
+            }, 1000);
+        })
+    </script>
+    }
+}
