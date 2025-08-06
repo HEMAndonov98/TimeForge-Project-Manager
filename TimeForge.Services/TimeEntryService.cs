@@ -223,6 +223,11 @@ public class TimeEntryService : ITimeEntryService
         return viewModel;
     }
 
+    public Task<TimeEntryViewModel?> GetCurrentPausedTimeEntryByUserIdAsync(string userId)
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task<TimeEntry> ValidateTimeEntryAsync(string entryId)
     {
         //Check if ID is valid
