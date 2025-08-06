@@ -240,8 +240,143 @@ public class ProjectServiceTests
 
     #region UpdateProject
 
-    
+    [Test]
+    public void UpdateProject_NullInput_ThrowsArgumentNullException()
+    {
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.UpdateProject(null));
+    }
 
+    [Test]
+    public async Task UpdateProject_ValidInput_UpdatesProject()
+    {
+        var input = new Project() { Id = "123", Name = "Test Project" };
+        this.timeForgeRepositoryMock.Setup(r => r.GetByIdAsync<Project>(input.Id))
+            .ReturnsAsync(input);
+
+        var inputModel = new ProjectInputModel() { Id = input.Id, Name = input.Name };
+        await this.projectService.UpdateProject(inputModel);
+        
+        this.timeForgeRepositoryMock.Verify(r => r.Update(It.IsAny<Project>()), Times.Once);
+        this.timeForgeRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    [Test]
+    public void UpdateProject_NonExistingModel_ThrowsArgumentException()
+    {
+        Project input = null;
+        this.timeForgeRepositoryMock.Setup(r => r.GetByIdAsync<Project>("123"))
+            .ReturnsAsync(input);
+        
+        Assert.ThrowsAsync<ArgumentException>(() => this.projectService.UpdateProject(new ProjectInputModel()));
+    }
+
+    #endregion
+
+    #region AddTagToProject
+
+    [Test]
+    public void AddTagToProject_NullInput_ThrowsArgumentNullException()
+    {
+        string input = "123";
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(null, null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(input, null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(null, input));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(string.Empty, string.Empty));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(input, string.Empty));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(string.Empty, input));
+    }
+
+    [Test]
+    public void AddTagToProject_NonExistingProjectOrTagName_ThrowsArgumentException()
+    {
+        string input = "123";
+        Project nullProject = null;
+        Tag nullTag = null;
+        
+        this.timeForgeRepositoryMock.Setup(
+            r => r.GetByIdAsync<Project>("123"))
+            .ReturnsAsync(nullProject);
+        
+        this.timeForgeRepositoryMock.Setup(
+            r => r.GetByIdAsync<Tag>("123"))
+            .ReturnsAsync(nullTag);
+        
+        Assert.ThrowsAsync<ArgumentException>(() => this.projectService.AddTagToProject(input, input));
+    }
+
+    [Test]
+    public async Task AddTagToProject_ValidInput_UpdatesProject()
+    {
+        Project validProject = new Project() { Id = "123", Name = "Test Project" };
+        Tag validTag = new Tag() { Name = "TestTag" };
+        string  input = "123";
+        
+        this.timeForgeRepositoryMock.Setup(
+            r => r.GetByIdAsync<Project>(input))
+            .ReturnsAsync(validProject);
+        
+        this.timeForgeRepositoryMock.Setup(
+                r => r.GetByIdAsync<Tag>(input))
+            .ReturnsAsync(validTag);
+        
+        
+        await this.projectService.AddTagToProject(input, input);
+        
+        this.timeForgeRepositoryMock.Verify(
+            r => r.AddAsync(It.IsAny<ProjectTag>()), Times.Once);
+        this.timeForgeRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    #endregion
+    
+    #region RemoveTagFromProject
+
+    [Test]
+    public void RemoveTagFromProject_NullInput_ThrowsArgumentNullException()
+    {
+        string input = "123";
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(null, null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(input, null));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(null, input));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(string.Empty, string.Empty));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(input, string.Empty));
+        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(string.Empty, input));
+    }
+
+    [Test]
+    public void RemoveTagFromProject_NonExistingProjectOrTagName_ThrowsArgumentException()
+    {
+        var inMemoryDbContext = InitialiseInMemoryDbContext();
+        var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var mockInput = "123";
+        
+        Assert.ThrowsAsync<ArgumentException>(() => inMemoryProjectService
+            .RemoveTagFromProjectAsync(mockInput, mockInput));
+    }
+
+    [Test]
+    public async Task RemoveTagFromProject_ValidInput_RemovesTag()
+    {
+        var inMemoryDbContext = InitialiseInMemoryDbContext();
+        var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        
+        string projectId = "123";
+        string tagId = "321";
+        
+        var mockProjectTag = new ProjectTag() { ProjectId = projectId, TagId = tagId };
+        
+        inMemoryDbContext.ProjectTags.Add(mockProjectTag);
+        await inMemoryDbContext.SaveChangesAsync();
+
+        await inMemoryProjectService.RemoveTagFromProjectAsync(projectId, tagId);
+        
+        
+        Assert.That(inMemoryDbContext.ProjectTags.Count, Is.EqualTo(0));
+
+
+    }
     #endregion
     
     #region HelperMethods
