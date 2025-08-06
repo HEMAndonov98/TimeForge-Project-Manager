@@ -39,6 +39,7 @@ else
                 </div>
 
                 <form asp-action="Start" asp-controller="TimeEntry">
+                    <input type="hidden" name="TaskId" value="@task.Id" />
                     <button class="btn btn-outline-primary btn-sm" data-toggle="button" aria-pressed="False">
                         <i class="bi bi-play"></i>
                     </button>
