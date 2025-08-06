@@ -13,4 +13,6 @@ public interface ITimeEntryService
     public Task StopEntryAsync(string entryId);
 
     public Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId);
+    
+    public Task<TimeEntryViewModel?> GetCurrentPausedTimeEntryByUserIdAsync(string userId);
 }
