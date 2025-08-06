@@ -300,18 +300,26 @@ public class ProjectService : IProjectService
                 this.logger.LogWarning("Project with Id {Id} not found in UpdateProject.", inputModel.Id);
                 throw new ArgumentException($"Project with Id {inputModel.Id} not found.");
             }
-            
+
             project.Name = inputModel.Name;
             project.DueDate = inputModel.DueDate;
             project.IsPublic = inputModel.IsPublic;
             project.LastModified = DateTime.UtcNow;
             project.UserId = inputModel.UserId;
-            
+
 
             this.timeForgeRepository.Update(project);
             await this.timeForgeRepository.SaveChangesAsync();
 
             this.logger.LogInformation("Successfully updated project with Id: {Id}.", inputModel.Id);
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
+        catch (ArgumentException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -390,7 +398,9 @@ public class ProjectService : IProjectService
         {
             if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(tagId))
             {
-                this.logger.LogWarning("AddTagToProject was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.", projectId, tagId);
+                this.logger.LogWarning(
+                    "AddTagToProject was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.",
+                    projectId, tagId);
                 throw new ArgumentNullException(projectId, tagId);
             }
 
@@ -399,7 +409,9 @@ public class ProjectService : IProjectService
 
             if (project == null || tag == null)
             {
-                this.logger.LogWarning("Either project or tag was not found in AddTagToProject. ProjectId: {ProjectId}, TagId: {TagId}.", projectId, tagId);
+                this.logger.LogWarning(
+                    "Either project or tag was not found in AddTagToProject. ProjectId: {ProjectId}, TagId: {TagId}.",
+                    projectId, tagId);
                 throw new ArgumentException("Both project and tag must exist.");
             }
 
@@ -412,7 +424,12 @@ public class ProjectService : IProjectService
             await this.timeForgeRepository.AddAsync(newProjectTag);
             await this.timeForgeRepository.SaveChangesAsync();
 
-            this.logger.LogInformation("Successfully added tag with Id {TagId} to project with Id {ProjectId}.", tagId, projectId);
+            this.logger.LogInformation("Successfully added tag with Id {TagId} to project with Id {ProjectId}.", tagId,
+                projectId);
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -427,24 +444,37 @@ public class ProjectService : IProjectService
         {
             if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(tagId))
             {
-                this.logger.LogWarning("RemoveTagFromProjectAsync was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.", projectId, tagId);
+                this.logger.LogWarning(
+                    "RemoveTagFromProjectAsync was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.",
+                    projectId, tagId);
                 throw new ArgumentNullException(projectId, tagId);
             }
-            
-            var projectTag = this.timeForgeRepository.All<ProjectTag>(
-                pt => pt.ProjectId == projectId && pt.TagId == tagId)
-                .FirstOrDefault();
+
+            var projectTag = await this.timeForgeRepository
+                .All<ProjectTag>(pt => pt.ProjectId == projectId && pt.TagId == tagId)
+                .FirstOrDefaultAsync();
 
             if (projectTag == null)
             {
-                this.logger.LogWarning("A ProjectTag with a projectId of {projectId} and a tagId of {tagId} does not exist", projectId, tagId);
+                this.logger.LogWarning(
+                    "A ProjectTag with a projectId of {projectId} and a tagId of {tagId} does not exist", projectId,
+                    tagId);
                 throw new ArgumentException("Both project and tag must exist.");
             }
-            
+
             this.timeForgeRepository.Delete(projectTag);
             await this.timeForgeRepository.SaveChangesAsync();
 
-            this.logger.LogInformation("Successfully removed tag with Id {TagId} from project with Id {ProjectId}.", tagId, projectId);
+            this.logger.LogInformation("Successfully removed tag with Id {TagId} from project with Id {ProjectId}.",
+                tagId, projectId);
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
+        catch (ArgumentException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
