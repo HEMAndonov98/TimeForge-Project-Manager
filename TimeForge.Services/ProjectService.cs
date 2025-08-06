@@ -46,6 +46,10 @@ public class ProjectService : IProjectService
 
             this.logger.LogInformation("Successfully created a new project with Name: {Name}.", newProject.Name);
         }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             this.logger.LogError(ex, "An error occurred in CreateProjectAsync.");
@@ -96,9 +100,18 @@ public class ProjectService : IProjectService
             this.logger.LogInformation("Successfully retrieved project with Id: {ProjectId}.", projectId);
             return viewModel;
         }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, "An error occurred in GetProjectByIdAsync while fetching project with Id: {ProjectId}.", projectId);
+            this.logger.LogError(ex,
+                "An error occurred in GetProjectByIdAsync while fetching project with Id: {ProjectId}.", projectId);
             throw;
         }
     }
@@ -127,7 +140,7 @@ public class ProjectService : IProjectService
                     p.DueDate,
                     CreatedBy = p.CreatedBy.UserName,
                     Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
-                    Tasks = p.Tasks.Select(t => new {t.Name, t.IsCompleted}).ToList(),
+                    Tasks = p.Tasks.Select(t => new { t.Name, t.IsCompleted }).ToList(),
                     p.IsPublic
                 })
                 .ToListAsync();
@@ -152,8 +165,14 @@ public class ProjectService : IProjectService
                 IsPublic = p.IsPublic
             }).ToList();
 
-            this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
+            this.logger.LogInformation(
+                "GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.",
+                projectViewModels.Count, userId);
             return projectViewModels;
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -241,6 +260,14 @@ public class ProjectService : IProjectService
             await this.timeForgeRepository.SaveChangesAsync();
 
             this.logger.LogInformation("Successfully deleted project with Id: {ProjectId}.", projectId);
+        }
+        catch (ArgumentNullException)
+        {
+            throw;
+        }
+        catch (ArgumentException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
