@@ -23,11 +23,21 @@ public class TimeEntryController : Controller
     {
         try
         {
+            this.logger.LogInformation("Starting time entry for task {TaskId}", taskId);
             var userId = this.GetUserId();
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(taskId))
                 throw new ArgumentNullException();
+
+            var runningTimeEntry = await this.timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
+            if (runningTimeEntry != null)
+            {
+                this.logger.LogInformation("Stopping running time entry {RunningTimeEntryId}", runningTimeEntry.Id);
+                await this.timeEntryService.StopEntryAsync(runningTimeEntry.Id);
+            }
             
-            await this.timeEntryService.StartEntryAsync(taskId, userId!);
+            await this.timeEntryService.StartEntryAsync(taskId, userId);
+            this.logger.LogInformation("Time entry started for task {TaskId}", taskId);
+            return RedirectToAction("Index", "Home");
         }
         catch (ArgumentNullException)
         {
@@ -67,7 +77,8 @@ public class TimeEntryController : Controller
         {
             return StatusCode(500);
         }
-        return Ok();
+
+        return RedirectToAction("Index", "Home");
     }
     
     
@@ -94,7 +105,7 @@ public class TimeEntryController : Controller
         {
             return StatusCode(500);
         }
-        return Ok();
+        return RedirectToAction("Index", "Home");
     }
 
     public async Task<IActionResult> Stop(string entryId)
@@ -118,7 +129,7 @@ public class TimeEntryController : Controller
             return StatusCode(500);
         }
 
-        return Ok();
+        return RedirectToAction("Index", "Home");
     }
 
 
