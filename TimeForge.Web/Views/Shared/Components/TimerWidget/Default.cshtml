@@ -1,3 +1,4 @@
+@using TimeForge.Common.Enums
 @using TimeForge.ViewModels.TimeEntry;
 @model NavbarTimerViewModel
 
@@ -11,7 +12,7 @@
             }
             else
             {
-                <span class="text-muted">No timer running</span>
+                <span class="text-muted fs-4">No timer running</span>
             }
         </span>
     </a>
@@ -20,13 +21,13 @@
         {
             <li>
                 <form method="post" asp-controller="TimeEntry" asp-action="Pause">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="EntryId" value="@Model.Id" />
                     <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Pause</button>
                 </form>
             </li>
             <li class="mt-1">
                 <form method="post" asp-controller="TimeEntry" asp-action="Stop">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="EntryId" value="@Model.Id" />
                     <button type="submit" class="btn btn-sm btn-outline-danger w-100">Stop</button>
                 </form>
             </li>
@@ -38,29 +39,7 @@
     </ul>
 </div>
 
-@if (Model.IsRunning)
-{
-    @section Scripts {
-        <script>
-        $(document).ready(function () {
-            let durationMs = @Model.DurationInMiliseconds;
-            const displayEl = $('#timer-text');
+<div id="timer-is-running" class="d-none">@(Model.IsRunning ? "true" : "false")</div>
 
-            function formatDuration(ms) {
-                const totalSeconds = Math.floor(ms / 1000);
-                const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-                const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-                const seconds = String(totalSeconds % 60).padStart(2, '0');
-                return `${hours}:${minutes}:${seconds}`;
-            }
+<div id="timer-duration" class="d-none">@(Model.IsRunning ? Model.DurationInMiliseconds : 0)</div>
 
-            displayEl.textContent = formatDuration(durationMs);
-
-            setInterval(() => {
-                durationMs += 1000;
-                displayEl.textContent = formatDuration(durationMs);
-            }, 1000);
-        })
-    </script>
-    }
-}
