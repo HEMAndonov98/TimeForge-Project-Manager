@@ -10,7 +10,7 @@ public class NavbarTimerViewModel
 
     public long DurationInMiliseconds { get; set; }
 
-    public TimeEntryState State { get; set; }
+    public TimeEntryState? State { get; set; }
 
     public bool IsRunning => State == TimeEntryState.Running;
 }
