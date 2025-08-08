@@ -13,7 +13,7 @@ public class DashboardViewModel
     
     
     //Chart username: [tasks]
-    public Dictionary<string, string>? UsersTasksCompletionPercentage { get; set; }
+    public Dictionary<string, double>? UsersTasksCompletionPercentage { get; set; }
     
     //Chart username: [projects]
     public Dictionary<string, int>? UsersProjects { get; set; }
