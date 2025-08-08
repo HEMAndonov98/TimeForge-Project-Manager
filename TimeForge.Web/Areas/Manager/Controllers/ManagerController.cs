@@ -79,9 +79,9 @@ public class ManagerController : Controller
 
        int managerProjectsCount = managerProjects.Count();
 
-       Dictionary<string, string> userTaskCompletionPrecentages = managedUsers.ToDictionary(
+       Dictionary<string, double> userTaskCompletionPercentages = managedUsers.ToDictionary(
            u => u.Username ?? string.Empty,
-           u => Math.Round(u.Tasks.Count(t => t.IsCompleted) / (double)u.Tasks.Count(), 1).ToString("P")
+           u => Math.Round(u.Tasks.Count(t => t.IsCompleted) / (double)u.Tasks.Count(), 1) * 100
        );
 
        Dictionary<string, int> userProjectsCount = managedUsers.ToDictionary(
@@ -94,9 +94,10 @@ public class ManagerController : Controller
        DashboardViewModel viewModel = new DashboardViewModel()
        {
            ManagerProjectsCount = managerProjectsCount,
+           ManagedUsersCount = managedUsers.Count(),
            TaskCompletionPercentage = taskCompletionPercentage,
            DueProjects = dueProjects.ToList(),
-           UsersTasksCompletionPercentage = userTaskCompletionPrecentages,
+           UsersTasksCompletionPercentage = userTaskCompletionPercentages,
            UsersProjects = userProjectsCount
        };
        
@@ -138,5 +139,16 @@ public class ManagerController : Controller
         };
 
         return View("AssignProjects", viewModel);
+    }
+
+    public async Task<IActionResult> AssignProject(ProjectAssignInputModel inputModel)
+    {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+        
+        return View();
     }
 }
