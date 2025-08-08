@@ -1,25 +1,40 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using TimeForge.Services.Interfaces;
 
 namespace TimeForge.Web.Controllers;
+/// <summary>
+/// Handles time entry operations for tasks (start, pause, resume, stop).
+/// </summary>
 [Authorize]
 public class TimeEntryController : Controller
 {
     private readonly ITimeEntryService timeEntryService;
     private readonly ILogger<TimeEntryController> logger;
 
-    public TimeEntryController(ITimeEntryService timeEntryService,
+/// <summary>
+/// Initializes a new instance of the <see cref="TimeEntryController"/>.
+/// </summary>
+/// <param name="timeEntryService">Time entry service for time tracking.</param>
+/// <param name="logger">Logger instance.</param>
+public TimeEntryController(ITimeEntryService timeEntryService,
         ILogger<TimeEntryController> logger)
     {
         this.timeEntryService = timeEntryService;
         this.logger = logger;
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Start(string taskId)
+
+/// <summary>
+/// Starts a time entry for the specified task.
+/// </summary>
+/// <param name="taskId">The ID of the task.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Start(string taskId)
     {
         try
         {
@@ -27,17 +42,9 @@ public class TimeEntryController : Controller
             var userId = this.GetUserId();
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(taskId))
                 throw new ArgumentNullException();
-
-            var runningTimeEntry = await this.timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
-            if (runningTimeEntry != null)
-            {
-                this.logger.LogInformation("Stopping running time entry {RunningTimeEntryId}", runningTimeEntry.Id);
-                await this.timeEntryService.StopEntryAsync(runningTimeEntry.Id);
-            }
             
             await this.timeEntryService.StartEntryAsync(taskId, userId);
             this.logger.LogInformation("Time entry started for task {TaskId}", taskId);
-            return RedirectToAction("Index", "Home");
         }
         catch (ArgumentNullException)
         {
@@ -51,12 +58,17 @@ public class TimeEntryController : Controller
         {
             return StatusCode(500);
         }
-        return Ok();
+        return RedirectToAction("Index", "Home");
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Pause(string entryId)
+
+/// <summary>
+/// Pauses a time entry.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Pause(string entryId)
     {
         try
         {
@@ -81,17 +93,23 @@ public class TimeEntryController : Controller
         return RedirectToAction("Index", "Home");
     }
     
-    
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Resume(string entryId)
+
+/// <summary>
+/// Resumes a paused time entry.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Resume(string entryId)
     {
         try
         {
-            if (String.IsNullOrEmpty(entryId))
+            string? userId = this.GetUserId();
+            if (String.IsNullOrEmpty(entryId) || String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException();
+            
 
-            await this.timeEntryService.ResumeEntryAsync(entryId);
+            await this.timeEntryService.ResumeEntryAsync(entryId, userId);
         }
         catch (ArgumentNullException)
         {
@@ -108,7 +126,11 @@ public class TimeEntryController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-    public async Task<IActionResult> Stop(string entryId)
+/// <summary>
+/// Stops a time entry.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+public async Task<IActionResult> Stop(string entryId)
     {
         try
         {
@@ -133,6 +155,10 @@ public class TimeEntryController : Controller
     }
 
 
-    private string? GetUserId()
+/// <summary>
+/// Gets the current user's ID from claims.
+/// </summary>
+/// <returns>The user ID as a string, or null if not found.</returns>
+private string? GetUserId()
     => this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
