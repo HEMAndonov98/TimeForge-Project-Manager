@@ -1,0 +1,158 @@
+﻿<CorruptedSettingsDescription>
+  <Exception Message="'.', hexadecimal value 0x00, is an invalid character. Line 79, position 27." Kind="Error">'.', hexadecimal value 0x00, is an invalid character. Line 79, position 27.
+
+--- EXCEPTION #1/2 [XmlException]
+Message = “'.', hexadecimal value 0x00, is an invalid character. Line 79, position 27.”
+res = “'{0}', hexadecimal value {1}, is an invalid character.”
+args.#0 = .
+args.#1 = 0x00
+lineNumber = 79
+linePosition = 27
+version = 2.0
+StackTraceString = “
+  at System.Xml.XmlTextReaderImpl.Throw(Exception e) in Throw.il:line IL_0027 mvid E97C or Throw.il:line IL_0029 mvid E97C
+     at System.Xml.XmlTextReaderImpl.Throw(String res, String[] args) in Throw.il:line IL_0027 mvid E97C or Throw.il:line IL_0029 mvid E97C
+     at System.Xml.XmlTextReaderImpl.ParseRootLevelWhitespace() in ParseRootLevelWhitespace.il:line IL_0133 mvid E97C
+     at System.Xml.XmlTextReaderImpl.ParseDocumentContent() in ParseDocumentContent.il:line IL_02C0 mvid E97C
+     at JetBrains.Application.Settings.Storage.Persistence.EntriesReader.Step_GenericRead_SkipToElement() in Step.il:line IL_0029 mvid 6D62
+”
+ExceptionPath = Root.InnerException
+ClassName = System.Xml.XmlException
+HResult = Xml=80131940
+Source = System.Private.Xml
+Data.ThreadLocalDebugInfo = ShutdownRequested
+
+--- Outer ---
+
+--- EXCEPTION #2/2 [LoggerException]
+Message = “'.', hexadecimal value 0x00, is an invalid character. Line 79, position 27.”
+InnerException = “Exception #1 at Root.InnerException”
+StackTraceString = “
+  at JetBrains.Util.ILoggerEx.LogException(ILogger logger, LoggingLevel level, Exception exception, ExceptionOrigin exceptionOrigin, String comment) in LogException.il:line IL_002E mvid 01F5
+     at JetBrains.Util.ILoggerEx.Error(ILogger logger, Exception exception, ExceptionOrigin origin, String comment) in Error.il:line IL_0000 mvid 01F5
+     at JetBrains.Util.ILoggerEx.LogOuterDataException(ILogger logger, Exception exception, String comment) in LogOuterDataException.il:line IL_0000 mvid 01F5
+     at JetBrains.Application.Settings.Storage.Persistence.EntriesReader.Step_GenericRead_SkipToElement() in Step.il:line IL_0029 mvid 6D62 or Step.il:line IL_002D mvid 6D62 or Step.il:line IL_006F mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.EntriesReader.Step_GenericRead() in Step.il:line IL_0029 mvid 6D62 or Step.il:line IL_002D mvid 6D62 or Step.il:line IL_006F mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.EntriesReader.Step() in Step.il:line IL_0029 mvid 6D62 or Step.il:line IL_002D mvid 6D62 or Step.il:line IL_006F mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.EntriesReader.Run(XmlReader reader, EntryPositionsFlag entryPositionsFlag) in Run.il:line IL_006B mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass34_2.&lt;Save_WriteFile_BackupOldCorruptedFile&gt;b__5(XmlReader xmlreader)
+     at JetBrains.Util.XmlReaderEx.ReadXml[TResult](Stream stream, Func`2 FRead) in ReadXml.il:line IL_002F mvid 2BFE
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass34_2.&lt;Save_WriteFile_BackupOldCorruptedFile&gt;b__4(Stream streamR)
+     at JetBrains.Util.FileSystemPathOpenEx.ReadStream[T,TF,TFile,TDir](FileSystemPathBase`3 path, Func`2 λRead) in ReadStream.il:line IL_0029 mvid 01F5
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass34_1.&lt;Save_WriteFile_BackupOldCorruptedFile&gt;b__2()
+     at JetBrains.Util.Logging.Logger.Catch(Action action) in Catch.il:line IL_000F mvid 01F5
+     at JetBrains.Util.XmlWriterEx.InElement(XmlWriter writer, String name, Action nested, Boolean writeFullEndElement)
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass34_0.&lt;Save_WriteFile_BackupOldCorruptedFile&gt;b__1(XmlWriter xmlwriter)
+     at JetBrains.Util.XmlWriterEx.WriteXml(Stream stream, Action`1 FWrite) in WriteXml.il:line IL_0023 mvid 01F5
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass34_0.&lt;Save_WriteFile_BackupOldCorruptedFile&gt;b__0(Stream stream)
+     at JetBrains.Util.FileSystemPathOpenEx.WriteStream[T,TFile,TDir](FileSystemPathBase`3 path, Action`1 λWrite) in WriteStream.il:line IL_0029 mvid 01F5
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.Save_WriteFile_BackupOldCorruptedFile(FileSystemPath path) in Save.il:line IL_002C mvid 6D62 or Save.il:line IL_00D2 mvid 6D62 or Save.il:line IL_0241 mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass31_0.&lt;Save_WriteFile&gt;b__0()
+     at JetBrains.Util.ILoggerEx.Catch(ILogger logger, Action action, ExceptionOrigin origin, LoggingLevel loggingLevel) in Catch.il:line IL_0060 mvid 01F5
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.Save_WriteFile(SaveDiffFlags flagsDiff, SaveForcedFlags flagsForced) in Save.il:line IL_002C mvid 6D62 or Save.il:line IL_00D2 mvid 6D62 or Save.il:line IL_0241 mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.Save(SaveDiffFlags flagsDiff, SaveForcedFlags flagsForced) in Save.il:line IL_002C mvid 6D62 or Save.il:line IL_00D2 mvid 6D62 or Save.il:line IL_0241 mvid 6D62
+     at JetBrains.Application.Settings.Storage.Persistence.SettingsStoreSerializationToXmlDiskFile.&lt;&gt;c__DisplayClass9_0.&lt;Init_FirstLoadLastSave&gt;b__1()
+     at JetBrains.DataFlow.IPropertySignalEx.&lt;&gt;c__DisplayClass0_0`1.&lt;Advise_FallingFront&gt;b__0(PropertyChangedEventArgs`1 args) in IPropertySignalEx.il:line IL_0010 mvid 01F5 or IPropertySignalEx.il:line IL_0028 mvid 01F5
+     at JetBrains.DataFlow.CombinedProperty2`3.&lt;&gt;c__DisplayClass8_0.&lt;AdviseCore&gt;b__1() in CombinedProperty2.il:line IL_009C mvid 01F5
+     at JetBrains.Lifetimes.LifetimeDefinition.Destruct() in Destruct.il:line IL_00A8 mvid 2A6A or Destruct.il:line IL_00B1 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Terminate() in Terminate.il:line IL_0162 mvid 2A6A
+     at JetBrains.Application.Components.SingletonDescriptorBindings`1.Dispose() in Dispose.il:line IL_0000 mvid 2C3D
+     at JetBrains.Application.Components.SingletonDescriptor`1.DisposeInternalResources() in DisposeInternalResources.il:line IL_0048 mvid 2C3D
+     at JetBrains.Application.Components.AsyncDescriptorBase.DoDisposeSafe(Object instance) in DoDisposeSafe.il:line IL_0036 mvid 2C3D
+     at JetBrains.Application.Components.AsyncDescriptorBase.Dispose() in Dispose.il:line IL_00DD mvid 2C3D
+     at JetBrains.Application.Components.ComponentStorage.DisposeDescriptor(IComponentDescriptor descriptor) in DisposeDescriptor.il:line IL_000A mvid 2C3D
+     at JetBrains.Application.Components.ComponentStorage.Terminate() in Terminate.il:line IL_00AE mvid 2C3D
+     at JetBrains.Lifetimes.LifetimeDefinition.Destruct() in Destruct.il:line IL_00A8 mvid 2A6A or Destruct.il:line IL_00B1 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Terminate() in Terminate.il:line IL_0162 mvid 2A6A
+     at JetBrains.ProjectModel.SolutionInstance.CloseSolutionInstance() in CloseSolutionInstance.il:line IL_0087 mvid 0765
+     at JetBrains.ProjectModel.SolutionManagerBase.CloseSolutionInstance(SolutionInstance instance) in CloseSolutionInstance.il:line IL_0000 mvid 0765
+     at JetBrains.ProjectModel.ProjectsHost.SolutionHost.Impl.SolutionHostManager.CloseSolution() in CloseSolution.il:line IL_0046 mvid 1B95
+     at JetBrains.Rider.Backend.Features.ProjectModel.RiderSolutionWatcher.&lt;&gt;c__DisplayClass4_0.&lt;.ctor&gt;b__2() in RiderSolutionWatcher.il:line IL_002D mvid 350C
+     at JetBrains.Lifetimes.LifetimeDefinition.Destruct() in Destruct.il:line IL_00A8 mvid 2A6A or Destruct.il:line IL_00B1 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Terminate() in Terminate.il:line IL_0162 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Destruct() in Destruct.il:line IL_00A8 mvid 2A6A or Destruct.il:line IL_00B1 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Terminate() in Terminate.il:line IL_0162 mvid 2A6A
+     at JetBrains.Application.Components.SingletonDescriptorBindings`1.Dispose() in Dispose.il:line IL_0000 mvid 2C3D
+     at JetBrains.Application.Components.SingletonDescriptor`1.DisposeInternalResources() in DisposeInternalResources.il:line IL_0048 mvid 2C3D
+     at JetBrains.Application.Components.AsyncDescriptorBase.DoDisposeSafe(Object instance) in DoDisposeSafe.il:line IL_0036 mvid 2C3D
+     at JetBrains.Application.Components.AsyncDescriptorBase.Dispose() in Dispose.il:line IL_00DD mvid 2C3D
+     at JetBrains.Application.Components.ComponentStorage.DisposeDescriptor(IComponentDescriptor descriptor) in DisposeDescriptor.il:line IL_000A mvid 2C3D
+     at JetBrains.Application.Components.ComponentStorage.Terminate() in Terminate.il:line IL_00AE mvid 2C3D
+     at JetBrains.Lifetimes.LifetimeDefinition.Destruct() in Destruct.il:line IL_00A8 mvid 2A6A or Destruct.il:line IL_00B1 mvid 2A6A
+     at JetBrains.Lifetimes.LifetimeDefinition.Terminate() in Terminate.il:line IL_0162 mvid 2A6A
+     at JetBrains.Lifetimes.SequentialLifetimes.TrySetNewAndTerminateOld(LifetimeDefinition newLifetimeDefinition, Action`1 actionWithNewLifetime) in TrySetNewAndTerminateOld.il:line IL_001F mvid 2A6A
+     at JetBrains.DataFlow.IPropertyEx.&lt;&gt;c__DisplayClass39_0.&lt;WhenTrue&gt;b__0(PropertyChangedEventArgs`1 args) in IPropertyEx.il:line IL_0000 mvid 01F5
+     at JetBrains.DataFlow.Signal`1.Fire(TValue value, Object cookie) in Fire.il:line IL_0054 mvid 01F5
+     at JetBrains.DataFlow.Property`1.SetValue(TValue value, Object cookie)
+     at JetBrains.DataFlow.Property`1.set_Value(TValue value)
+     at JetBrains.Application.Environment.RunsProducts.&lt;&gt;c__DisplayClass5_1.&lt;.ctor&gt;b__0(PropertyChangedEventArgs`1 _)
+     at JetBrains.DataFlow.IPropertySignalEx.&lt;&gt;c__DisplayClass1_0`1.&lt;Advise_FallingFront&gt;b__0(PropertyChangedEventArgs`1 args) in IPropertySignalEx.il:line IL_0010 mvid 01F5 or IPropertySignalEx.il:line IL_0028 mvid 01F5
+     at JetBrains.Util.DataFlow.ProjectedProperty`2.&lt;&gt;c__DisplayClass10_2.&lt;AdviseCore&gt;b__4() in ProjectedProperty.il:line IL_0000 mvid 01F5 or ProjectedProperty.il:line IL_0139 mvid 01F5
+     at JetBrains.Util.Logging.Logger.Catch(Action action) in Catch.il:line IL_000F mvid 01F5
+     at JetBrains.Util.DataFlow.ProjectedProperty`2.&lt;&gt;c__DisplayClass10_0.&lt;AdviseCore&gt;b__3(PropertyChangedEventArgs`1 args) in ProjectedProperty.il:line IL_0000 mvid 01F5 or ProjectedProperty.il:line IL_0139 mvid 01F5
+     at JetBrains.DataFlow.Signal`1.Fire(TValue value, Object cookie) in Fire.il:line IL_0054 mvid 01F5
+     at JetBrains.DataFlow.Property`1.SetValue(TValue value, Object cookie)
+     at JetBrains.DataFlow.Property`1.set_Value(TValue value)
+     at JetBrains.Application.Environment.ReportsProductsAllowedToRun.UpdateActiveTellers(Lifetime lifetimeComponent, List`1 tellers, IThreading threading, IProperty`1 propComposite, ILogger logger) in UpdateActiveTellers.il:line IL_00FD mvid 6D62
+     at JetBrains.Application.Environment.ReportsProductsAllowedToRun.&lt;&gt;c__DisplayClass2_0.&lt;UpdateActiveTellers&gt;g__UpdateActiveTellersAgain|0() in ReportsProductsAllowedToRun.il:line IL_000B mvid 6D62
+     at JetBrains.DataFlow.IPropertySignalEx.&lt;&gt;c__DisplayClass10_0`1.&lt;Advise_NoAcknowledgement&gt;b__0(PropertyChangedEventArgs`1 args) in IPropertySignalEx.il:line IL_0010 mvid 01F5 or IPropertySignalEx.il:line IL_0028 mvid 01F5
+     at JetBrains.DataFlow.Signal`1.Fire(TValue value, Object cookie) in Fire.il:line IL_0054 mvid 01F5
+     at JetBrains.DataFlow.Property`1.SetValue(TValue value, Object cookie)
+     at JetBrains.DataFlow.Property`1.set_Value(TValue value)
+     at JetBrains.Application.Environment.ApplicationShutdownRequests.&lt;&gt;c__DisplayClass10_0.&lt;ProcessShutdownVerdict&gt;b__0() in ApplicationShutdownRequests.il:line IL_00C3 mvid 6D62
+     at JetBrains.Util.Concurrency.ExecutionContextEx.WithinExecutionContext(Object o) in WithinExecutionContext.il:line IL_002F mvid 01F5
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid 77FC
+     at JetBrains.Threading.ReentrancyGuard.Execute(String name, Action action) in Execute.il:line IL_0119 mvid 01F5
+     at JetBrains.Threading.ReentrancyGuard.ExecutePendingActions() in ExecutePendingActions.il:line IL_0054 mvid 01F5
+     at JetBrains.Util.Concurrency.ExecutionContextEx.WithinExecutionContext(Object o) in WithinExecutionContext.il:line IL_002F mvid 01F5
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid 77FC
+     at JetBrains.Threading.JetDispatcher.Closure.Execute() in Execute.il:line IL_01EF mvid 01F5
+     at JetBrains.Threading.JetDispatcher.ProcessQueue(Int32 nMinBucket, Int32 nProcessQueueGeneration) in ProcessQueue.il:line IL_01D0 mvid 01F5
+     at JetBrains.Threading.JetDispatcher.&lt;&gt;c__DisplayClass64_0.&lt;ScheduleQueueProcessingOnNativeMarshaller&gt;g__ProcessQueueWithPriority|0() in JetDispatcher.il:line IL_0000 mvid 01F5
+     at JetBrains.Threading.RunsAndSleeps.RunOrSleep(Func`1 FCondition, IProperty`1 propCondition, TimeSpan timeout, OnWaitTimeout ontimeout, RunOrSleepFlags flags) in RunOrSleep.il:line IL_03B2 mvid 01F5
+     at JetBrains.Threading.JetDispatcher.Run(IProperty`1 condition, TimeSpan timeout, Boolean bThrowOnTimeout) in Run.il:line IL_0005 mvid 01F5
+     at JetBrains.Application.Environment.IJetHostEx.RunHostMessageLoop(IComponentContainer containerEnv) in RunHostMessageLoop.il:line IL_000E mvid 6D62
+     at JetBrains.Application.Environment.HostParameters.MessagePumpMainLoopHostMixin.JetBrains.Application.Environment.HostParameters.IRunMainLoopHostMixin.RunMainLoop(ComponentContainer containerEnv)
+     at JetBrains.Application.Environment.HostParameters.JetHostParametersCaller.RunMainLoop(ComponentContainer containerEnv) in RunMainLoop.il:line IL_009F mvid 6D62
+     at JetBrains.Application.Environment.JetEnvironment.&lt;&gt;c__DisplayClass12_0.&lt;RunUntilShutdown&gt;b__0() in JetEnvironment.il:line IL_0000 mvid 6D62
+     at JetBrains.Util.Concurrency.ExecutionContextEx.WithinExecutionContext(Object o) in WithinExecutionContext.il:line IL_002F mvid 01F5
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid 77FC
+     at JetBrains.Threading.JetDispatcher.Closure.Execute() in Execute.il:line IL_01EF mvid 01F5
+     at JetBrains.Threading.JetDispatcher.Invoke(OuterLifetime lifetime, String name, Action action, TaskPriority priority, Nullable`1 limit)
+     at JetBrains.Threading.JetDispatcher.Invoke(String name, Action action, TaskPriority priority)
+     at JetBrains.Application.Environment.JetEnvironment.RunUntilShutdown() in RunUntilShutdown.il:line IL_0044 mvid 6D62
+     at JetBrains.Application.Environment.JetEnvironment.CreateAndRun(JetHostParameters hostparams) in CreateAndRun.il:line IL_000B mvid 6D62
+     at JetBrains.Application.Environment.JetHostItems.CreateAndRun(Full input) in CreateAndRun.il:line IL_0000 mvid 6D62
+     at JetBrains.Rider.Backend.Product.RiderBackendProgram.MainX(Assembly assembly, HostInfo hostInfo) in MainX.il:line IL_00B3 mvid 350C
+     at JetBrains.Rider.Backend.Product.RiderBackendProgram.&lt;&gt;c.&lt;Main&gt;b__4_0(Lifetime lifetime) in RiderBackendProgram.il:line IL_002B mvid 350C
+     at JetBrains.Lifetimes.Lifetime.Using[T](Func`2 action) in Using.il:line IL_0014 mvid 2A6A
+     at JetBrains.Rider.Backend.Product.RiderBackendProgram.Main() in Main.il:line IL_005D mvid 350C
+”
+ExceptionPath = Root
+ClassName = JetBrains.Util.LoggerException
+HResult = COR_E_APPLICATION=80131600
+</Exception>
+  <!--The backup file has been created before writing in-memory changes to the settings file. As the existing settings file is corrupted, many settings might get lost when writing the new content. If you'd like to restore the settings from the previous version, here're the changes against the backed-up version (note: subsequent changes are not reflected here).-->
+  <InMemoryChanges>
+    <SetValue>
+      <wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a057e8aa_002Dc6e1_002D4606_002Da71d_002Dfffd68cb1501/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="RemoveTagFromProject_NonExistingProjectOrTagName_ThrowsArgumentException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+    </SetValue>
+    <ClearValue>
+      <wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2000395c_002Da176_002D451c_002D8bcc_002D8fca4cf437ee/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2caaae92_002D6c3a_002D4a24_002Dbd36_002D829cd474b720/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=392a65c8_002Dc8eb_002D42c2_002D8190_002D2cfb68c3e896/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4f32c1fe_002D9d83_002D494a_002Da765_002D70c5fa7ff646/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5a11d6d5_002D9d53_002D4f02_002Db942_002D2a0260556b01/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8b4d2095_002Da0ca_002D4be1_002D9d56_002D4d4a7e326ba8/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8efebc46_002D616b_002D4a9d_002D9ac1_002Dc1ca7f345a9f/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=aaab91cf_002D73b8_002D4a36_002Dbcea_002D66ece430aaf2/@EntryIndexedValue">—</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f40129d5_002Dadce_002D4f5b_002Db8d8_002D5e00d7325f37/@EntryIndexedValue">—</s:String></wpf:ResourceDictionary>
+    </ClearValue>
+  </InMemoryChanges>
+</CorruptedSettingsDescription>

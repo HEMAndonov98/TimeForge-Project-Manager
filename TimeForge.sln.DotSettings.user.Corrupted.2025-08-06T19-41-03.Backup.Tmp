@@ -16,24 +16,64 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AMock_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F11aa0e509b4c4eeeaed9547dab1ff52b4c400_003Fbe_003Fd29c7860_003FMock_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AMock_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F337268366a89be4dda7d47b37063fd21841972237539397997c82c4f924b_003FMock_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AMonitor_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fd3dbf6cb82f24a6eb5d96047273ff9d6d83a00_003Fc8_003F29e6575c_003FMonitor_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AProxyGenerator_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F34e54cf52b4a4c2b82645ccc3a46837e5e000_003Fb8_003Ff6c5a937_003FProxyGenerator_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ARazorView_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003Fb4e4585d6d5309b65edbdbda1b0e322193c5163b5958a2f8eed9bd65d22f_003FRazorView_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AServiceProviderServiceExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F9efc724329ab415f9a4af6b465bba4d621800_003F95_003F70f9dc08_003FServiceProviderServiceExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AServiceProvider_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F7d81b2d4f22bee75e5438c707251ae43cb0974c207db91ffc159118c84b4eb9_003FServiceProvider_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AThrowHelper_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fd3dbf6cb82f24a6eb5d96047273ff9d6d83a00_003F09_003Fb4bece15_003FThrowHelper_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AUserManager_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Fhristoandonov_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FSourcesCache_003F3e1beecd653485b1deb7561c9360f17cdf93ce222c59548f021503eb07450_003FUserManager_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	
-	
-	
-	
-	
-	
-	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a057e8aa_002Dc6e1_002D4606_002Da71d_002Dfffd68cb1501/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="RemoveTagFromProject_NonExistingProjectOrTagName_ThrowsArgumentException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2000395c_002Da176_002D451c_002D8bcc_002D8fca4cf437ee/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ProjectServiceTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	
-	
-	</wpf:ResourceDictionary>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2caaae92_002D6c3a_002D4a24_002Dbd36_002D829cd474b720/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AddTagToProject_NonExistingProjectOrTagName_ThrowsArgumentException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=392a65c8_002Dc8eb_002D42c2_002D8190_002D2cfb68c3e896/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="UpdateProject_NullInput_ThrowsArgumentNullException" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.UpdateProject_NullInput_ThrowsArgumentNullException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.UpdateProject_ValidInput_UpdatesProject&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.UpdateProject_NonExistingModel_ThrowsArgumentException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.AddTagToProject_NullInput_ThrowsArgumentNullException&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4f32c1fe_002D9d83_002D494a_002Da765_002D70c5fa7ff646/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetProjectByIdAsync_ValidId_ReturnsProjectViewModel" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetProjectByIdAsync_ValidId_ReturnsProjectViewModel&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5a11d6d5_002D9d53_002D4f02_002Db942_002D2a0260556b01/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TagServiceTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TagServiceTests&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TaskServiceTests.CreateTaskAsync_WithValidInput_AddsTaskAndSaves&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TaskServiceTests.CreateTaskAsync_WithNullInput_ThrowsArgumentNullException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TaskServiceTests.CompleteTask_WithValidId_SetsCompletionAndSaves&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TaskServiceTests.CompleteTask_TaskNotFound_ThrowsInvalidOperationException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.TaskServiceTests.DeleteTaskAsync_TaskExists_DeletesAndSaves&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8b4d2095_002Da0ca_002D4be1_002D9d56_002D4d4a7e326ba8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/Volumes/ExtremeSSD/Projects/C#Web/TimeForge" Presentation="&amp;lt;Tests&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8efebc46_002D616b_002D4a9d_002D9ac1_002Dc1ca7f345a9f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetProjectByIdAsync_ValidId_ReturnsProjectViewModel #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetProjectByIdAsync_ValidId_ReturnsProjectViewModel&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=aaab91cf_002D73b8_002D4a36_002Dbcea_002D66ece430aaf2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetProjectByIdAsync_ValidId_ReturnsProjectViewModel #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetProjectByIdAsync_ValidId_ReturnsProjectViewModel&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetProjectByIdAsync_NullOrEmptyId_ThrowsArgumentNullException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetProjectByIdAsync_NotFound_ThrowsInvalidOperationException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetAllProjectsAsync_NullOrEmptyUserId_ThrowsArgumentNullException&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests.GetAllProjectsAsync_ValidUserId_ReturnsProjectViewModelList&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f40129d5_002Dadce_002D4f5b_002Db8d8_002D5e00d7325f37/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetAllProjectsAsync_ValidUserId_ReturnsProjectViewModelList" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::552C8B8F-4814-4DAF-A2AB-97B94FF451FA::net8.0::TimeForge.Tests.ProjectServiceTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	</wpf:ResourceDictionary>                                                                                                                                                                                                                                          
