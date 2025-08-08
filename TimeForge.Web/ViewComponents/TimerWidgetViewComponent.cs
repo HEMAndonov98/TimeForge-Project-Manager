@@ -1,5 +1,7 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Mvc;
+
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.TimeEntry;
 
@@ -17,6 +19,11 @@ public class TimerWidgetViewComponent : ViewComponent
     public async Task<IViewComponentResult> InvokeAsync()
     {
         var userId = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (String.IsNullOrEmpty(userId))
+        {
+            return View(new NavbarTimerViewModel());
+        }
         var runningEntry = await this.timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
         
         if (runningEntry is null)
