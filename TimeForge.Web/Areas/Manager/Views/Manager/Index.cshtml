@@ -170,15 +170,15 @@ ViewData["Title"] = "Manager Dashboard";
         
         const usersTaskCompletionPercentage = @Html.Raw(Json.Serialize(Model.UsersTasksCompletionPercentage))
         const usersTaskCompletionLabels = Object.keys(usersTaskCompletionPercentage);
-        const usersTaskCompletionValues = Object.values(usersTaskCompletionPercentage);
+        const usersTaskCompletionValues = Object.values(usersTaskCompletionPercentage).map(item => Number(item));
         const ctx2 = $('#usersTaskCompletion');
         
         new Chart(ctx2, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: usersTaskCompletionLabels,
                 datasets: [{
-                    label: 'Task Completion',
+                    label: 'Task Completion %',
                     data: usersTaskCompletionValues,
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -187,15 +187,14 @@ ViewData["Title"] = "Manager Dashboard";
                 }]
             },
             options: {
-                cutoutPercentage: 50,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString();
-                            }
-                        }
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Task Completion'
                     }
                 }
             }
