@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
@@ -8,12 +9,20 @@ using TimeForge.ViewModels.TimeEntry;
 
 namespace TimeForge.Services;
 
+/// <summary>
+/// Service for managing tasks, including creation, completion, retrieval, and deletion operations.
+/// </summary>
 public class TaskService : ITaskService
 {
     private readonly ITimeForgeRepository timeForgeRepository;
     private readonly ILogger<TaskService> logger;
 
-    public TaskService(ITimeForgeRepository timeForgeRepository, ILogger<TaskService> logger)
+    /// <summary>
+/// Initializes a new instance of the <see cref="TaskService"/> class.
+/// </summary>
+/// <param name="timeForgeRepository">The repository for data access.</param>
+/// <param name="logger">The logger instance.</param>
+public TaskService(ITimeForgeRepository timeForgeRepository, ILogger<TaskService> logger)
     {
         this.timeForgeRepository = timeForgeRepository;
         this.logger = logger;
@@ -21,7 +30,11 @@ public class TaskService : ITaskService
         this.logger.LogInformation("Initializing TaskService with timeForgeRepository");
     }
     
-    public async Task CreateTaskAsync(TaskInputModel inputModel)
+    /// <summary>
+/// Creates a new task using the provided input model.
+/// </summary>
+/// <param name="inputModel">The task input model.</param>
+public async Task CreateTaskAsync(TaskInputModel inputModel)
     {
         try
         {
@@ -57,7 +70,11 @@ public class TaskService : ITaskService
         }
     }
 
-    public async Task CompleteTask(string taskId)
+    /// <summary>
+/// Marks a task as complete by its unique identifier.
+/// </summary>
+/// <param name="taskId">The task ID.</param>
+public async Task CompleteTask(string taskId)
     {
         this.logger.LogInformation("Completing task with ID: {TaskId}", taskId);
         try
@@ -85,7 +102,12 @@ public class TaskService : ITaskService
         }
     }
 
-    public async Task<TaskViewModel> GetTaskByIdAsync(string taskId)
+    /// <summary>
+/// Retrieves a task by its unique identifier.
+/// </summary>
+/// <param name="taskId">The task ID.</param>
+/// <returns>The task view model.</returns>
+public async Task<TaskViewModel> GetTaskByIdAsync(string taskId)
     {
         this.logger.LogInformation("Retrieving task with ID: {TaskId}", taskId);
         try
@@ -110,6 +132,7 @@ public class TaskService : ITaskService
                 TimeEntries = task.TimeEntries
                     .Select(te => new TimeEntryViewModel()
                     {
+                        Id = te.Id,
                         Start = te.Start,
                         End = te.End,
                         TaskId = taskId,
@@ -129,7 +152,12 @@ public class TaskService : ITaskService
         }
     }
 
-    public async Task<IEnumerable<TaskViewModel>> GetTasksByProjectIdAsync(string projectId)
+    /// <summary>
+/// Retrieves all tasks associated with a specific project.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+/// <returns>A collection of task view models.</returns>
+public async Task<IEnumerable<TaskViewModel>> GetTasksByProjectIdAsync(string projectId)
     {
         this.logger.LogInformation("Retrieving tasks for project with ID: {ProjectId}", projectId);
         try
@@ -156,6 +184,7 @@ public class TaskService : ITaskService
                     TimeEntries = t.TimeEntries
                         .Select(te => new TimeEntryViewModel()
                         {
+                            Id = te.Id,
                             Start = te.Start,
                             End = te.End,
                             TaskId = te.TaskId,
@@ -177,7 +206,11 @@ public class TaskService : ITaskService
         }
     }
 
-    public async Task DeleteTaskAsync(string taskId)
+    /// <summary>
+/// Deletes a task by its unique identifier.
+/// </summary>
+/// <param name="taskId">The task ID.</param>
+public async Task DeleteTaskAsync(string taskId)
     {
         this.logger.LogInformation("Deleting task with ID: {TaskId}", taskId);
         try

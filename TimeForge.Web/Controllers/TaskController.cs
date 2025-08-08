@@ -4,6 +4,9 @@ using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Task;
 
 namespace TimeForge.Web.Controllers;
+/// <summary>
+/// Handles task-related actions such as create, complete, and retrieval.
+/// </summary>
 [Authorize]
 public class TaskController : Controller
 {
@@ -11,15 +14,25 @@ public class TaskController : Controller
     private readonly ITaskService taskService;
     private readonly ILogger<TaskController> logger;
 
-    public TaskController(ITaskService taskService, ILogger<TaskController> logger)
+/// <summary>
+/// Initializes a new instance of the <see cref="TaskController"/>.
+/// </summary>
+/// <param name="taskService">Task service for task operations.</param>
+/// <param name="logger">Logger instance.</param>
+public TaskController(ITaskService taskService, ILogger<TaskController> logger)
     {
         this.taskService = taskService;
         this.logger = logger;
     }
     
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(TaskListAndFormModel listAndFormModel)
+
+/// <summary>
+/// Handles the creation of a new task for a project.
+/// </summary>
+/// <param name="listAndFormModel">The model containing task input data.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(TaskListAndFormModel listAndFormModel)
     {
         var inputModel = listAndFormModel.TaskInputModel;
         
@@ -52,9 +65,14 @@ public class TaskController : Controller
         }
     }
     
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Complete(string taskId)
+
+/// <summary>
+/// Marks a task as complete.
+/// </summary>
+/// <param name="taskId">The ID of the task to complete.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Complete(string taskId)
     {
         try
         {
@@ -75,8 +93,12 @@ public class TaskController : Controller
         }
     }
     
-    [HttpGet]
-    public async Task<IActionResult> GetTaskListPartial(string projectId)
+/// <summary>
+/// Retrieves the partial view of the task list for a project.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+[HttpGet]
+public async Task<IActionResult> GetTaskListPartial(string projectId)
     {
         try
         {

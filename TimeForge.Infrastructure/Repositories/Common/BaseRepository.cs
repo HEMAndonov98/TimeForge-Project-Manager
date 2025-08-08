@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+
 using TimeForge.Infrastructure.Repositories.Interfaces;
 
 namespace TimeForge.Infrastructure.Repositories.Common;

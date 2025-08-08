@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using TimeForge.Common.Enums;
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
@@ -9,13 +10,22 @@ using TimeForge.ViewModels.TimeEntry;
 
 namespace TimeForge.Services;
 
+/// <summary>
+/// Service for managing time entries, including start, pause, resume, stop, and retrieval operations.
+/// </summary>
 public class TimeEntryService : ITimeEntryService
 {
     private readonly ITimeForgeRepository timeForgeRepository;
     private readonly UserManager<User> userManager;
     private readonly ILogger<TimeEntryService> logger;
 
-    public TimeEntryService(ITimeForgeRepository timeForgeRepository,
+    /// <summary>
+/// Initializes a new instance of the <see cref="TimeEntryService"/> class.
+/// </summary>
+/// <param name="timeForgeRepository">The repository for data access.</param>
+/// <param name="userManager">The user manager instance.</param>
+/// <param name="logger">The logger instance.</param>
+public TimeEntryService(ITimeForgeRepository timeForgeRepository,
         UserManager<User> userManager,
         ILogger<TimeEntryService> logger)
     {
@@ -26,7 +36,12 @@ public class TimeEntryService : ITimeEntryService
         this.logger.LogInformation("Initializing TimeEntryService with timeForgeRepository");
     }
     
-    public async Task StartEntryAsync(string taskId, string userId)
+/// <summary>
+/// Starts a new time entry for a specific task and user.
+/// </summary>
+/// <param name="taskId">The task ID.</param>
+/// <param name="userId">The user ID.</param>
+public async Task StartEntryAsync(string taskId, string userId)
     {
         try
         {
@@ -51,6 +66,18 @@ public class TimeEntryService : ITimeEntryService
             }
 
             //Task and User exists and Task is not completed
+            
+            //Sanity check: if there are any currently running Timers for this user
+            var runningTimer = await this.timeForgeRepository
+                .All<TimeEntry>(te => te.UserId == userId && te.State == TimeEntryState.Running)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (runningTimer != null)
+            {
+                await this.PauseEntryAsync(runningTimer.Id);
+            }
+            
 
             //Create a TimeEntry class and populate with data
 
@@ -80,7 +107,12 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public async Task ResumeEntryAsync(string entryId)
+/// <summary>
+/// Resumes a paused time entry for a user.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+/// <param name="userId">The user ID.</param>
+public async Task ResumeEntryAsync(string entryId, string userId)
     {
         try
         {
@@ -95,7 +127,23 @@ public class TimeEntryService : ITimeEntryService
             
             this.logger.LogInformation("Resuming time entry with ID: {EntryId}", entryId);
 
+
+            //Sanity check: if there are any currently running Timers for this user
+            var runningTimer = await this.timeForgeRepository
+                .All<TimeEntry>(te => te.UserId == userId && te.State == TimeEntryState.Running)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (runningTimer != null)
+            {
+                await this.PauseEntryAsync(runningTimer.Id);
+            }
+            
+            var totalPausedDuration = (DateTime.UtcNow - timeEntry.LastPausedAt!.Value).TotalMilliseconds;
+            var totalPausedDurationTimeSpan = TimeSpan.FromMilliseconds(totalPausedDuration);
+
             timeEntry.State = TimeEntryState.Running;
+            timeEntry.TotalPausedDuration += totalPausedDurationTimeSpan;
             timeEntry.LastPausedAt = null;
             timeEntry.LastModified = DateTime.UtcNow;
 
@@ -119,7 +167,11 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public async Task PauseEntryAsync(string entryId)
+/// <summary>
+/// Pauses a running time entry.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+public async Task PauseEntryAsync(string entryId)
     {
         try
         {
@@ -136,7 +188,6 @@ public class TimeEntryService : ITimeEntryService
             timeEntry.State = TimeEntryState.Paused;
             timeEntry.LastPausedAt = DateTime.UtcNow;
             timeEntry.LastModified = DateTime.UtcNow;
-            timeEntry.TotalPausedDuration += DateTime.UtcNow - timeEntry.LastPausedAt.Value;
             
             this.timeForgeRepository.Update(timeEntry);
             await this.timeForgeRepository.SaveChangesAsync();
@@ -157,7 +208,11 @@ public class TimeEntryService : ITimeEntryService
         }
     }
 
-    public async Task StopEntryAsync(string entryId)
+/// <summary>
+/// Stops a running time entry.
+/// </summary>
+/// <param name="entryId">The time entry ID.</param>
+public async Task StopEntryAsync(string entryId)
     {
         try
         {
@@ -193,7 +248,12 @@ public class TimeEntryService : ITimeEntryService
     }
 
 
-    public async Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId)
+/// <summary>
+/// Retrieves the current running time entry for a user, if any.
+/// </summary>
+/// <param name="userId">The user ID.</param>
+/// <returns>The running time entry view model, or null if none exists.</returns>
+public async Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             throw new ArgumentNullException(userId, "User ID cannot be null or empty");
@@ -223,9 +283,56 @@ public class TimeEntryService : ITimeEntryService
         return viewModel;
     }
 
-    public Task<TimeEntryViewModel?> GetCurrentPausedTimeEntryByUserIdAsync(string userId)
+/// <summary>
+/// Retrieves all paused time entries for a user.
+/// </summary>
+/// <param name="userId">The user ID.</param>
+/// <returns>A collection of paused time entry view models.</returns>
+public async Task<IEnumerable<TimeEntryViewModel>> GetCurrentPausedTimeEntryByUserIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                this.logger.LogError("User ID is null or empty");
+                throw new ArgumentNullException(userId, "User ID cannot be null or empty");
+            }
+            
+            this.logger.LogInformation("Retrieving current paused time entry for user with ID: {UserId}", userId);
+
+            
+            var userName = (await this.userManager.FindByIdAsync(userId))?.UserName ?? string.Empty;
+            var pausedTimeEntries = await this.timeForgeRepository
+                .All<TimeEntry>(te => te.UserId == userId &&
+                                      te.State == TimeEntryState.Paused)
+                .Include(te => te.ProjectTask)
+                .AsNoTracking()
+                .Select(te => new TimeEntryViewModel()
+                {
+                    Id = te.Id,
+                    Start = te.Start,
+                    End = te.End,
+                    TaskName = te.ProjectTask.Name,
+                    Duration = te.Duration ?? TimeSpan.Zero,
+                    State = te.State,
+                    CreatedBy = userName
+                })
+                .ToListAsync();
+
+            if (pausedTimeEntries.Count == 0)
+            { 
+                this.logger.LogInformation("No paused time entries found for user with ID: {UserId}", userId);
+                return pausedTimeEntries;
+            }
+            
+            this.logger.LogInformation("Successfully retrieved current paused time entry for user with ID: {UserId}", userId);
+            return pausedTimeEntries;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private async Task<TimeEntry> ValidateTimeEntryAsync(string entryId)

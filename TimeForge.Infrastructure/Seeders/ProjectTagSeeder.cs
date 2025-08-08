@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Seeders;

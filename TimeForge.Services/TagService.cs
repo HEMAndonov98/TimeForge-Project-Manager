@@ -1,17 +1,26 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Tag;
 
 namespace TimeForge.Services;
+/// <summary>
+/// Service for managing tags, including creation, retrieval, and deletion operations.
+/// </summary>
 public class TagService : ITagService
 {
     private readonly ITimeForgeRepository timeForgeRepository;
     private readonly ILogger<TagService> logger;
 
-    public TagService(ITimeForgeRepository timeForgeRepository, ILogger<TagService> logger)
+    /// <summary>
+/// Initializes a new instance of the <see cref="TagService"/> class.
+/// </summary>
+/// <param name="timeForgeRepository">The repository for data access.</param>
+/// <param name="logger">The logger instance.</param>
+public TagService(ITimeForgeRepository timeForgeRepository, ILogger<TagService> logger)
     {
         this.timeForgeRepository = timeForgeRepository ?? throw new ArgumentNullException(nameof(timeForgeRepository));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -19,7 +28,11 @@ public class TagService : ITagService
         this.logger.LogInformation("TagService initialized");
     }
 
-    public async Task CreateTagAsync(TagInputModel inputModel)
+    /// <summary>
+/// Creates a new tag using the provided input model.
+/// </summary>
+/// <param name="inputModel">The tag input model.</param>
+public async Task CreateTagAsync(TagInputModel inputModel)
     {
         try
         {
@@ -53,7 +66,12 @@ public class TagService : ITagService
         }
     }
 
-    public async Task<TagViewModel> GetTagByIdAsync(string tagId)
+    /// <summary>
+/// Retrieves a tag by its unique identifier.
+/// </summary>
+/// <param name="tagId">The tag ID.</param>
+/// <returns>The tag view model.</returns>
+public async Task<TagViewModel> GetTagByIdAsync(string tagId)
     {
         try
         {
@@ -90,7 +108,12 @@ public class TagService : ITagService
         
     }
     
-    public async Task<IEnumerable<TagViewModel>> GetAllTagsAsync(string userId)
+    /// <summary>
+/// Retrieves all tags for a user.
+/// </summary>
+/// <param name="userId">The user ID.</param>
+/// <returns>A collection of tag view models.</returns>
+public async Task<IEnumerable<TagViewModel>> GetAllTagsAsync(string userId)
     {
         try
         {
@@ -128,7 +151,12 @@ public class TagService : ITagService
         }
     }
 
-    public async Task<IEnumerable<TagViewModel>> GetAllTagsByProjectIdAsync(string projectId)
+    /// <summary>
+/// Retrieves all tags associated with a specific project.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+/// <returns>A collection of tag view models.</returns>
+public async Task<IEnumerable<TagViewModel>> GetAllTagsByProjectIdAsync(string projectId)
     {
         try
         {
@@ -172,7 +200,11 @@ public class TagService : ITagService
     }
     
 
-    public async Task DeleteTagAsync(string tagId)
+    /// <summary>
+/// Deletes a tag by its unique identifier.
+/// </summary>
+/// <param name="tagId">The tag ID.</param>
+public async Task DeleteTagAsync(string tagId)
     {
         try
         {

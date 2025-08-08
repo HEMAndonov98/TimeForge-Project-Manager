@@ -6,7 +6,7 @@ public interface ITimeEntryService
 {
     public Task StartEntryAsync(string taskId, string userId);
     
-    public Task ResumeEntryAsync(string entryId);
+    public Task ResumeEntryAsync(string entryId, string userId);
     
     public Task PauseEntryAsync(string entryId);
     
@@ -14,5 +14,5 @@ public interface ITimeEntryService
 
     public Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(string userId);
     
-    public Task<TimeEntryViewModel?> GetCurrentPausedTimeEntryByUserIdAsync(string userId);
+    public Task<IEnumerable<TimeEntryViewModel>> GetCurrentPausedTimeEntryByUserIdAsync(string userId);
 }

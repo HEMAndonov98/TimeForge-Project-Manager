@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using TimeForge.Infrastructure;
 using TimeForge.Infrastructure.Repositories;
 using TimeForge.Infrastructure.Repositories.Interfaces;
@@ -15,6 +18,7 @@ public class ProjectServiceTests
 {
     private Mock<ITimeForgeRepository> timeForgeRepositoryMock;
     private Mock<ILogger<ProjectService>> loggerMock;
+    private Mock<UserManager<User>> userManagerMock;
     private ProjectService projectService;
 
     [SetUp]
@@ -22,7 +26,12 @@ public class ProjectServiceTests
     {
         timeForgeRepositoryMock = new Mock<ITimeForgeRepository>();
         loggerMock = new Mock<ILogger<ProjectService>>();
-        projectService = new ProjectService(timeForgeRepositoryMock.Object, loggerMock.Object);
+        var userStore = new Mock<IUserStore<User>>();
+        userManagerMock = new Mock<UserManager<User>>(userStore.Object, null, null, null, null, null, null, null, null);
+        projectService = new ProjectService(
+            timeForgeRepositoryMock.Object,
+            loggerMock.Object,
+            userManagerMock.Object);
     }
 
     #region CreateProjectAsync
@@ -74,7 +83,8 @@ public class ProjectServiceTests
         // Arrange
         await using var inMemoryDbContext = InitialiseInMemoryDbContext(); 
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
         
         var testProject = await AddTestProjectToInMemoryRepository(inMemoryRepository);
             
@@ -103,7 +113,8 @@ public class ProjectServiceTests
         // Arrange
         await using var inMemoryDbContext = InitialiseInMemoryDbContext(); 
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
         
         // Act & Assert
         Assert.ThrowsAsync<InvalidOperationException>(() => inMemoryProjectService.GetProjectByIdAsync("missing"));
@@ -127,7 +138,8 @@ public class ProjectServiceTests
         // Arrange
         await using var inMemoryDbContext = InitialiseInMemoryDbContext(); 
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
         
         var testProject = await AddTestProjectToInMemoryRepository(inMemoryRepository);
         
@@ -215,7 +227,8 @@ public class ProjectServiceTests
         // Initialize the in-memory database
         await using var inMemoryDbContext = InitialiseInMemoryDbContext();
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
 
         // Add test data to the in-memory database
         for (int i = 0; i < expectedCount; i++)
@@ -348,7 +361,8 @@ public class ProjectServiceTests
     {
         var inMemoryDbContext = InitialiseInMemoryDbContext();
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
         var mockInput = "123";
         
         Assert.ThrowsAsync<ArgumentException>(() => inMemoryProjectService
@@ -360,7 +374,8 @@ public class ProjectServiceTests
     {
         var inMemoryDbContext = InitialiseInMemoryDbContext();
         var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object);
+        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
+            userManagerMock.Object);
         
         string projectId = "123";
         string tagId = "321";

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+
 using TimeForge.Models.Common;
 
 namespace TimeForge.Infrastructure.Interceptors;

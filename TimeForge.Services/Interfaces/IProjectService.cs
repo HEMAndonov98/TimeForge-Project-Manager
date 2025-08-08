@@ -20,4 +20,6 @@ public interface IProjectService
     Task AddTagToProject(string projectId, string tagId);
     
     Task RemoveTagFromProjectAsync(string projectId, string tagId);
+    
+    Task AssignProjectToUser(string projectId, string userId);
 }

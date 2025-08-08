@@ -1,12 +1,17 @@
 using System.Globalization;
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
 using TimeForge.ViewModels.Tag;
 
 namespace TimeForge.Web.Controllers;
+/// <summary>
+/// Handles project-related operations such as create, edit, details, and delete.
+/// </summary>
 [Authorize]
 public class ProjectController : Controller
 {
@@ -15,7 +20,14 @@ public class ProjectController : Controller
     private readonly ITaskService taskService;
     private readonly ILogger<ProjectController> logger;
 
-    public ProjectController(IProjectService projectService, ITagService tagService, ITaskService taskService, ILogger<ProjectController> logger)
+/// <summary>
+/// Initializes a new instance of the <see cref="ProjectController"/>.
+/// </summary>
+/// <param name="projectService">Project service for project operations.</param>
+/// <param name="tagService">Tag service for tag operations.</param>
+/// <param name="taskService">Task service for task operations.</param>
+/// <param name="logger">Logger instance.</param>
+public ProjectController(IProjectService projectService, ITagService tagService, ITaskService taskService, ILogger<ProjectController> logger)
     {
         this.projectService = projectService;
         this.tagService = tagService;
@@ -23,8 +35,11 @@ public class ProjectController : Controller
         this.logger = logger;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Create()
+/// <summary>
+/// Displays the create project form.
+/// </summary>
+[HttpGet]
+public async Task<IActionResult> Create()
     {
         //TODO Update to use userManager in the future for security
         string? userId = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -44,9 +59,14 @@ public class ProjectController : Controller
         return View(inputModel);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ProjectInputModel inputModel)
+
+/// <summary>
+/// Handles project creation form submission.
+/// </summary>
+/// <param name="inputModel">The project input model.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Create(ProjectInputModel inputModel)
     {
         foreach (TagInputModel tag in inputModel.Tags)
         {
@@ -81,8 +101,12 @@ public class ProjectController : Controller
             return StatusCode(500);
         }
     }
-    [HttpGet]
-    public async Task<IActionResult> Details(string projectId)
+/// <summary>
+/// Displays project details by project ID.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+[HttpGet]
+public async Task<IActionResult> Details(string projectId)
     {
         try
         {
@@ -107,8 +131,12 @@ public class ProjectController : Controller
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Edit(string projectId)
+/// <summary>
+/// Displays the edit project form.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+[HttpGet]
+public async Task<IActionResult> Edit(string projectId)
     {
         try
         {
@@ -141,9 +169,13 @@ public class ProjectController : Controller
         }
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(ProjectInputModel inputModel)
+/// <summary>
+/// Handles project edit form submission.
+/// </summary>
+/// <param name="inputModel">The project input model.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(ProjectInputModel inputModel)
     {
         if (!ModelState.IsValid)
         {
@@ -196,8 +228,12 @@ public class ProjectController : Controller
     }
 
 
-    [HttpGet]
-    public async Task<IActionResult> Delete(string projectId)
+/// <summary>
+/// Displays the delete project confirmation partial view.
+/// </summary>
+/// <param name="projectId">The project ID.</param>
+[HttpGet]
+public async Task<IActionResult> Delete(string projectId)
     {
         try
         {
@@ -210,9 +246,13 @@ public class ProjectController : Controller
         }
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
+/// <summary>
+/// Handles project deletion.
+/// </summary>
+/// <param name="viewModel">The project view model.</param>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
     {
         try
         {
