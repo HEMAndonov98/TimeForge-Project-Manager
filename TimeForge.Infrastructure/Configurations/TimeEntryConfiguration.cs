@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Configurations;
@@ -22,6 +23,9 @@ public class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntry>
             .HasForeignKey(te => te.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(te => new { te.UserId, te.Start });
+        builder.HasIndex(te => new { te.UserId, te.State })
+            .IsUnique()
+            .HasFilter("[State] = 0")
+            .IncludeProperties(te => new { te.TaskId, te.Start });
     }
 }
