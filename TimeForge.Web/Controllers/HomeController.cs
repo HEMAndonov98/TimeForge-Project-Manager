@@ -1,28 +1,41 @@
-using System.Diagnostics;
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Framework;
-using TimeForge.Models;
+
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
-using TimeForge.ViewModels.Shared;
 
 namespace TimeForge.Web.Controllers;
 
+/// <summary>
+/// Handles home page and general navigation actions.
+/// </summary>
 public class HomeController : Controller
 {
     private readonly IProjectService projectService;
     private readonly ITaskService taskService;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger, IProjectService projectService, ITaskService taskService)
+/// <summary>
+/// Initializes a new instance of the <see cref="HomeController"/>.
+/// </summary>
+/// <param name="logger">The logger instance.</param>
+/// <param name="projectService">Project service for project operations.</param>
+/// <param name="taskService">Task service for task operations.</param>
+public HomeController(ILogger<HomeController> logger, IProjectService projectService, ITaskService taskService)
     {
         _logger = logger;
         this.taskService = taskService;
         this.projectService = projectService;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+/// <summary>
+/// Displays the home page with a paged list of projects for the logged-in user.
+/// </summary>
+/// <param name="page">The page number to display.</param>
+/// <returns>The home view with the project list.</returns>
+[HttpGet]
+public async Task<IActionResult> Index(int page = 1)
     {
         try
         {
@@ -40,6 +53,11 @@ public class HomeController : Controller
                 int projectsCount = await projectService.GetProjectsCountAsync(user);
                 totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
 
+                if (totalPages < 1)
+                {
+                    totalPages = 1;
+                }
+                
                 if (page < 1)
                 {
                     page = 1;
@@ -85,7 +103,11 @@ public class HomeController : Controller
         }
     }
 
-    public IActionResult Privacy()
+/// <summary>
+/// Displays the privacy policy page.
+/// </summary>
+[HttpGet]
+public IActionResult Privacy()
     {
         return View();
     }
