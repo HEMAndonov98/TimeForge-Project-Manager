@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+
 using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Seeders;
@@ -16,6 +17,10 @@ public static class IdentitySeeder
         const string managerEmail = "manager@timeforge.com";
         const string managerPassword = "Manager123!";
         const string managerRole = "Manager";
+
+        const string testUserEmail = "testUser@testUser.com";
+        const string testPassword = "testUser123_";
+        
 
         if (!await roleManager.RoleExistsAsync("Manager"))
         {
@@ -42,6 +47,26 @@ public static class IdentitySeeder
             {
                 throw new Exception("Failed to create Manager user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
+        }
+        
+        var testUser = await userManager.FindByEmailAsync(testUserEmail);
+        if (testUser == null)
+        {
+            testUser = new User()
+            {
+                UserName = testUserEmail,
+                Email = testUserEmail,
+                EmailConfirmed = true,
+                IsManager = false,
+                Manager = manager
+            };
+            
+            var result = await userManager.CreateAsync(testUser, testPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Failed to create Test user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+            
         }
     }
 }
