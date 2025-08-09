@@ -14,6 +14,8 @@ public class ProjectViewModel
 
     public string UserId { get; set; }
 
+    public string? AssignedToUserId { get; set; }
+
     public bool IsPublic { get; set; }
     
     public List<TaskViewModel> Tasks { get; set; }
