@@ -37,12 +37,6 @@ public TimeEntryState State { get; set; } = TimeEntryState.Running;
 /// Gets or sets the last paused time of the time entry.
 /// </summary>
 public DateTime? LastPausedAt { get; set; }
-   
-/// <summary>
-/// Gets or sets the total duration for which the time entry was paused.
-/// </summary>
-[NotMapped]
-public TimeSpan TotalPausedDuration { get; set; } = TimeSpan.Zero;
 
 /// <summary>
 /// Gets the calculated duration of the time entry, excluding paused time.
@@ -54,17 +48,17 @@ public TimeSpan? Duration
       {
          if (End.HasValue)
          {
-            return (End.Value - Start) - TotalPausedDuration;
+            return (End.Value - Start);
          }
 
          if (State == TimeEntryState.Running && LastPausedAt.HasValue)
          {
-            return (LastPausedAt.Value - Start) - TotalPausedDuration;
+            return (LastPausedAt.Value - Start);
          }
 
          if (State == TimeEntryState.Running)
          {
-            return (DateTime.UtcNow - Start) - TotalPausedDuration;
+            return (DateTime.UtcNow - Start);
          }
 
          return null;
