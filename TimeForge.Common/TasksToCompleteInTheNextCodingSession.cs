@@ -14,6 +14,8 @@ public class TasksToCompleteInTheNextCodingSession
     
     //TODO 4. Work on system to promote users to managers
     
+    //TODO 5. Implement Tag Filtering feature for projects
+    
     //Test user
     //Email: testUser@testUser.com
     //Passowrd: testUser123_
