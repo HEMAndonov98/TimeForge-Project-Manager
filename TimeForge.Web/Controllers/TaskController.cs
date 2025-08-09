@@ -1,5 +1,8 @@
+using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Task;
 
@@ -12,16 +15,21 @@ public class TaskController : Controller
 {
     
     private readonly ITaskService taskService;
+    private readonly ITimeEntryService timeEntryService;
     private readonly ILogger<TaskController> logger;
 
 /// <summary>
 /// Initializes a new instance of the <see cref="TaskController"/>.
 /// </summary>
 /// <param name="taskService">Task service for task operations.</param>
+/// <param name="timeEntryService">Timer service for timer widget operations.</param>
 /// <param name="logger">Logger instance.</param>
-public TaskController(ITaskService taskService, ILogger<TaskController> logger)
+public TaskController(ITaskService taskService,
+    ITimeEntryService timeEntryService,
+    ILogger<TaskController> logger)
     {
         this.taskService = taskService;
+        this.timeEntryService = timeEntryService;
         this.logger = logger;
     }
     
@@ -76,7 +84,21 @@ public async Task<IActionResult> Complete(string taskId)
     {
         try
         {
+            var userId = this.GetUserId();
+
+            if (String.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentNullException();
+            }
+
+            var runningEntry = await this.timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
+
+            if (runningEntry != null && runningEntry.TaskId == taskId)
+            {
+                await this.timeEntryService.StopEntryAsync(runningEntry.Id);
+            }
             await this.taskService.CompleteTask(taskId);
+            
             return Ok();
         }
         catch (ArgumentNullException)
@@ -125,4 +147,10 @@ public async Task<IActionResult> GetTaskListPartial(string projectId)
         }
     }
 
+/// <summary>
+/// Gets the current user's ID from claims.
+/// </summary>
+/// <returns>The user ID as a string, or null if not found.</returns>
+private string? GetUserId()
+    => this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
