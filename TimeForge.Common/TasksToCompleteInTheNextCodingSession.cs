@@ -9,9 +9,6 @@ public class TasksToCompleteInTheNextCodingSession
     
     //Future plan is to use Ajax and SignalR to dynamically reload TimerWidget independently
     
-    //TODO 2. Work on ManagerController(Assign Project to user)
-    //TODO 3. Work on ManagerService(Assign Project to user)
-    
     //TODO 4. Work on system to promote users to managers
     
     //TODO 5. Implement Tag Filtering feature for projects
