@@ -139,11 +139,10 @@ public async Task ResumeEntryAsync(string entryId, string userId)
                 await this.PauseEntryAsync(runningTimer.Id);
             }
             
-            var totalPausedDuration = (DateTime.UtcNow - timeEntry.LastPausedAt!.Value).TotalMilliseconds;
-            var totalPausedDurationTimeSpan = TimeSpan.FromMilliseconds(totalPausedDuration);
+            var totalPausedDuration = DateTime.UtcNow - timeEntry.LastPausedAt!.Value;
 
             timeEntry.State = TimeEntryState.Running;
-            timeEntry.TotalPausedDuration += totalPausedDurationTimeSpan;
+            timeEntry.Start = timeEntry.Start.Add(totalPausedDuration);
             timeEntry.LastPausedAt = null;
             timeEntry.LastModified = DateTime.UtcNow;
 
@@ -220,7 +219,6 @@ public async Task StopEntryAsync(string entryId)
 
             if (timeEntry.State == TimeEntryState.Paused && timeEntry.LastPausedAt.HasValue)
             {
-                timeEntry.TotalPausedDuration = DateTime.UtcNow - timeEntry.LastPausedAt.Value;
                 timeEntry.LastPausedAt = null;
             }
 
@@ -273,6 +271,7 @@ public async Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(s
         var viewModel = new TimeEntryViewModel()
         {
             Id = timeEntry.Id,
+            TaskId = timeEntry.TaskId,
             Start = timeEntry.Start,
             End = timeEntry.End,
             TaskName = timeEntry.ProjectTask.Name,
