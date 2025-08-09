@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TimeForge.Infrastructure;
 
@@ -11,9 +12,11 @@ using TimeForge.Infrastructure;
 namespace TimeForge.Infrastructure.Migrations
 {
     [DbContext(typeof(TimeForgeDbContext))]
-    partial class TimeForgeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250809134954_Added_AssignedUser_PropertyForeignKey_For_Projects")]
+    partial class Added_AssignedUser_PropertyForeignKey_For_Projects
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
