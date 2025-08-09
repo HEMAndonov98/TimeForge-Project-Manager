@@ -16,36 +16,36 @@ public class HomeController : Controller
     private readonly ITaskService taskService;
     private readonly ILogger<HomeController> _logger;
 
-/// <summary>
-/// Initializes a new instance of the <see cref="HomeController"/>.
-/// </summary>
-/// <param name="logger">The logger instance.</param>
-/// <param name="projectService">Project service for project operations.</param>
-/// <param name="taskService">Task service for task operations.</param>
-public HomeController(ILogger<HomeController> logger, IProjectService projectService, ITaskService taskService)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HomeController"/>.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="projectService">Project service for project operations.</param>
+    /// <param name="taskService">Task service for task operations.</param>
+    public HomeController(ILogger<HomeController> logger, IProjectService projectService, ITaskService taskService)
     {
         _logger = logger;
         this.taskService = taskService;
         this.projectService = projectService;
     }
 
-/// <summary>
-/// Displays the home page with a paged list of projects for the logged-in user.
-/// </summary>
-/// <param name="page">The page number to display.</param>
-/// <returns>The home view with the project list.</returns>
-[HttpGet]
-public async Task<IActionResult> Index(int page = 1)
+    /// <summary>
+    /// Displays the home page with a paged list of projects for the logged-in user.
+    /// </summary>
+    /// <param name="page">The page number to display.</param>
+    /// <returns>The home view with the project list.</returns>
+    [HttpGet]
+    public async Task<IActionResult> Index(int page = 1)
     {
         try
         {
             int totalPages = 0;
             List<ProjectViewModel> projectsList = new List<ProjectViewModel>();
-            
+
             var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
             this.ViewData["IsLoggedIn"] = isLoggedIn;
-        
+
             if (!string.IsNullOrEmpty(user))
             {
                 int pageSize = 4;
@@ -57,7 +57,7 @@ public async Task<IActionResult> Index(int page = 1)
                 {
                     totalPages = 1;
                 }
-                
+
                 if (page < 1)
                 {
                     page = 1;
@@ -67,8 +67,7 @@ public async Task<IActionResult> Index(int page = 1)
                 {
                     page = totalPages;
                 }
-                
-                
+
                 IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
                 foreach (ProjectViewModel project in projects)
                 {
@@ -76,11 +75,10 @@ public async Task<IActionResult> Index(int page = 1)
                     string projectId = project.Id;
                     project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
                 }
-                
+
                 projectsList = projects.ToList();
             }
-            
-            
+
             var viewModel = new PagedProjectViewModel()
             {
                 Projects = projectsList,
@@ -103,11 +101,11 @@ public async Task<IActionResult> Index(int page = 1)
         }
     }
 
-/// <summary>
-/// Displays the privacy policy page.
-/// </summary>
-[HttpGet]
-public IActionResult Privacy()
+    /// <summary>
+    /// Displays the privacy policy page.
+    /// </summary>
+    [HttpGet]
+    public IActionResult Privacy()
     {
         return View();
     }
