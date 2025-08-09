@@ -22,6 +22,7 @@
                 contentType: false,
                 success: function () {
                     updateTaskList(projectId);
+                    refreshTimerWidget();
                 },
                 error: function (error) {
                     alert('Error while completing task. Please try again.')
@@ -45,6 +46,12 @@
                     alert('Could not refresh task list.');
                 }
             });
+        }
+        
+        function refreshTimerWidget(){
+            const href = '@Url.Action("RefreshTimerWidgetViewComponent", "TimeEntry")';
+            const timerWidget = $('#timer-widget');
+            timerWidget.load(href);
         }
     });
 </script>
