@@ -17,16 +17,16 @@ namespace TimeForge.Web.Areas.Manager.Controllers;
 public class ManagerController : Controller
 {
     private readonly IProjectService projectService;
-    private readonly ITaskService taskService;
+    private readonly IManagerService managerService;
     private readonly UserManager<User> userManager;
 
 
     public ManagerController(IProjectService projectService,
-        ITaskService taskService,
+        IManagerService managerService,
         UserManager<User> userManager)
     {
+        this.managerService = managerService;
         this.projectService = projectService;
-        this.taskService = taskService;
         this.userManager = userManager;
     }
     
@@ -135,7 +135,7 @@ public class ManagerController : Controller
                 Value = mu.Id
             }).ToList(),
             TotalPages = totalPages,
-            CurrentPage = page
+            CurrentPage = page,
         };
 
         return View("AssignProjects", viewModel);
@@ -144,11 +144,29 @@ public class ManagerController : Controller
     public async Task<IActionResult> AssignProject(ProjectAssignInputModel inputModel)
     {
 
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                throw new ArgumentException("Invalid model state");
+            }
+
+            await this.managerService.AssignProjectToUserAsync(inputModel.ProjectId, inputModel.UserId);
+
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
         }
         
-        return View();
+        return RedirectToAction("AssignProjects", "Manager");
     }
 }
