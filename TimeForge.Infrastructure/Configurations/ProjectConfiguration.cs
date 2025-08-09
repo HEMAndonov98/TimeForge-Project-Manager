@@ -9,6 +9,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
     public void Configure(EntityTypeBuilder<Project> builder)
     {
+        //Relationships
         builder.HasMany(p => p.ProjectTags)
             .WithOne(pt => pt.Project)
             .HasForeignKey(pt => pt.ProjectId);
@@ -22,7 +23,13 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithMany(u => u.Projects)
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(p => p.AssignedTo)
+            .WithMany(u => u.AssignedProjects)
+            .HasForeignKey(p => p.AssignedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        //Indexes
         builder.HasIndex(p => p.UserId);
         builder.HasIndex(p => p.IsDeleted);
 
