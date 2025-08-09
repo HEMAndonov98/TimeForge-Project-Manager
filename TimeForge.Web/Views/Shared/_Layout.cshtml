@@ -44,7 +44,9 @@
                 </ul>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    @await Component.InvokeAsync("TimerWidget")
+                    <div id="timer-widget">
+                        @await Component.InvokeAsync("TimerWidget")
+                    </div>
                 }
                 <partial name="_LoginPartial"/>
             </div>
