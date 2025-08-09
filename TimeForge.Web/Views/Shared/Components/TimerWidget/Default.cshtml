@@ -1,4 +1,3 @@
-@using TimeForge.Common.Enums
 @using TimeForge.ViewModels.TimeEntry;
 @model NavbarTimerViewModel
 
@@ -8,7 +7,7 @@
         <span id="timer-display" class="badge bg-light text-dark border rounded-pill px-2">
             @if (Model.IsRunning)
             {
-                <span class="fs-4">@Model.TaskName <span id="timer-text" class="fs-4"> 00:00:00 </span></span>
+                <span class="fs-4 text-success">@Model.TaskName : <span id="timer-text" class="fs-4 text-danger"> 00:00:00 </span></span>
             }
             else
             {
