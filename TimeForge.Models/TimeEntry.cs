@@ -41,6 +41,7 @@ public DateTime? LastPausedAt { get; set; }
 /// <summary>
 /// Gets or sets the total duration for which the time entry was paused.
 /// </summary>
+[NotMapped]
 public TimeSpan TotalPausedDuration { get; set; } = TimeSpan.Zero;
 
 /// <summary>
