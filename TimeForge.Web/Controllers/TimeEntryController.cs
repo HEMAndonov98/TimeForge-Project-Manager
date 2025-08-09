@@ -154,6 +154,12 @@ public async Task<IActionResult> Stop(string entryId)
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpGet]
+    public IActionResult RefreshTimerWidgetViewComponent()
+    {
+        return ViewComponent("TimerWidget");
+    }
+
 
 /// <summary>
 /// Gets the current user's ID from claims.
