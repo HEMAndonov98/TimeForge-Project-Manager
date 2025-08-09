@@ -11,7 +11,7 @@ public class ProjectAssignmentViewModel
     public List<ProjectViewModel> Projects { get; set; }
 
     public List<SelectListItem> ManagedUsers { get; set; }
-
+    
     public string? UserId { get; set; }
 
     public string? ProjectId { get; set; }
