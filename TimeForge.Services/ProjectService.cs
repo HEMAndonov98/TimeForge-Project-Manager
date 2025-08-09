@@ -228,7 +228,9 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
             }
 
             // Fetch only what is needed from the database
-            var projects = await this.timeForgeRepository.All<Project>(e => e.UserId == userId)
+            var projects = await this.timeForgeRepository.All<Project>(
+                    e => e.UserId == userId || 
+                         e.AssignedUserId == userId)
                 .Include(p => p.ProjectTags)
                 .ThenInclude(pt => pt.Tag)
                 .Include(p => p.CreatedBy)
@@ -241,6 +243,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                     p.Id,
                     p.Name,
                     p.DueDate,
+                    p.AssignedUserId,
                     CreatedBy = p.CreatedBy.UserName,
                     Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
                     p.IsPublic,
@@ -261,7 +264,8 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                     Name = tag.Name
                 }).ToList(),
                 IsPublic = p.IsPublic,
-                UserId = p.userId
+                UserId = p.userId,
+                AssignedToUserId = p.AssignedUserId
             }).ToList();
 
             this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
