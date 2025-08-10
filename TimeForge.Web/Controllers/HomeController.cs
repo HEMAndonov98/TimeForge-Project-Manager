@@ -35,7 +35,7 @@ public class HomeController : Controller
     /// <param name="page">The page number to display.</param>
     /// <returns>The home view with the project list.</returns>
     [HttpGet]
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(int page = 1, List<string>? selectedTags = null)
     {
         try
         {
@@ -49,8 +49,17 @@ public class HomeController : Controller
             if (!string.IsNullOrEmpty(user))
             {
                 int pageSize = 4;
+                int projectsCount = 0;
 
-                int projectsCount = await projectService.GetProjectsCountAsync(user);
+                if (selectedTags != null && selectedTags.Any())
+                {
+                    projectsCount = await projectService.GetProjectsCountAsync(user, selectedTags);
+                }
+                else
+                {
+                    projectsCount = await projectService.GetProjectsCountAsync(user);
+                    
+                }
                 totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
 
                 if (totalPages < 1)
@@ -68,7 +77,17 @@ public class HomeController : Controller
                     page = totalPages;
                 }
 
-                IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
+                IEnumerable<ProjectViewModel> projects = null;
+
+                if (selectedTags != null && selectedTags.Any())
+                {
+                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize, selectedTags);
+                }
+                else
+                {
+                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
+                }
+                
                 foreach (ProjectViewModel project in projects)
                 {
                     project.UserId = user;
@@ -83,7 +102,8 @@ public class HomeController : Controller
             {
                 Projects = projectsList,
                 CurrentPage = page,
-                TotalPages = totalPages
+                TotalPages = totalPages,
+                SelectedTags = selectedTags ?? new List<string>()
             };
             return View("Index", viewModel);
         }
