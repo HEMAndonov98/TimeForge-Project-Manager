@@ -10,10 +10,14 @@ public interface IProjectService
 
     Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId);
     Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId, int pageNumber, int pageSize);
-
+    
+    Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId, int pageNumber, int pageSize, List<string> tags);
+    
     Task DeleteProject(string projectId);
     
     Task<int> GetProjectsCountAsync(string userId);
+
+    Task<int> GetProjectsCountAsync(string userId, List<string> tags);
 
     Task UpdateProject(ProjectInputModel inputModel);
 
