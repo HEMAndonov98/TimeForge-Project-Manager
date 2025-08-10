@@ -278,6 +278,68 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
         }
     }
 
+    public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId, int pageNumber, int pageSize, List<string> tags)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                this.logger.LogWarning("GetAllProjectsAsync was called with a null or empty userId.");
+                throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty");
+            }
+
+            // Fetch only what is needed from the database
+            var projects = await this.timeForgeRepository.All<Project>(
+                    e => e.UserId == userId || 
+                         e.AssignedUserId == userId)
+                .Include(p => p.ProjectTags)
+                .ThenInclude(pt => pt.Tag)
+                .Include(p => p.CreatedBy)
+                .OrderByDescending(p => p.CreatedAt)
+                .Where(p => p.ProjectTags.Any(pt => tags.Contains(pt.TagId)))
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.DueDate,
+                    p.AssignedUserId,
+                    CreatedBy = p.CreatedBy.UserName,
+                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
+                    p.IsPublic,
+                    userId = p.UserId
+                })
+                .ToListAsync();
+
+            // Perform projection to ViewModel in memory
+            var projectViewModels = projects.Select(p => new ProjectViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                DueDate = p.DueDate?.ToString("dd/MM/yyyy"), // Format handled in memory
+                CreatedBy = p.CreatedBy ?? string.Empty,
+                Tags = p.Tags.Select(tag => new TagViewModel
+                {
+                    Id = tag.Id,
+                    Name = tag.Name
+                }).ToList(),
+                IsPublic = p.IsPublic,
+                UserId = p.userId,
+                AssignedToUserId = p.AssignedUserId
+            }).ToList();
+
+            this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
+            return projectViewModels;
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "An error occurred in GetAllProjectsAsync for userId {UserId}.", userId);
+            throw new InvalidOperationException("An error occurred while retrieving projects", ex);
+        }
+    }
+
     /// <summary>
 /// Deletes a project by its unique identifier.
 /// </summary>
@@ -329,6 +391,18 @@ public async Task<int> GetProjectsCountAsync(string userId)
     {
         return await timeForgeRepository.All<Project>()
             .Where(p => p.UserId == userId)
+            .AsNoTracking()
+            .CountAsync();
+    }
+
+    public async Task<int> GetProjectsCountAsync(string userId, List<string> tags)
+    {
+        return await timeForgeRepository.All<Project>()
+            .Include(p => p.ProjectTags)
+            .ThenInclude(pt => pt.Tag)
+            .Where(p => p.ProjectTags.Any(pt => tags.Contains(pt.TagId))
+            && p.UserId == userId)
+            .AsNoTracking()
             .CountAsync();
     }
 
