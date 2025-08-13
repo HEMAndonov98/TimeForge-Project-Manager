@@ -63,7 +63,7 @@ ViewData["Title"] = "Manager Dashboard";
                     <!-- /.card-header -->
                     <div class="card-body" style="display: block;">
                         <ul id="projects-list">
-                            @if (Model.DueProjects.Count() == 0)
+                            @if (Model.DueProjects?.Count() == 0)
                             {
                                 <span>No due projects</span>
                             }
@@ -134,39 +134,40 @@ ViewData["Title"] = "Manager Dashboard";
 @section Scripts {
     
     <script>
-        const userProjectsCount = @Html.Raw(Json.Serialize(Model.UsersProjects))
-        
-        const userNamesLabels = Object.keys(userProjectsCount);
-        const userProjectsCountValues = Object.values(userProjectsCount);
+        if(userProjectsCount > 0) {
+            const userProjectsCount = @Html.Raw(Json.Serialize(Model.UsersProjects))
 
-        const ctx = $('#userProjectsCount');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: userNamesLabels,
-                datasets: [{
-                    label: 'Projects Count',
-                    data: userProjectsCountValues,
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString();
+            const userNamesLabels = Object.keys(userProjectsCount);
+            const userProjectsCountValues = Object.values(userProjectsCount);
+
+            const ctx = $('#userProjectsCount');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: userNamesLabels,
+                    datasets: [{
+                        label: 'Projects Count',
+                        data: userProjectsCountValues,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value.toLocaleString();
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
-        
+            });
+        }
         
         const usersTaskCompletionPercentage = @Html.Raw(Json.Serialize(Model.UsersTasksCompletionPercentage))
         const usersTaskCompletionLabels = Object.keys(usersTaskCompletionPercentage);
