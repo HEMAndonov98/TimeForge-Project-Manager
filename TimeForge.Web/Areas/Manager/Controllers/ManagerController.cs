@@ -1,13 +1,15 @@
+using System.Globalization;
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
-using TimeForge.ViewModels.Task;
 using TimeForge.Web.Areas.Manager.ViewModels;
 
 namespace TimeForge.Web.Areas.Manager.Controllers;
@@ -38,58 +40,72 @@ public class ManagerController : Controller
        var managerId = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
        var managedUsers = await this.userManager
            .Users
-           .Include(u => u.Projects)
-           .ThenInclude(p => p.Tasks)
-           .AsNoTracking()
-           .Where(u => u.ManagerId == managerId)
+           .Where(
+               u => 
+                   u.ManagerId == managerId &&
+                    u.Id != managerId)
            .Select(u => new
            {
-               Username = u.UserName,
-               Projects = u.Projects,
-               Tasks = u.Projects.SelectMany(p => p.Tasks)
+               u.Id,
+               u.UserName
            })
+           .AsNoTracking()
            .ToListAsync();
        
        
        //Retrieve any additional data from back-end
 
-       IEnumerable<ProjectViewModel> managerProjects = await this.projectService.GetAllProjectsAsync(managerId);
-       IEnumerable<TaskViewModel> mangerTasks = managerProjects.SelectMany(p => p.Tasks);
+       var managerProjects = (await this.projectService.GetAllProjectsAsync(managerId))
+           .ToArray();
+       var mangerTasks = managerProjects.SelectMany(p => p.Tasks)
+           .ToArray();
 
-       DateTime now = DateTime.UtcNow;
-       DateTime upcoming = now.AddDays(7);
+       DateTime now = DateTime.UtcNow.Date;
+       DateTime upcoming = now.AddDays(7).Date;
        
-       var dueProjects = managedUsers.SelectMany(mu => mu.Projects
-           .Where(p => p.DueDate.HasValue &&
-                       p.DueDate.Value >= DateOnly.FromDateTime(now) &&
-                       p.DueDate.Value <= DateOnly.FromDateTime(upcoming)
-           )
-           .OrderBy(p => p.DueDate)
-           .Select(p => new ProjectViewModel()
-           {
-               Name = p.Name,
-               DueDate = p.DueDate.ToString(),
-           })
-       );
        
        int totalTasks = mangerTasks.Count();
        int completedTasks = mangerTasks.Count(t => t.IsCompleted);
-       string taskCompletionPercentage = Math.Round(
-           (double)completedTasks / totalTasks, 1).ToString("P");
-
+       string taskCompletionPercentage = (Math.Round(
+           (double)completedTasks / totalTasks, 1)).ToString("P");
        int managerProjectsCount = managerProjects.Count();
 
-       Dictionary<string, double> userTaskCompletionPercentages = managedUsers.ToDictionary(
-           u => u.Username ?? string.Empty,
-           u => Math.Round(u.Tasks.Count(t => t.IsCompleted) / (double)u.Tasks.Count(), 1) * 100
-       );
+       List<ProjectViewModel> dueProjects = new List<ProjectViewModel>();
 
-       Dictionary<string, int> userProjectsCount = managedUsers.ToDictionary(
-           u => u.Username ?? string.Empty,
-           u => u.Projects.Count()
-       );
-        
-       //Populate DashboardViewModel
+       Dictionary<string, double> userTaskCompletionPercentages = new Dictionary<string, double>();
+       Dictionary<string, int> userProjectsCount = new Dictionary<string, int>();
+
+       foreach (var managedUser in managedUsers)
+       {
+           var managedUserProjects = (await this.projectService.GetAllProjectsAsync(managedUser.Id))
+               .ToArray();
+           var managedUserTasks = managedUserProjects
+               .SelectMany(p => p.Tasks)
+               .ToList();
+           
+           var managedUserUpcomingProjects = managedUserProjects.Where(
+                   p => 
+                   !String.IsNullOrEmpty(p.DueDate) &&
+                    DateTime.Compare(DateTime.ParseExact(p.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture), now) > 0 &&
+                    DateTime.Compare(DateTime.ParseExact(p.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture), upcoming) < 0)
+               .ToList();
+           
+           var managerUpcomingProjects = managerProjects.Where(
+                   p => 
+                       !String.IsNullOrEmpty(p.DueDate) &&
+                       DateTime.Compare(DateTime.ParseExact(p.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture), now) > 0 &&
+                       DateTime.Compare(DateTime.ParseExact(p.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture), upcoming) < 0)
+               .ToList();
+           
+           dueProjects.AddRange(managedUserUpcomingProjects);
+           dueProjects.AddRange(managerUpcomingProjects);
+           
+           var managedUserCompletedTasks = managedUserTasks.Count(t => t.IsCompleted);
+           var completionPercentage = managedUserTasks.Any()? Math.Round(managedUserCompletedTasks / (double)managedUserTasks.Count(), 1) * 100 : 0;
+           
+           userTaskCompletionPercentages[managedUser.UserName] = completionPercentage;
+           userProjectsCount[managedUser.UserName] = managedUserProjects.Count();
+       }
 
        DashboardViewModel viewModel = new DashboardViewModel()
        {
