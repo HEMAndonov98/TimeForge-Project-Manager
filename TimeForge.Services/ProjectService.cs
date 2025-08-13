@@ -432,7 +432,7 @@ public async Task UpdateProject(ProjectInputModel inputModel)
             project.DueDate = inputModel.DueDate;
             project.IsPublic = inputModel.IsPublic;
             project.LastModified = DateTime.UtcNow;
-            project.UserId = inputModel.UserId;
+            project.UserId = inputModel.UserId ?? project.UserId;
 
 
             this.timeForgeRepository.Update(project);
