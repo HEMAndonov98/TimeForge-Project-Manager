@@ -18,7 +18,7 @@ public class ProjectInputModel
 
     public DateOnly? DueDate { get; set; }
 
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     public List<TagInputModel> Tags { get; set; } = new();
 }
