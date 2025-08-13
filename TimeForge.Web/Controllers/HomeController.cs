@@ -35,90 +35,13 @@ public class HomeController : Controller
     /// <param name="page">The page number to display.</param>
     /// <returns>The home view with the project list.</returns>
     [HttpGet]
-    public async Task<IActionResult> Index(int page = 1, List<string>? selectedTags = null)
+    public async Task<IActionResult> Index()
     {
-        try
-        {
-            int totalPages = 0;
-            List<ProjectViewModel> projectsList = new List<ProjectViewModel>();
+        var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+        this.ViewData["IsLoggedIn"] = isLoggedIn;
 
-            var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
-            this.ViewData["IsLoggedIn"] = isLoggedIn;
-
-            if (!string.IsNullOrEmpty(user))
-            {
-                int pageSize = 4;
-                int projectsCount = 0;
-
-                if (selectedTags != null && selectedTags.Any())
-                {
-                    projectsCount = await projectService.GetProjectsCountAsync(user, selectedTags);
-                }
-                else
-                {
-                    projectsCount = await projectService.GetProjectsCountAsync(user);
-                    
-                }
-                totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
-
-                if (totalPages < 1)
-                {
-                    totalPages = 1;
-                }
-
-                if (page < 1)
-                {
-                    page = 1;
-                }
-
-                if (page > totalPages)
-                {
-                    page = totalPages;
-                }
-
-                IEnumerable<ProjectViewModel> projects = null;
-
-                if (selectedTags != null && selectedTags.Any())
-                {
-                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize, selectedTags);
-                }
-                else
-                {
-                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
-                }
-                
-                foreach (ProjectViewModel project in projects)
-                {
-                    project.UserId = user;
-                    string projectId = project.Id;
-                    project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
-                }
-
-                projectsList = projects.ToList();
-            }
-
-            var viewModel = new PagedProjectViewModel()
-            {
-                Projects = projectsList,
-                CurrentPage = page,
-                TotalPages = totalPages,
-                SelectedTags = selectedTags ?? new List<string>()
-            };
-            return View("Index", viewModel);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
+        return View();
     }
 
     /// <summary>
