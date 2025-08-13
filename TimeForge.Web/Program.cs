@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,6 @@ builder.Services.AddDbContext<TimeForgeDbContext>(
             sp.GetRequiredService<SoftDeleteInterceptor>()));
 
 
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<User>(options =>
@@ -47,7 +47,9 @@ builder.Services.AddDefaultIdentity<User>(options =>
     .AddEntityFrameworkStores<TimeForgeDbContext>();
 builder.Services.AddControllersWithViews();
 
-
+var cultureInfo = new CultureInfo("en-GB"); // Day/Month/Year
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 var app = builder.Build();
 
@@ -89,6 +91,7 @@ else
     app.UseStatusCodePagesWithReExecute("/Error/{0}");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    
 }
 
 app.UseHttpsRedirection();
