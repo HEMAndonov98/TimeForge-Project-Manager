@@ -35,10 +35,137 @@ public ProjectController(IProjectService projectService, ITagService tagService,
         this.logger = logger;
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> Index(int page = 1, List<string>? selectedTags = null)
+    {
+        try
+        {
+            int totalPages = 0;
+            List<ProjectViewModel> projectsList = new List<ProjectViewModel>();
+
+            var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+            this.ViewData["IsLoggedIn"] = isLoggedIn;
+            
+            if (!string.IsNullOrEmpty(user))
+            {
+                int pageSize = 4;
+                int projectsCount = 0;
+
+                if (selectedTags != null && selectedTags.Any())
+                {
+                    projectsCount = await projectService.GetProjectsCountAsync(user, selectedTags);
+                }
+                else
+                {
+                    projectsCount = await projectService.GetProjectsCountAsync(user);
+                    
+                }
+                totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
+
+                if (totalPages < 1)
+                {
+                    totalPages = 1;
+                }
+
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (page > totalPages)
+                {
+                    page = totalPages;
+                }
+
+                IEnumerable<ProjectViewModel> projects = null;
+
+                if (selectedTags != null && selectedTags.Any())
+                {
+                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize, selectedTags);
+                }
+                else
+                {
+                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
+                }
+                
+                foreach (ProjectViewModel project in projects)
+                {
+                    project.UserId = user;
+                    string projectId = project.Id;
+                    project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
+                }
+
+                projectsList = projects.ToList();
+            }
+
+            var viewModel = new PagedProjectViewModel()
+            {
+                Projects = projectsList,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                SelectedTags = selectedTags ?? new List<string>()
+            };
+            return View("Index", viewModel);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest("Required parameter is null");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Upcoming()
+    {
+        string? userId = this.GetUserId();
+        
+        if (String.IsNullOrEmpty(userId))
+            throw new ArgumentNullException();
+        var projects = await this.projectService.GetAllProjectsAsync(userId);
+        
+        
+        var startDate = DateTime.UtcNow.Date;
+        var days = Enumerable.Range(1, 7)
+            .Select(i => startDate.AddDays(i))
+            .ToList();
+
+        Dictionary<string, List<ProjectViewModel>> grouped = new Dictionary<string, List<ProjectViewModel>>();
+
+        for (int i = 1; i <= days.Count; i++)
+        {
+            string day = days[i - 1].ToString("dddd");
+            bool isToday = DateTime.Compare(days[i - 1], DateTime.Today.Date) == 0;
+            string key = day;
+
+            if (isToday)
+            {
+                key = $"{day} (Today)";
+            }
+
+            List<ProjectViewModel> projectsOnDay = projects.Where(p => 
+                    DateTime.TryParse(p.DueDate, out var due) &&
+                    DateTime.Compare(due.Date, days[i - 1].Date) == 0)
+                .ToList();
+            
+            grouped[key] = projectsOnDay;
+        }
+        
+        return View(grouped);
+    }
+
 /// <summary>
 /// Displays the create project form.
 /// </summary>
-[HttpGet]
+[HttpGet] 
 public async Task<IActionResult> Create()
     {
         //TODO Update to use userManager in the future for security
@@ -272,4 +399,70 @@ public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
             return StatusCode(500);
         }
     }
+
+/// <summary>
+/// Displays the project calendar.
+/// </summary>
+/// <returns>The calendar view.</returns>
+[HttpGet]
+    public async Task<IActionResult> Calendar()
+    {
+        try
+        {
+            string? userId = this.GetUserId();
+            if (String.IsNullOrEmpty(userId))
+                throw new ArgumentNullException();
+            var projects = await this.projectService
+                .GetAllProjectsAsync(userId);
+
+            return View(projects);
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest($"Required parameter is null: GET/{nameof(ProjectController)}/{nameof(Calendar)}");
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateDueDate(ProjectInputModel inputModel)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+                throw new ArgumentNullException();
+
+            inputModel.DueDate = inputModel.DueDate!.Value.AddDays(1);
+            
+            await this.projectService.UpdateProject(inputModel);
+
+            return Ok(
+                new
+                {
+                    success = true,
+                });
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest($"Required parameter is null : POST/{nameof(ProjectController)}/{nameof(UpdateDueDate)}");
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return StatusCode(500);
+        }
+    }
+
+    /// <summary>
+    /// Gets the current user's ID from claims.
+    /// </summary>
+    /// <returns>The user ID as a string, or null if not found.</returns>
+    private string? GetUserId()
+        => this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
