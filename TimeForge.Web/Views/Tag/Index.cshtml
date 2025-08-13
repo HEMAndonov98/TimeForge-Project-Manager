@@ -1,0 +1,68 @@
+@using TimeForge.ViewModels.Tag;
+@model List<TagViewModel>
+
+@{
+    ViewData["Title"] = "Manage Tags";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Manage Tags</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateTags" method="post" id="tagForm">
+                        <!-- Hidden select to submit IDs -->
+                        <select name="tagIds" multiple hidden id="tagSelect">
+                            @foreach (var tag in Model)
+                            {
+                                <option value="@tag.Id" selected>@tag.Name</option>
+                            }
+                        </select>
+
+                        <div id="tagBadgeContainer" class="d-flex flex-wrap gap-2 mb-3">
+                            @foreach (var tag in Model)
+                            {
+                                <span class="badge bg-secondary p-2 d-flex align-items-center" data-tag-id="@tag.Id">
+                                    <span class="me-1">@tag.Name</span>
+                                    <button type="button" class="btn-close btn-close-white btn-sm" aria-label="Remove"></button>
+                                </span>
+                            }
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const badgeContainer = document.getElementById("tagBadgeContainer");
+            const tagSelect = document.getElementById("tagSelect");
+
+            badgeContainer.addEventListener("click", function (e) {
+                if (e.target.classList.contains("btn-close")) {
+                    const badge = e.target.closest(".badge");
+                    const tagId = badge.getAttribute("data-tag-id");
+
+                    // Remove badge
+                    badge.remove();
+
+                    // Remove option from select
+                    const option = tagSelect.querySelector(`option[value="${tagId}"]`);
+                    if (option) {
+                        option.remove();
+                    }
+                }
+            });
+        });
+    </script>
+}
