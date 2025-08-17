@@ -21,6 +21,7 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
+builder.Services.AddScoped<ITaskCollectionService, TaskCollectionService>();
 
 
 // Interceptors
