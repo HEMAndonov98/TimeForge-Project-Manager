@@ -15,7 +15,7 @@ namespace TimeForge.Infrastructure.Migrations
                 name: "TaskItems",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(40)", nullable: false),
                     ListName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -31,9 +31,9 @@ namespace TimeForge.Infrastructure.Migrations
                 name: "TaskCollections",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(40)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TaskListId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TaskListId = table.Column<string>(type: "nvarchar(40)", nullable: false),
                     IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
