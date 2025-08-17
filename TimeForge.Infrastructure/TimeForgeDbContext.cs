@@ -18,6 +18,10 @@ public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : 
     public DbSet<ProjectTag> ProjectTags { get; set; }
 
     public DbSet<User> Users { get; set; }
+
+    public DbSet<TaskItem> TaskItems { get; set; }
+
+    public DbSet<TaskCollection> TaskCollections { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
