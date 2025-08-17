@@ -162,7 +162,8 @@ namespace TimeForge.Infrastructure.Migrations
             modelBuilder.Entity("TimeForge.Models.Project", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("AssignedUserId")
                         .HasColumnType("nvarchar(450)");
@@ -208,10 +209,10 @@ namespace TimeForge.Infrastructure.Migrations
             modelBuilder.Entity("TimeForge.Models.ProjectTag", b =>
                 {
                     b.Property<string>("ProjectId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("TagId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("ProjectId", "TagId");
 
@@ -226,7 +227,8 @@ namespace TimeForge.Infrastructure.Migrations
             modelBuilder.Entity("TimeForge.Models.ProjectTask", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<DateTime?>("CompletionDate")
                         .HasColumnType("datetime2");
@@ -256,7 +258,7 @@ namespace TimeForge.Infrastructure.Migrations
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -270,7 +272,8 @@ namespace TimeForge.Infrastructure.Migrations
             modelBuilder.Entity("TimeForge.Models.Tag", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -302,10 +305,80 @@ namespace TimeForge.Infrastructure.Migrations
                     b.ToTable("Tags");
                 });
 
+            modelBuilder.Entity("TimeForge.Models.TaskCollection", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TaskListId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TaskListId");
+
+                    b.ToTable("TaskCollections");
+                });
+
+            modelBuilder.Entity("TimeForge.Models.TaskItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ListName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("TaskItems");
+                });
+
             modelBuilder.Entity("TimeForge.Models.TimeEntry", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -333,7 +406,7 @@ namespace TimeForge.Infrastructure.Migrations
 
                     b.Property<string>("TaskId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -537,6 +610,17 @@ namespace TimeForge.Infrastructure.Migrations
                     b.Navigation("CreatedBy");
                 });
 
+            modelBuilder.Entity("TimeForge.Models.TaskCollection", b =>
+                {
+                    b.HasOne("TimeForge.Models.TaskItem", "TaskItem")
+                        .WithMany("ListTasks")
+                        .HasForeignKey("TaskListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskItem");
+                });
+
             modelBuilder.Entity("TimeForge.Models.TimeEntry", b =>
                 {
                     b.HasOne("TimeForge.Models.ProjectTask", "ProjectTask")
@@ -581,6 +665,11 @@ namespace TimeForge.Infrastructure.Migrations
             modelBuilder.Entity("TimeForge.Models.Tag", b =>
                 {
                     b.Navigation("ProjectTags");
+                });
+
+            modelBuilder.Entity("TimeForge.Models.TaskItem", b =>
+                {
+                    b.Navigation("ListTasks");
                 });
 
             modelBuilder.Entity("TimeForge.Models.User", b =>
