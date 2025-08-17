@@ -21,7 +21,7 @@
                 processData: false,
                 contentType: false,
                 success: function () {
-                    updateTaskList(projectId);
+                    updateTaskItem(projectId);
                     refreshTimerWidget();
                 },
                 error: function (error) {
@@ -30,7 +30,7 @@
             });
         });
 
-        function updateTaskList(projectId) {
+        function updateTaskItem(projectId) {
             const url = '@Url.Action("GetTaskListPartial", "Task")';
             const container = $('#task-list-container-' + projectId);
 
