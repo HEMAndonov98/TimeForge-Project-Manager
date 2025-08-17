@@ -511,7 +511,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Views\List\" />
       <Folder Include="wwwroot\adminlte\" />
     </ItemGroup>
 
