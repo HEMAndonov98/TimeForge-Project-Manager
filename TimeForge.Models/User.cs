@@ -32,6 +32,10 @@ public class User : IdentityUser
     [InverseProperty(nameof(Project.AssignedTo))]
     public virtual List<Project> AssignedProjects { get; set; } = new();
 
+
+    [InverseProperty(nameof(TaskItem.User))]
+    public virtual List<TaskItem> TaskCollections { get; set; } = new();
+
     // Manager properties
 
     /// <summary>
