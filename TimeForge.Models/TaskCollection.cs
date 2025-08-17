@@ -8,13 +8,9 @@ namespace TimeForge.Models;
 public class TaskCollection : BaseDeletableModel<string>
 {
     [Required]
-    [MaxLength(TaskListValidationConstants.ListTaskDescriptionMaxLength)]
-    public string Description { get; set; } = null!;
-    
-    [ForeignKey(nameof(TaskItem))]
-    public string TaskListId { get; set; }
+    [MaxLength(TaskCollectionConstants.TaskCollectionNameMaxLength)]
+    public string ListName { get; set; } = null!;
 
-    public TaskItem TaskItem { get; set; }
-
-    public bool IsCompleted { get; set; }
+    [InverseProperty(nameof(TaskItem.TaskCollection))]
+    public List<TaskItem> ListTasks { get; set; } = new();
 }
