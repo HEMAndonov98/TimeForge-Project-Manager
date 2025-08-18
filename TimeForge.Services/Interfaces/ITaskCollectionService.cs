@@ -52,4 +52,15 @@ public interface ITaskCollectionService
     /// A task that represents the asynchronous operation. The task result contains a collection of task item view models.
     /// </returns>
     Task<IEnumerable<TaskItemViewModel>> GetAllTaskItemsForTaskCollectionAsync(string taskCollectionId);
+
+    /// <summary>
+    /// Retrieves a specific task collection by its ID. 
+    /// </summary>
+    /// <param name="taskCollectionId">The ID of the specific task collection that will be retrieved.</param>
+    /// <returns>
+    ///  A task that represents the asynchronous operation. The task result contains a collection of task collection view models.
+    /// </returns>
+    Task<TaskCollectionViewModel> GetTaskCollectionByIdAsync(string taskCollectionId);
+    
+    
 }
