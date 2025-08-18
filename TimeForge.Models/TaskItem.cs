@@ -7,20 +7,22 @@ namespace TimeForge.Models;
 
 public class TaskItem : BaseDeletableModel<string>
 {
+    public TaskItem()
+    {
+        this.Id = Guid.NewGuid().ToString();
+        this.CreatedAt = DateTime.UtcNow;
+        this.LastModified = DateTime.UtcNow;
+    }
+    
     [Required]
-    [MaxLength(TaskCollectionConstants.TaskItemDescriptionMaxLength)]
+    [MaxLength(TaskCollectionConstants.TaskItemTitleMaxLength)]
     public string Title { get; set; } = null!;
     
     public bool IsCompleted { get; set; }
     
     
     [ForeignKey(nameof(TaskCollection))]
-    public string TaskItemId { get; set; }
+    public string TaskCollectionId { get; set; }
 
     public TaskCollection TaskCollection { get; set; }
-
-    [ForeignKey(nameof(User))]
-    public string UserId { get; set; }
-
-    public User User { get; set; }
 }
