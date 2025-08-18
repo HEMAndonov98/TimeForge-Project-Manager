@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using TimeForge.Common.Constants;
 using TimeForge.Common.Dto_Validation;
 
@@ -11,4 +12,7 @@ public class TaskCollectionInputModel
         MinimumLength = TaskCollectionConstants.TaskCollectionNameMinLength,
         ErrorMessage = TaskCollectionDtoMessages.TaskCollectionNameLength)]
     public string Title { get; set; }
+
+    [ValidateNever]
+    public string UserId { get; set; } = null!;
 }
