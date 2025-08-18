@@ -28,16 +28,23 @@
                     <div class="card shadow-sm border-0 rounded-4 h-100 d-flex flex-column">
                         <div class="card-body d-flex flex-column">
                             <!-- List Title -->
-                            <h5 class="card-title fw-bold text-primary mb-3">@list.Title</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title fw-bold text-primary mb-3">@list.Title</h5>
+                                <a class="card-link text-danger" onclick="handleDeleteTaskCollection(this)" task-collection-id="@list.Id">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
 
                             <!-- Tasks -->
                             <div class="flex-grow-1 mb-3 overflow-auto" style="max-height: 250px;">
                                 @if (list.Tasks != null && list.Tasks.Any())
                                 {
                                     <ul class="list-group list-group-flush">
-                                        @foreach (var task in list.Tasks)
+                                        @foreach (var task in list.Tasks.OrderByDescending(l => l.IsCompleted))
                                         {
-                                            <li class="list-group-item d-flex justify-content-between align-items-center px-2">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-2 link-underline-info user-select-all"
+                                                onclick="handleCompleteTask(this)"
+                                                task-item-id="@task.Id">
                                                 <span>@task.Description</span>
                                                 @if (task.IsCompleted)
                                                 {
@@ -58,8 +65,12 @@
                             </div>
 
                             <!-- Add Task -->
-                            <form asp-controller="Tasks" asp-action="Create" method="post" class="mt-auto">
-                                <input type="hidden" name="ListId" value="@list.Id" />
+                            <form asp-controller="TaskCollection" 
+                                  asp-action="AddTaskItem" 
+                                  method="post"
+                                  asp-area=""
+                                  class="mt-auto">
+                                <input type="hidden" name="taskCollectionId" value="@list.Id" />
                                 <div class="input-group">
                                     <input type="text" name="Title" class="form-control" placeholder="New task..." required />
                                     <button class="btn btn-outline-primary" type="submit">Add</button>
@@ -73,9 +84,47 @@
 
         <!-- Floating Add List Button -->
         <div class="text-center mt-5">
-            <a class="btn btn-primary btn-lg rounded-pill shadow" asp-controller="TaskLists" asp-action="Create">
+            <a class="btn btn-primary btn-lg rounded-pill shadow" asp-controller="TaskCollection" asp-action="Create" asp-area="">
                 + Create New List
             </a>
         </div>
+        
+        <div id="modal-placeholder"></div>
     }
 </div>
+
+@section Scripts
+{
+<script>
+    
+    function handleCompleteTask(elemnt) {
+        let taskItemId = '';
+        
+        taskItemId = elemnt.getAttribute('task-item-id') ?? '';
+        
+        if (taskItemId !== '') {
+            const basePath = window.location.origin;
+            const endPoint = '@Url.Action("CompleteTaskItem", "TaskCollection")';
+            const urlWithParams = `${basePath}${endPoint}?taskItemId=${taskItemId}`;
+            
+            alert(urlWithParams);
+        }
+    }
+    
+    
+    function handleDeleteTaskCollection(element) {
+        let taskCollectionId = '';
+
+        taskCollectionId = element.getAttribute('task-collection-id') ?? '';
+
+        if (taskCollectionId !== '') {
+            const urlRoute = '@Url.Action("Delete", "TaskCollection")';
+            const urlWithParams = `${urlRoute}?taskCollectionId=${taskCollectionId}`;
+            $.get(urlWithParams, function (html) {
+                $('#modal-placeholder').html(html);
+                $('#deleteProjectModal').modal('show');
+            });
+        }
+    }
+</script>
+}
