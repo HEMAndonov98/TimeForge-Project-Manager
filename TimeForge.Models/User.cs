@@ -33,6 +33,18 @@ public class User : IdentityUser
     public virtual List<Project> AssignedProjects { get; set; } = new();
     
     /// <summary>
+    /// Gets or sets the list of friend requests sent to another user
+    /// </summary>
+    [InverseProperty(nameof(UserConnection.FromUser))]
+    public List<UserConnection> SentConnections { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the list of friend requests received by another user
+    /// </summary>
+    [InverseProperty(nameof(UserConnection.ToUser))]
+    public List<UserConnection> ReceivedConnections { get; set; }
+    
+    /// <summary>
     /// Gets or sets the list of tasks assigned to the user.
     /// </summary>
     [InverseProperty(nameof(TaskCollection.User))]

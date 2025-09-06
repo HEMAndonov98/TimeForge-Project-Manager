@@ -22,6 +22,8 @@ public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : 
     public DbSet<TaskCollection> TaskItems { get; set; }
     
     public DbSet<TaskItem> TaskCollections { get; set; }
+
+    public DbSet<UserConnection> UserConnections { get; set; }
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
