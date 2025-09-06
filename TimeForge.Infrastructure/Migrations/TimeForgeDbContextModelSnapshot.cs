@@ -506,6 +506,24 @@ namespace TimeForge.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("TimeForge.Models.UserConnection", b =>
+                {
+                    b.Property<string>("FromUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ToUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("FromUserId", "ToUserId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("UserConnections");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -667,6 +685,25 @@ namespace TimeForge.Infrastructure.Migrations
                     b.Navigation("Manager");
                 });
 
+            modelBuilder.Entity("TimeForge.Models.UserConnection", b =>
+                {
+                    b.HasOne("TimeForge.Models.User", "FromUser")
+                        .WithMany("SentConnections")
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TimeForge.Models.User", "ToUser")
+                        .WithMany("ReceivedConnections")
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("TimeForge.Models.Project", b =>
                 {
                     b.Navigation("ProjectTags");
@@ -696,6 +733,10 @@ namespace TimeForge.Infrastructure.Migrations
                     b.Navigation("ManagedUsers");
 
                     b.Navigation("Projects");
+
+                    b.Navigation("ReceivedConnections");
+
+                    b.Navigation("SentConnections");
 
                     b.Navigation("Tags");
 
