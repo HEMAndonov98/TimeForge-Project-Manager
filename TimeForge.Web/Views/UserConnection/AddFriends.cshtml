@@ -1,0 +1,33 @@
+@using TimeForge.ViewModels.UserConnection
+@model AddFriendInputModel
+
+<div class="add-friend-form-container">
+    <form asp-action="AddFriends" method="post" asp-controller="UserConnection" class="add-friend-form">
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">User email address</label>
+            <input asp-for="Email" type="email" class="form-control" id="userEmail" aria-describedby="emailHelp">
+            <span asp-validation-for="Email" class="text-danger small"></span>
+            <div id="emailHelp" class="form-text">Connect and expand.</div>
+        </div>
+        <button type="submit"
+                id="add-friend-form-submit-button"
+                class="btn btn-primary"
+                onclick="handleSubmitForm()">
+            <span class="spinner-border spinner-border-sm d-none" id="add-friend-form-submit-spinner" role="status" aria-hidden="true"></span>
+            Submit
+        </button>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script>
+        function handleSubmitForm() {
+            let spinnerEl = document.getElementById("add-friend-form-submit-spinner");
+            spinnerEl.classList.remove('d-none');
+            spinnerEl.classList.add('d-inline-block');
+            
+            document.getElementById('add-friend-form-submit-button').textContent = 'Loading...'
+        }
+    </script>
+}
