@@ -295,7 +295,6 @@ public class ProjectServiceTests
         var projectTaskList = new List<ProjectTask>();
         projectTaskList.Add(testTask);
         
-        var projectTagList = new List<ProjectTag>();
 
             
         var testUser = new User() { Id = "user1", UserName = "Test User" };

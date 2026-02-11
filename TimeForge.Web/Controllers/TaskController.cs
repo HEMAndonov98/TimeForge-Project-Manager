@@ -1,156 +1,164 @@
 using System.Security.Claims;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Task;
 
 namespace TimeForge.Web.Controllers;
+
 /// <summary>
-/// Handles task-related actions such as create, complete, and retrieval.
+/// Web API Controller for managing tasks.
 /// </summary>
+[ApiController]
+[Route("api/[controller]")]
 [Authorize]
-public class TaskController : Controller
+public class TaskController : ControllerBase
 {
-    
     private readonly ITaskService taskService;
     private readonly ITimeEntryService timeEntryService;
     private readonly ILogger<TaskController> logger;
 
-/// <summary>
-/// Initializes a new instance of the <see cref="TaskController"/>.
-/// </summary>
-/// <param name="taskService">Task service for task operations.</param>
-/// <param name="timeEntryService">Timer service for timer widget operations.</param>
-/// <param name="logger">Logger instance.</param>
-public TaskController(ITaskService taskService,
-    ITimeEntryService timeEntryService,
-    ILogger<TaskController> logger)
+    public TaskController(
+        ITaskService taskService,
+        ITimeEntryService timeEntryService,
+        ILogger<TaskController> logger)
     {
         this.taskService = taskService;
         this.timeEntryService = timeEntryService;
         this.logger = logger;
     }
-    
 
-/// <summary>
-/// Handles the creation of a new task for a project.
-/// </summary>
-/// <param name="listAndFormModel">The model containing task input data.</param>
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Create(TaskListAndFormModel listAndFormModel)
+    /// <summary>
+    /// Creates a new task.
+    /// </summary>
+    /// <param name="input">The task data.</param>
+    /// <returns>The created task.</returns>
+    [HttpPost]
+    public async Task<ActionResult<TaskViewModel>> Create([FromBody] TaskInputModel input)
     {
-        var inputModel = listAndFormModel.TaskInputModel;
-        
-        this.logger.LogInformation("Creating task for project {ProjectId}", inputModel.ProjectId);
-
         if (!ModelState.IsValid)
         {
-            this.logger.LogWarning("Model state is invalid for Task with description: {TaskDescription}", inputModel.Name);
-            return RedirectToAction("Details", "Project", new { projectId = inputModel.ProjectId });
+            return BadRequest(ModelState);
         }
 
         try
         {
-            await this.taskService.CreateTaskAsync(inputModel);
-
-            this.logger.LogInformation("Task added for project {ProjectId}", inputModel.ProjectId);
-            return RedirectToAction("Details", "Project", new { projectId = inputModel.ProjectId });
+            await taskService.CreateTaskAsync(input);
+            // Since CreateTaskAsync doesn't return the ID, return Ok.
+            return Ok(); 
         }
-        catch (ArgumentNullException)
+        catch (Exception ex)
         {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error creating task");
+            return StatusCode(500, "Internal server error");
         }
     }
-    
 
-/// <summary>
-/// Marks a task as complete.
-/// </summary>
-/// <param name="taskId">The ID of the task to complete.</param>
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Complete(string taskId)
+    /// <summary>
+    /// Marks a task as complete.
+    /// </summary>
+    /// <param name="taskId">The task ID.</param>
+    /// <returns>No content on success.</returns>
+    [HttpPost("{taskId}/complete")]
+    public async Task<IActionResult> Complete(string taskId)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
         try
         {
-            var userId = this.GetUserId();
-
-            if (String.IsNullOrEmpty(userId))
-            {
-                throw new ArgumentNullException();
-            }
-
-            var runningEntry = await this.timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
-
+            var runningEntry = await timeEntryService.GetCurrentRunningTimeEntryByUserIdAsync(userId);
             if (runningEntry != null && runningEntry.TaskId == taskId)
             {
-                await this.timeEntryService.StopEntryAsync(runningEntry.Id);
+                await timeEntryService.StopEntryAsync(runningEntry.Id);
             }
-            await this.taskService.CompleteTask(taskId);
-            
-            return Ok();
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
+
+            await taskService.CompleteTask(taskId);
+            return NoContent();
         }
         catch (InvalidOperationException)
         {
             return NotFound();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500);
-        }
-    }
-    
-/// <summary>
-/// Retrieves the partial view of the task list for a project.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-[HttpGet]
-public async Task<IActionResult> GetTaskListPartial(string projectId)
-    {
-        try
-        {
-            var model = await this.taskService.GetTasksByProjectIdAsync(projectId);
-            var taskListAndFormModel = new TaskListAndFormModel()
-            {
-                Tasks = model.ToList(),
-                TaskInputModel = new TaskInputModel(),
-                ProjectId = projectId
-            };
-            return PartialView("_ProjectTaskList", taskListAndFormModel);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error completing task {TaskId}", taskId);
+            return StatusCode(500, "Internal server error");
         }
     }
 
-/// <summary>
-/// Gets the current user's ID from claims.
-/// </summary>
-/// <returns>The user ID as a string, or null if not found.</returns>
-private string? GetUserId()
-    => this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    /// <summary>
+    /// Retrieves all tasks for a specific project.
+    /// </summary>
+    /// <param name="projectId">The project ID.</param>
+    /// <returns>A list of tasks.</returns>
+    [HttpGet("project/{projectId}")]
+    public async Task<ActionResult<IEnumerable<TaskViewModel>>> GetByProject(string projectId)
+    {
+        try
+        {
+            var tasks = await taskService.GetTasksByProjectIdAsync(projectId);
+            return Ok(tasks);
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving tasks for project {ProjectId}", projectId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Retrieves a task by its ID.
+    /// </summary>
+    /// <param name="id">The task ID.</param>
+    /// <returns>The task data.</returns>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TaskViewModel>> GetById(string id)
+    {
+        try
+        {
+            var task = await taskService.GetTaskByIdAsync(id);
+            return Ok(task);
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving task {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Deletes a task.
+    /// </summary>
+    /// <param name="id">The task ID.</param>
+    /// <returns>No content on success.</returns>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        try
+        {
+            await taskService.DeleteTaskAsync(id);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting task {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }

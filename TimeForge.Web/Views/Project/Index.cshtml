@@ -19,7 +19,6 @@
         else
         {
             <div class="text-center bg-light border rounded shadow-sm mb-3 p-2">
-                @await Component.InvokeAsync("TagFilterWidget", new { tags = Model.SelectedTags })
                 <a class="btn btn-primary btn-lg m-2" asp-controller="Project" asp-action="Create">Create Project</a>
             </div>
             @foreach (var project in this.Model.Projects)
@@ -38,12 +37,6 @@
                                     }
                                 </div>
 
-                                <div class="mt-2">
-                                    @foreach (var tag in project.Tags)
-                                    {
-                                        <span class="badge rounded-pill bg-secondary me-1">@tag.Name</span>
-                                    }
-                                </div>
                             </div>
                             <a class="btn btn-outline-primary btn-sm" asp-area="" asp-controller="Project" asp-action="Details" asp-route-projectId="@project.Id">Details</a>
                         </div>

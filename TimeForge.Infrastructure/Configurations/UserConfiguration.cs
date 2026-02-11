@@ -15,10 +15,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(u => u.Tags)
-            .WithOne(t => t.CreatedBy)
-            .HasForeignKey(t => t.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+
 
         builder.HasMany(u => u.TimeEntries)
             .WithOne(te => te.CreatedBy)

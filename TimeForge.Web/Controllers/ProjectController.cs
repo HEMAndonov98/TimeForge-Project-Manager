@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
-using TimeForge.ViewModels.Tag;
+
 
 namespace TimeForge.Web.Controllers;
 /// <summary>
@@ -16,7 +16,6 @@ namespace TimeForge.Web.Controllers;
 public class ProjectController : Controller
 {
     private readonly IProjectService projectService;
-    private readonly ITagService tagService;
     private readonly ITaskService taskService;
     private readonly ILogger<ProjectController> logger;
 
@@ -27,17 +26,16 @@ public class ProjectController : Controller
 /// <param name="tagService">Tag service for tag operations.</param>
 /// <param name="taskService">Task service for task operations.</param>
 /// <param name="logger">Logger instance.</param>
-public ProjectController(IProjectService projectService, ITagService tagService, ITaskService taskService, ILogger<ProjectController> logger)
+public ProjectController(IProjectService projectService, ITaskService taskService, ILogger<ProjectController> logger)
     {
         this.projectService = projectService;
-        this.tagService = tagService;
         this.taskService = taskService;
         this.logger = logger;
     }
 
 
     [HttpGet]
-    public async Task<IActionResult> Index(int page = 1, List<string>? selectedTags = null)
+    public async Task<IActionResult> Index(int page = 1)
     {
         try
         {
@@ -53,15 +51,7 @@ public ProjectController(IProjectService projectService, ITagService tagService,
                 int pageSize = 4;
                 int projectsCount = 0;
 
-                if (selectedTags != null && selectedTags.Any())
-                {
-                    projectsCount = await projectService.GetProjectsCountAsync(user, selectedTags);
-                }
-                else
-                {
-                    projectsCount = await projectService.GetProjectsCountAsync(user);
-                    
-                }
+                projectsCount = await projectService.GetProjectsCountAsync(user);
                 totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
 
                 if (totalPages < 1)
@@ -79,16 +69,7 @@ public ProjectController(IProjectService projectService, ITagService tagService,
                     page = totalPages;
                 }
 
-                IEnumerable<ProjectViewModel> projects = null;
-
-                if (selectedTags != null && selectedTags.Any())
-                {
-                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize, selectedTags);
-                }
-                else
-                {
-                    projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
-                }
+                IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
                 
                 foreach (ProjectViewModel project in projects)
                 {
@@ -104,8 +85,7 @@ public ProjectController(IProjectService projectService, ITagService tagService,
             {
                 Projects = projectsList,
                 CurrentPage = page,
-                TotalPages = totalPages,
-                SelectedTags = selectedTags ?? new List<string>()
+                TotalPages = totalPages
             };
             return View("Index", viewModel);
         }
@@ -170,18 +150,9 @@ public async Task<IActionResult> Create()
     {
         //TODO Update to use userManager in the future for security
         string? userId = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var tags = await this.tagService.GetAllTagsAsync(userId);
         var inputModel = new ProjectInputModel()
         {
-            UserId = userId!,
-            Tags = tags
-                .Select(t => new TagInputModel()
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    UserId = userId
-                })
-                .ToList()
+            UserId = userId!
         };
         return View(inputModel);
     }
@@ -195,10 +166,6 @@ public async Task<IActionResult> Create()
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> Create(ProjectInputModel inputModel)
     {
-        foreach (TagInputModel tag in inputModel.Tags)
-        {
-            tag.UserId = inputModel.UserId;
-        }
         
         if (!ModelState.IsValid)
         {
@@ -208,11 +175,6 @@ public async Task<IActionResult> Create(ProjectInputModel inputModel)
         try
         {
             await this.projectService.CreateProjectAsync(inputModel);
-            foreach (TagInputModel tag in inputModel.Tags)
-            {
-                await this.tagService.CreateTagAsync(tag);
-                await this.projectService.AddTagToProject(inputModel.Id, tag.Id);
-            }
             return RedirectToAction("Index", "Home");
         }
         catch (ArgumentNullException)
@@ -274,10 +236,7 @@ public async Task<IActionResult> Edit(string projectId)
                 UserId = viewModel.UserId,
                 DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
                 Name = viewModel.Name,
-                IsPublic = viewModel.IsPublic,
-                Tags = viewModel.Tags
-                    .Select(t => new TagInputModel() { Id = t.Id, Name = t.Name})
-                .ToList()
+                IsPublic = viewModel.IsPublic
             };
 
             return View(inputModel);
@@ -312,31 +271,6 @@ public async Task<IActionResult> Edit(ProjectInputModel inputModel)
         try
         {
             await this.projectService.UpdateProject(inputModel);
-
-            var previousTags = await this.tagService.GetAllTagsByProjectIdAsync(inputModel.Id);
-
-            var currentTags = inputModel.Tags;
-            
-            //Add new tags to project
-            foreach (var currentTag in currentTags)
-            {
-                if (!previousTags.Any(t => t.Name == currentTag.Name))
-                {
-                    currentTag.UserId = inputModel.UserId;
-                    await this.tagService.CreateTagAsync(currentTag);
-                    await this.projectService.AddTagToProject(inputModel.Id, currentTag.Id);
-                }
-            }
-
-            // Remove tags not in current input model
-            foreach (var previousTag in previousTags)
-            {
-                if (!currentTags.Any(t => t.Name != previousTag.Name))
-                {
-                    await this.projectService.RemoveTagFromProjectAsync(inputModel.Id, previousTag.Id);
-                }
-            }
-
             return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
         }
         catch (ArgumentNullException)

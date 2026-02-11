@@ -4,7 +4,6 @@ public class PagedProjectViewModel
 {
     public IEnumerable<ProjectViewModel> Projects { get; set; }
 
-    public List<string>? SelectedTags { get; set; }
 
     public int CurrentPage { get; set; }
 

@@ -10,9 +10,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         //Relationships
-        builder.HasMany(p => p.ProjectTags)
-            .WithOne(pt => pt.Project)
-            .HasForeignKey(pt => pt.ProjectId);
+
 
         builder.HasMany(p => p.Tasks)
             .WithOne(t => t.Project)

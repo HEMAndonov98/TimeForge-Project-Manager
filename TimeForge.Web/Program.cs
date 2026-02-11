@@ -33,7 +33,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<TimeForgeDbContext>(
     (sp, options) => options
-        .UseSqlServer(connectionString)
+        .UseInMemoryDatabase("TimeForgeDb")
         .AddInterceptors(
             sp.GetRequiredService<SoftDeleteInterceptor>()));
 
@@ -67,7 +67,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<TimeForgeDbContext>();
-        await context.Database.MigrateAsync();
+        // await context.Database.MigrateAsync();
         await IdentitySeeder.SeedManagerAsync(services);
         await DbInitializer.SeedAsync(context);
     }

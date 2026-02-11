@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 namespace TimeForge.Models;
 
 /// <summary>
-/// Represents an application user, including projects, tags, and management relationships.
+/// Represents an application user, including projects, time entries, and management relationships.
 /// </summary>
 public class User : IdentityUser
 {
@@ -14,11 +14,7 @@ public class User : IdentityUser
     [InverseProperty(nameof(Project.CreatedBy))]
     public virtual List<Project> Projects { get; set; } = new();
 
-    /// <summary>
-    /// Gets or sets the list of tags created by the user.
-    /// </summary>
-    [InverseProperty(nameof(Tag.CreatedBy))]
-    public virtual List<Tag> Tags { get; set; } = new();
+
 
     /// <summary>
     /// Gets or sets the list of time entries created by the user.
