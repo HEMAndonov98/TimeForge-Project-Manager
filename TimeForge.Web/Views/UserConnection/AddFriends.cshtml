@@ -1,7 +1,7 @@
 @using TimeForge.ViewModels.UserConnection
 @model AddFriendInputModel
 
-<div class="add-friend-form-container">
+<div class="add-friend-form-container d-flex justify-content-center align-items-center">
     <form asp-action="AddFriends" method="post" asp-controller="UserConnection" class="add-friend-form">
         <div class="mb-3">
             <label asp-for="Email" class="form-label">User email address</label>
@@ -11,23 +11,10 @@
         </div>
         <button type="submit"
                 id="add-friend-form-submit-button"
-                class="btn btn-primary"
-                onclick="handleSubmitForm()">
+                class="btn btn-primary m-auto"
+                onclick="handleSubmitFriendForm()">
             <span class="spinner-border spinner-border-sm d-none" id="add-friend-form-submit-spinner" role="status" aria-hidden="true"></span>
             Submit
         </button>
     </form>
 </div>
-
-
-@section Scripts {
-    <script>
-        function handleSubmitForm() {
-            let spinnerEl = document.getElementById("add-friend-form-submit-spinner");
-            spinnerEl.classList.remove('d-none');
-            spinnerEl.classList.add('d-inline-block');
-            
-            document.getElementById('add-friend-form-submit-button').textContent = 'Loading...'
-        }
-    </script>
-}

@@ -133,6 +133,12 @@ public class UserConnectionService : IConnectionService
         return userConnectionViewModel;
     }
 
+    public async Task<UserConnection> GetConnectionByIdAsync(string fromUserId, string toUserId)
+    => await this.timeForgeRepository.All<UserConnection>()
+        .Where(uc => uc.FromUserId == fromUserId && uc.ToUserId == toUserId)
+        .FirstAsync();
+    
+
     /// <summary>
     /// Validates and checks if users with this id exist in the database
     /// </summary>

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TimeForge.Common.Enums;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.UserConnection;
 
@@ -39,12 +40,6 @@ public class UserConnectionController : Controller
             return StatusCode(500);
         }
     }
-    
-    [HttpGet]
-    public IActionResult AddFriends()
-    {
-        return View(new AddFriendInputModel());
-    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -78,6 +73,16 @@ public class UserConnectionController : Controller
         {
             return StatusCode(500);
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AcceptFriendRequest(string fromUserId, string toUserId)
+    {
+        var friendRequest = await this.connectionService.GetConnectionByIdAsync(fromUserId, toUserId);
+
+        await this.connectionService.UpdateConnectionAsync(friendRequest, ConnectionStatus.Accepted);
+        return RedirectToAction("FriendsOverview", "UserConnection");
     }
     
     /// <summary>

@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
         <None Remove="wwwroot\adminlte\plugins\webfonts\**" />
     </ItemGroup>
 
@@ -21,6 +21,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.17" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,4 +11,6 @@ public interface IConnectionService
     Task UpdateConnectionAsync(UserConnection userConnection, ConnectionStatus status);
     
     Task<UserConnectionViewModel> GetConnectionsByUserIdAsync(string userId);
+    
+    Task<UserConnection> GetConnectionByIdAsync(string fromUserId, string toUserId);
 }
