@@ -12,270 +12,157 @@ namespace TimeForge.Web.Controllers;
 /// <summary>
 /// Handles project-related operations such as create, edit, details, and delete.
 /// </summary>
+[ApiController]
+[Route("api/[controller]")]
 [Authorize]
-public class ProjectController : Controller
+public class ProjectController : ControllerBase
 {
     private readonly IProjectService projectService;
     private readonly ITaskService taskService;
     private readonly ILogger<ProjectController> logger;
 
-/// <summary>
-/// Initializes a new instance of the <see cref="ProjectController"/>.
-/// </summary>
-/// <param name="projectService">Project service for project operations.</param>
-/// <param name="tagService">Tag service for tag operations.</param>
-/// <param name="taskService">Task service for task operations.</param>
-/// <param name="logger">Logger instance.</param>
-public ProjectController(IProjectService projectService, ITaskService taskService, ILogger<ProjectController> logger)
+    public ProjectController(IProjectService projectService, ITaskService taskService, ILogger<ProjectController> logger)
     {
         this.projectService = projectService;
         this.taskService = taskService;
         this.logger = logger;
     }
 
-
+    /// <summary>
+    /// Gets a paged list of projects for the current user.
+    /// </summary>
+    /// <param name="page">The page number.</param>
+    /// <returns>A paged result of projects.</returns>
     [HttpGet]
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<ActionResult<PagedProjectViewModel>> Index(int page = 1)
     {
         try
         {
-            int totalPages = 0;
-            List<ProjectViewModel> projectsList = new List<ProjectViewModel>();
-
-            var user = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
-            this.ViewData["IsLoggedIn"] = isLoggedIn;
-            
-            if (!string.IsNullOrEmpty(user))
+            var userId = this.GetUserId();
+            if (string.IsNullOrEmpty(userId))
             {
-                int pageSize = 4;
-                int projectsCount = 0;
-
-                projectsCount = await projectService.GetProjectsCountAsync(user);
-                totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
-
-                if (totalPages < 1)
-                {
-                    totalPages = 1;
-                }
-
-                if (page < 1)
-                {
-                    page = 1;
-                }
-
-                if (page > totalPages)
-                {
-                    page = totalPages;
-                }
-
-                IEnumerable<ProjectViewModel> projects = await this.projectService.GetAllProjectsAsync(user, page, pageSize);
-                
-                foreach (ProjectViewModel project in projects)
-                {
-                    project.UserId = user;
-                    string projectId = project.Id;
-                    project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(projectId)).ToList();
-                }
-
-                projectsList = projects.ToList();
+                return Unauthorized();
             }
 
-            var viewModel = new PagedProjectViewModel()
+            int pageSize = 4;
+            int projectsCount = await projectService.GetProjectsCountAsync(userId);
+            int totalPages = (int)Math.Ceiling(projectsCount / (double)pageSize);
+
+            if (totalPages < 1) totalPages = 1;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            var projects = await this.projectService.GetAllProjectsAsync(userId, page, pageSize);
+            var projectsList = projects.ToList();
+
+            foreach (var project in projectsList)
+            {
+                project.UserId = userId;
+                project.Tasks = (await this.taskService.GetTasksByProjectIdAsync(project.Id)).ToList();
+            }
+
+            var viewModel = new PagedProjectViewModel
             {
                 Projects = projectsList,
                 CurrentPage = page,
                 TotalPages = totalPages
             };
-            return View("Index", viewModel);
+
+            return Ok(viewModel);
         }
-        catch (ArgumentNullException)
+        catch (Exception ex)
         {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error retrieving projects");
+            return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Upcoming()
+    /// <summary>
+    /// Gets upcoming projects for the next 7 days.
+    /// </summary>
+    /// <returns>A dictionary of upcoming projects grouped by day.</returns>
+    [HttpGet("upcoming")]
+    public async Task<ActionResult<Dictionary<string, List<ProjectViewModel>>>> Upcoming()
     {
-        string? userId = this.GetUserId();
-        
-        if (String.IsNullOrEmpty(userId))
-            throw new ArgumentNullException();
-        var projects = await this.projectService.GetAllProjectsAsync(userId);
-        
-        
-        var startDate = DateTime.UtcNow.Date;
-        var days = Enumerable.Range(1, 7)
-            .Select(i => startDate.AddDays(i))
-            .ToList();
-
-        Dictionary<string, List<ProjectViewModel>> grouped = new Dictionary<string, List<ProjectViewModel>>();
-
-        for (int i = 1; i <= days.Count; i++)
+        try
         {
-            string day = days[i - 1].ToString("dddd");
-            bool isToday = DateTime.Compare(days[i - 1], DateTime.Today.Date) == 0;
-            string key = day;
-
-            if (isToday)
+            string? userId = this.GetUserId();
+            if (string.IsNullOrEmpty(userId))
             {
-                key = $"{day} (Today)";
+                return Unauthorized();
             }
 
-            List<ProjectViewModel> projectsOnDay = projects.Where(p => 
-                    DateTime.TryParse(p.DueDate, out var due) &&
-                    DateTime.Compare(due.Date, days[i - 1].Date) == 0)
+            var projects = await this.projectService.GetAllProjectsAsync(userId);
+            var startDate = DateTime.UtcNow.Date;
+            var days = Enumerable.Range(0, 7)
+                .Select(i => startDate.AddDays(i))
                 .ToList();
-            
-            grouped[key] = projectsOnDay;
+
+            var grouped = new Dictionary<string, List<ProjectViewModel>>();
+
+            foreach (var date in days)
+            {
+                string dayName = date.ToString("dddd");
+                string key = date == DateTime.Today.Date ? $"{dayName} (Today)" : dayName;
+
+                var projectsOnDay = projects.Where(p =>
+                    DateTime.TryParse(p.DueDate, out var due) &&
+                    due.Date == date.Date)
+                    .ToList();
+
+                grouped[key] = projectsOnDay;
+            }
+
+            return Ok(grouped);
         }
-        
-        return View(grouped);
-    }
-
-/// <summary>
-/// Displays the create project form.
-/// </summary>
-[HttpGet] 
-public async Task<IActionResult> Create()
-    {
-        //TODO Update to use userManager in the future for security
-        string? userId = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var inputModel = new ProjectInputModel()
+        catch (Exception ex)
         {
-            UserId = userId!
-        };
-        return View(inputModel);
+            logger.LogError(ex, "Error retrieving upcoming projects");
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-
-/// <summary>
-/// Handles project creation form submission.
-/// </summary>
-/// <param name="inputModel">The project input model.</param>
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Create(ProjectInputModel inputModel)
+    /// <summary>
+    /// Creates a new project.
+    /// </summary>
+    /// <param name="inputModel">The project data.</param>
+    /// <returns>The created project (ID only for now based on service).</returns>
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] ProjectInputModel inputModel)
     {
-        
         if (!ModelState.IsValid)
         {
-            return View(inputModel);
+            return BadRequest(ModelState);
         }
 
         try
         {
+            inputModel.UserId = this.GetUserId()!;
             await this.projectService.CreateProjectAsync(inputModel);
-            return RedirectToAction("Index", "Home");
+            return Ok(new { message = "Project created successfully" });
         }
-        catch (ArgumentNullException)
+        catch (Exception ex)
         {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error creating project");
+            return StatusCode(500, "Internal server error");
         }
     }
-/// <summary>
-/// Displays project details by project ID.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-[HttpGet]
-public async Task<IActionResult> Details(string projectId)
+
+    /// <summary>
+    /// Gets project details by ID.
+    /// </summary>
+    /// <param name="projectId">The project ID.</param>
+    /// <returns>The project details.</returns>
+    [HttpGet("{projectId}")]
+    public async Task<ActionResult<ProjectViewModel>> Details(string projectId)
     {
         try
         {
             var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
             var tasks = await this.taskService.GetTasksByProjectIdAsync(projectId);
-            ViewData["UserId"] = this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             viewModel.Tasks = tasks.ToList();
 
-            return View(viewModel);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-    }
-
-/// <summary>
-/// Displays the edit project form.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-[HttpGet]
-public async Task<IActionResult> Edit(string projectId)
-    {
-        try
-        {
-            var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
-            var inputModel = new ProjectInputModel()
-            {
-                Id = viewModel.Id,
-                UserId = viewModel.UserId,
-                DueDate = DateOnly.TryParseExact(viewModel.DueDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dueDate) ? dueDate : null,
-                Name = viewModel.Name,
-                IsPublic = viewModel.IsPublic
-            };
-
-            return View(inputModel);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-    }
-
-/// <summary>
-/// Handles project edit form submission.
-/// </summary>
-/// <param name="inputModel">The project input model.</param>
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(ProjectInputModel inputModel)
-    {
-        if (!ModelState.IsValid)
-        {
-            return View(inputModel);
-        }
-
-        try
-        {
-            await this.projectService.UpdateProject(inputModel);
-            return RedirectToAction("Details", "Project", new { projectId = inputModel.Id });
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
+            return Ok(viewModel);
         }
         catch (InvalidOperationException)
         {
@@ -283,120 +170,126 @@ public async Task<IActionResult> Edit(ProjectInputModel inputModel)
         }
         catch (Exception ex)
         {
-            // Consider logging ex here
-            return StatusCode(500);
-        }
-    }
-
-
-/// <summary>
-/// Displays the delete project confirmation partial view.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-[HttpGet]
-public async Task<IActionResult> Delete(string projectId)
-    {
-        try
-        {
-            var viewModel = await this.projectService.GetProjectByIdAsync(projectId);
-            return PartialView("Delete", viewModel);
-        }
-        catch (Exception e)
-        {
-            return NotFound();
-        }
-    }
-
-/// <summary>
-/// Handles project deletion.
-/// </summary>
-/// <param name="viewModel">The project view model.</param>
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteProject(ProjectViewModel viewModel)
-    {
-        try
-        {
-            await this.projectService.DeleteProject(viewModel.Id);
-            return RedirectToAction("Index", "Home");
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest("Required parameter is null");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-    }
-
-/// <summary>
-/// Displays the project calendar.
-/// </summary>
-/// <returns>The calendar view.</returns>
-[HttpGet]
-    public async Task<IActionResult> Calendar()
-    {
-        try
-        {
-            string? userId = this.GetUserId();
-            if (String.IsNullOrEmpty(userId))
-                throw new ArgumentNullException();
-            var projects = await this.projectService
-                .GetAllProjectsAsync(userId);
-
-            return View(projects);
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest($"Required parameter is null: GET/{nameof(ProjectController)}/{nameof(Calendar)}");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateDueDate(ProjectInputModel inputModel)
-    {
-        try
-        {
-            if (!ModelState.IsValid)
-                throw new ArgumentNullException();
-
-            inputModel.DueDate = inputModel.DueDate!.Value.AddDays(1);
-            
-            await this.projectService.UpdateProject(inputModel);
-
-            return Ok(
-                new
-                {
-                    success = true,
-                });
-        }
-        catch (ArgumentNullException)
-        {
-            return BadRequest($"Required parameter is null : POST/{nameof(ProjectController)}/{nameof(UpdateDueDate)}");
-        }
-        catch (InvalidOperationException)
-        {
-            return NotFound();
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error retrieving project details for {ProjectId}", projectId);
+            return StatusCode(500, "Internal server error");
         }
     }
 
     /// <summary>
-    /// Gets the current user's ID from claims.
+    /// Updates an existing project.
     /// </summary>
-    /// <returns>The user ID as a string, or null if not found.</returns>
+    /// <param name="projectId">The project ID.</param>
+    /// <param name="inputModel">The updated project data.</param>
+    /// <returns>No content on success.</returns>
+    [HttpPut("{projectId}")]
+    public async Task<IActionResult> Edit(string projectId, [FromBody] ProjectInputModel inputModel)
+    {
+        if (!ModelState.IsValid || projectId != inputModel.Id)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            await this.projectService.UpdateProject(inputModel);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating project {ProjectId}", projectId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Deletes a project.
+    /// </summary>
+    /// <param name="projectId">The project ID.</param>
+    /// <returns>No content on success.</returns>
+    [HttpDelete("{projectId}")]
+    public async Task<IActionResult> Delete(string projectId)
+    {
+        try
+        {
+            await this.projectService.DeleteProject(projectId);
+            return NoContent();
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting project {ProjectId}", projectId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Gets projects for the calendar view.
+    /// </summary>
+    /// <returns>A list of projects.</returns>
+    [HttpGet("calendar")]
+    public async Task<ActionResult<IEnumerable<ProjectViewModel>>> Calendar()
+    {
+        try
+        {
+            string? userId = this.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var projects = await this.projectService.GetAllProjectsAsync(userId);
+            return Ok(projects);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error retrieving calendar projects");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Updates a project's due date.
+    /// </summary>
+    /// <param name="projectId">The project ID.</param>
+    /// <param name="inputModel">The project data with new due date.</param>
+    /// <returns>Success status.</returns>
+    [HttpPost("{projectId}/due-date")]
+    public async Task<IActionResult> UpdateDueDate(string projectId, [FromBody] ProjectInputModel inputModel)
+    {
+        try
+        {
+            if (!ModelState.IsValid || projectId != inputModel.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Note: Keeping the original increment logic if it was intended for timezone/adjustment
+            if (inputModel.DueDate.HasValue)
+            {
+                inputModel.DueDate = inputModel.DueDate.Value.AddDays(1);
+            }
+            
+            await this.projectService.UpdateProject(inputModel);
+            return Ok(new { success = true });
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating due date for project {ProjectId}", projectId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
     private string? GetUserId()
         => this.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
