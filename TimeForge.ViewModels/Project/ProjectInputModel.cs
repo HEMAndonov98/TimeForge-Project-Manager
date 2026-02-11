@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using TimeForge.Common.Constants;
 using TimeForge.Common.GlobalErrorMessages;
-using TimeForge.ViewModels.Tag;
+
 
 namespace TimeForge.ViewModels.Project;
 
@@ -20,5 +20,4 @@ public class ProjectInputModel
 
     public string? UserId { get; set; }
 
-    public List<TagInputModel> Tags { get; set; } = new();
 }

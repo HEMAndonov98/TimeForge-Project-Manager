@@ -1,4 +1,4 @@
-using TimeForge.ViewModels.Tag;
+
 using TimeForge.ViewModels.Task;
 
 namespace TimeForge.ViewModels.Project;
@@ -20,5 +20,4 @@ public class ProjectViewModel
     
     public List<TaskViewModel> Tasks { get; set; }
 
-    public List<TagViewModel> Tags { get; set; } = new();
 }

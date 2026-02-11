@@ -7,7 +7,7 @@ using TimeForge.Models.Common;
 namespace TimeForge.Models;
 
 /// <summary>
-/// Represents a project entity with tasks, tags, and ownership information.
+/// Represents a project entity with tasks and ownership information.
 /// </summary>
 public class Project : BaseDeletableModel<string>
 {
@@ -64,9 +64,4 @@ public class Project : BaseDeletableModel<string>
     [InverseProperty(nameof(ProjectTask.Project))]
     public virtual List<ProjectTask> Tasks { get; set; } = new();
 
-    /// <summary>
-    /// Gets or sets the list of tags associated with the project.
-    /// </summary>
-    [InverseProperty(nameof(ProjectTag.Project))]
-    public virtual List<ProjectTag> ProjectTags { get; set; } = new();
 }

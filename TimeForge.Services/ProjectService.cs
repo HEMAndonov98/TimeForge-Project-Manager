@@ -6,7 +6,7 @@ using TimeForge.Infrastructure.Repositories.Interfaces;
 using TimeForge.Models;
 using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.Project;
-using TimeForge.ViewModels.Tag;
+
 using TimeForge.ViewModels.Task;
 
 namespace TimeForge.Services;
@@ -92,8 +92,7 @@ public async Task<ProjectViewModel> GetProjectByIdAsync(string projectId)
             }
 
             var project = await this.timeForgeRepository.All<Project>(e => e.Id == projectId)
-                .Include(p => p.ProjectTags)
-                .ThenInclude(pt => pt.Tag)
+
                 .Include(p => p.CreatedBy)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -104,11 +103,7 @@ public async Task<ProjectViewModel> GetProjectByIdAsync(string projectId)
                 throw new InvalidOperationException($"Project with id {projectId} not found.");
             }
 
-            var tags = project.ProjectTags.Select(pt => new TagViewModel()
-            {
-                Id = pt.TagId,
-                Name = pt.Tag.Name
-            }).ToList();
+
 
             var viewModel = new ProjectViewModel()
             {
@@ -117,7 +112,7 @@ public async Task<ProjectViewModel> GetProjectByIdAsync(string projectId)
                 DueDate = project.DueDate?.ToString("dd/MM/yyyy"),
                 CreatedBy = project.CreatedBy.UserName ?? string.Empty,
                 UserId = project.UserId,
-                Tags = tags,
+
                 IsPublic = project.IsPublic
             };
 
@@ -157,8 +152,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
 
             // Fetch only what is needed from the database
             var projects = await this.timeForgeRepository.All<Project>(e => e.UserId == userId)
-                .Include(p => p.ProjectTags)
-                .ThenInclude(pt => pt.Tag)
+
                 .Include(p => p.CreatedBy)
                 .Include(p => p.Tasks)
                 .AsNoTracking()
@@ -168,7 +162,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                     p.Name,
                     p.DueDate,
                     CreatedBy = p.CreatedBy.UserName,
-                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
+
                     Tasks = p.Tasks.Select(t => new { t.Name, t.IsCompleted }).ToList(),
                     p.IsPublic
                 })
@@ -181,11 +175,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                 Name = p.Name,
                 DueDate = p.DueDate?.ToString("dd/MM/yyyy"), // Format handled in memory
                 CreatedBy = p.CreatedBy ?? string.Empty,
-                Tags = p.Tags.Select(tag => new TagViewModel
-                {
-                    Id = tag.Id,
-                    Name = tag.Name
-                }).ToList(),
+
                 Tasks = p.Tasks.Select(task => new TaskViewModel()
                 {
                     Name = task.Name,
@@ -231,8 +221,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
             var projects = await this.timeForgeRepository.All<Project>(
                     e => e.UserId == userId || 
                          e.AssignedUserId == userId)
-                .Include(p => p.ProjectTags)
-                .ThenInclude(pt => pt.Tag)
+
                 .Include(p => p.CreatedBy)
                 .OrderByDescending(p => p.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
@@ -245,7 +234,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                     p.DueDate,
                     p.AssignedUserId,
                     CreatedBy = p.CreatedBy.UserName,
-                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
+
                     p.IsPublic,
                     userId = p.UserId
                 })
@@ -258,11 +247,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
                 Name = p.Name,
                 DueDate = p.DueDate?.ToString("dd/MM/yyyy"), // Format handled in memory
                 CreatedBy = p.CreatedBy ?? string.Empty,
-                Tags = p.Tags.Select(tag => new TagViewModel
-                {
-                    Id = tag.Id,
-                    Name = tag.Name
-                }).ToList(),
+
                 IsPublic = p.IsPublic,
                 UserId = p.userId,
                 AssignedToUserId = p.AssignedUserId
@@ -278,67 +263,7 @@ public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string user
         }
     }
 
-    public async Task<IEnumerable<ProjectViewModel>> GetAllProjectsAsync(string userId, int pageNumber, int pageSize, List<string> tags)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(userId))
-            {
-                this.logger.LogWarning("GetAllProjectsAsync was called with a null or empty userId.");
-                throw new ArgumentNullException(nameof(userId), "UserId cannot be null or empty");
-            }
 
-            // Fetch only what is needed from the database
-            var projects = await this.timeForgeRepository.All<Project>(
-                    e => e.UserId == userId || 
-                         e.AssignedUserId == userId)
-                .Include(p => p.ProjectTags)
-                .ThenInclude(pt => pt.Tag)
-                .Include(p => p.CreatedBy)
-                .OrderByDescending(p => p.CreatedAt)
-                .Where(p => p.ProjectTags.Any(pt => tags.Contains(pt.TagId)))
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .AsNoTracking()
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Name,
-                    p.DueDate,
-                    p.AssignedUserId,
-                    CreatedBy = p.CreatedBy.UserName,
-                    Tags = p.ProjectTags.Select(pt => new { pt.Tag.Id, pt.Tag.Name }).ToList(),
-                    p.IsPublic,
-                    userId = p.UserId
-                })
-                .ToListAsync();
-
-            // Perform projection to ViewModel in memory
-            var projectViewModels = projects.Select(p => new ProjectViewModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                DueDate = p.DueDate?.ToString("dd/MM/yyyy"), // Format handled in memory
-                CreatedBy = p.CreatedBy ?? string.Empty,
-                Tags = p.Tags.Select(tag => new TagViewModel
-                {
-                    Id = tag.Id,
-                    Name = tag.Name
-                }).ToList(),
-                IsPublic = p.IsPublic,
-                UserId = p.userId,
-                AssignedToUserId = p.AssignedUserId
-            }).ToList();
-
-            this.logger.LogInformation("GetAllProjectsAsync successfully retrieved {ProjectCount} projects for userId {UserId}.", projectViewModels.Count, userId);
-            return projectViewModels;
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "An error occurred in GetAllProjectsAsync for userId {UserId}.", userId);
-            throw new InvalidOperationException("An error occurred while retrieving projects", ex);
-        }
-    }
 
     /// <summary>
 /// Deletes a project by its unique identifier.
@@ -395,16 +320,7 @@ public async Task<int> GetProjectsCountAsync(string userId)
             .CountAsync();
     }
 
-    public async Task<int> GetProjectsCountAsync(string userId, List<string> tags)
-    {
-        return await timeForgeRepository.All<Project>()
-            .Include(p => p.ProjectTags)
-            .ThenInclude(pt => pt.Tag)
-            .Where(p => p.ProjectTags.Any(pt => tags.Contains(pt.TagId))
-            && p.UserId == userId)
-            .AsNoTracking()
-            .CountAsync();
-    }
+
 
     /// <summary>
 /// Updates an existing project with new data.
@@ -529,106 +445,7 @@ public async Task RemoveTaskFromProject(string projectId, string taskId)
         }
     }
 
-    /// <summary>
-/// Adds a tag to a project.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-/// <param name="tagId">The tag ID.</param>
-public async Task AddTagToProject(string projectId, string tagId)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(tagId))
-            {
-                this.logger.LogWarning(
-                    "AddTagToProject was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.",
-                    projectId, tagId);
-                throw new ArgumentNullException(projectId, tagId);
-            }
 
-            var project = await this.timeForgeRepository.GetByIdAsync<Project>(projectId);
-            var tag = await this.timeForgeRepository.GetByIdAsync<Tag>(tagId);
-
-            if (project == null || tag == null)
-            {
-                this.logger.LogWarning(
-                    "Either project or tag was not found in AddTagToProject. ProjectId: {ProjectId}, TagId: {TagId}.",
-                    projectId, tagId);
-                throw new ArgumentException("Both project and tag must exist.");
-            }
-
-            var newProjectTag = new ProjectTag()
-            {
-                ProjectId = projectId,
-                TagId = tagId
-            };
-
-            await this.timeForgeRepository.AddAsync(newProjectTag);
-            await this.timeForgeRepository.SaveChangesAsync();
-
-            this.logger.LogInformation("Successfully added tag with Id {TagId} to project with Id {ProjectId}.", tagId,
-                projectId);
-        }
-        catch (ArgumentNullException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "An error occurred in AddTagToProject for projectId: {ProjectId}, tagId: {TagId}.", projectId, tagId);
-            throw;
-        }
-    }
-
-    /// <summary>
-/// Removes a tag from a project asynchronously.
-/// </summary>
-/// <param name="projectId">The project ID.</param>
-/// <param name="tagId">The tag ID.</param>
-public async Task RemoveTagFromProjectAsync(string projectId, string tagId)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(tagId))
-            {
-                this.logger.LogWarning(
-                    "RemoveTagFromProjectAsync was called with invalid parameters. ProjectId: {ProjectId}, TagId: {TagId}.",
-                    projectId, tagId);
-                throw new ArgumentNullException(projectId, tagId);
-            }
-
-            var projectTag = await this.timeForgeRepository
-                .All<ProjectTag>(pt => pt.ProjectId == projectId && pt.TagId == tagId)
-                .FirstOrDefaultAsync();
-
-            if (projectTag == null)
-            {
-                this.logger.LogWarning(
-                    "A ProjectTag with a projectId of {projectId} and a tagId of {tagId} does not exist", projectId,
-                    tagId);
-                throw new ArgumentException("Both project and tag must exist.");
-            }
-
-            this.timeForgeRepository.Delete(projectTag);
-            await this.timeForgeRepository.SaveChangesAsync();
-
-            this.logger.LogInformation("Successfully removed tag with Id {TagId} from project with Id {ProjectId}.",
-                tagId, projectId);
-        }
-        catch (ArgumentNullException)
-        {
-            throw;
-        }
-        catch (ArgumentException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "An error occurred in RemoveTagFromProjectAsync for projectId: {ProjectId}, tagId: {TagId}.", projectId, tagId);
-            throw;
-        }
-    }
 
     public async Task AssignProjectToUser(string projectId, string userId)
     {

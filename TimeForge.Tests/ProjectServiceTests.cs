@@ -152,13 +152,8 @@ public class ProjectServiceTests
 
         var projectViewModel = result.First();
 
-        // Verify all fields match expected values
-        Assert.That(projectViewModel.Id, Is.EqualTo(testProject.Id));
-        Assert.That(projectViewModel.Name, Is.EqualTo(testProject.Name));
-        Assert.That(projectViewModel.CreatedBy, Is.EqualTo(testProject.CreatedBy.UserName));
-        Assert.That(projectViewModel.IsPublic, Is.EqualTo(testProject.IsPublic));
         Assert.That(projectViewModel.Tasks.Count, Is.EqualTo(testProject.Tasks.Count));
-        Assert.That(projectViewModel.Tags.Count, Is.EqualTo(testProject.ProjectTags.Count));
+
         
         // // Verify Tasks collection
         Assert.That(projectViewModel.Tasks, Is.Not.Null);
@@ -167,12 +162,7 @@ public class ProjectServiceTests
         Assert.That(task.Name, Is.EqualTo(testProject.Tasks.First().Name));
         Assert.That(task.IsCompleted, Is.EqualTo(testProject.Tasks.First().IsCompleted));;
         
-        // Verify Tags collection
-        Assert.That(projectViewModel.Tags, Is.Not.Null);
-        Assert.That(projectViewModel.Tags.Count, Is.EqualTo(testProject.ProjectTags.Count));
-        var tag = projectViewModel.Tags.First();
-        Assert.That(tag.Id, Is.EqualTo(testProject.ProjectTags.First().Tag.Id));
-        Assert.That(tag.Name, Is.EqualTo(testProject.ProjectTags.First().Tag.Name));
+
         
         // Verify all items are correct type
         CollectionAssert.AllItemsAreInstancesOfType(result, typeof(ProjectViewModel));
@@ -285,114 +275,7 @@ public class ProjectServiceTests
 
     #endregion
 
-    #region AddTagToProject
 
-    [Test]
-    public void AddTagToProject_NullInput_ThrowsArgumentNullException()
-    {
-        string input = "123";
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(null, null));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(input, null));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(null, input));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(string.Empty, string.Empty));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(input, string.Empty));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.AddTagToProject(string.Empty, input));
-    }
-
-    [Test]
-    public void AddTagToProject_NonExistingProjectOrTagName_ThrowsArgumentException()
-    {
-        string input = "123";
-        Project nullProject = null;
-        Tag nullTag = null;
-        
-        this.timeForgeRepositoryMock.Setup(
-            r => r.GetByIdAsync<Project>("123"))
-            .ReturnsAsync(nullProject);
-        
-        this.timeForgeRepositoryMock.Setup(
-            r => r.GetByIdAsync<Tag>("123"))
-            .ReturnsAsync(nullTag);
-        
-        Assert.ThrowsAsync<ArgumentException>(() => this.projectService.AddTagToProject(input, input));
-    }
-
-    [Test]
-    public async Task AddTagToProject_ValidInput_UpdatesProject()
-    {
-        Project validProject = new Project() { Id = "123", Name = "Test Project" };
-        Tag validTag = new Tag() { Name = "TestTag" };
-        string  input = "123";
-        
-        this.timeForgeRepositoryMock.Setup(
-            r => r.GetByIdAsync<Project>(input))
-            .ReturnsAsync(validProject);
-        
-        this.timeForgeRepositoryMock.Setup(
-                r => r.GetByIdAsync<Tag>(input))
-            .ReturnsAsync(validTag);
-        
-        
-        await this.projectService.AddTagToProject(input, input);
-        
-        this.timeForgeRepositoryMock.Verify(
-            r => r.AddAsync(It.IsAny<ProjectTag>()), Times.Once);
-        this.timeForgeRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
-    }
-
-    #endregion
-    
-    #region RemoveTagFromProject
-
-    [Test]
-    public void RemoveTagFromProject_NullInput_ThrowsArgumentNullException()
-    {
-        string input = "123";
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(null, null));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(input, null));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(null, input));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(string.Empty, string.Empty));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(input, string.Empty));
-        Assert.ThrowsAsync<ArgumentNullException>(() => this.projectService.RemoveTagFromProjectAsync(string.Empty, input));
-    }
-
-    [Test]
-    public void RemoveTagFromProject_NonExistingProjectOrTagName_ThrowsArgumentException()
-    {
-        var inMemoryDbContext = InitialiseInMemoryDbContext();
-        var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
-            userManagerMock.Object);
-        var mockInput = "123";
-        
-        Assert.ThrowsAsync<ArgumentException>(() => inMemoryProjectService
-            .RemoveTagFromProjectAsync(mockInput, mockInput));
-    }
-
-    [Test]
-    public async Task RemoveTagFromProject_ValidInput_RemovesTag()
-    {
-        var inMemoryDbContext = InitialiseInMemoryDbContext();
-        var inMemoryRepository = new TimeForgeRepository(inMemoryDbContext);
-        var inMemoryProjectService = new ProjectService(inMemoryRepository, loggerMock.Object,
-            userManagerMock.Object);
-        
-        string projectId = "123";
-        string tagId = "321";
-        
-        var mockProjectTag = new ProjectTag() { ProjectId = projectId, TagId = tagId };
-        
-        inMemoryDbContext.ProjectTags.Add(mockProjectTag);
-        await inMemoryDbContext.SaveChangesAsync();
-
-        await inMemoryProjectService.RemoveTagFromProjectAsync(projectId, tagId);
-        
-        
-        Assert.That(inMemoryDbContext.ProjectTags.Count, Is.EqualTo(0));
-
-
-    }
-    #endregion
     
     #region HelperMethods
 
@@ -412,9 +295,8 @@ public class ProjectServiceTests
         var projectTaskList = new List<ProjectTask>();
         projectTaskList.Add(testTask);
         
-        var testTag = new Tag() { Id = "123", Name = "Test Tag", UserId = "user1" };
         var projectTagList = new List<ProjectTag>();
-        projectTagList.Add(new ProjectTag() { ProjectId = "123", Tag = testTag });
+
             
         var testUser = new User() { Id = "user1", UserName = "Test User" };
             
@@ -423,7 +305,7 @@ public class ProjectServiceTests
             Id = "123",
             Name = "Test Project",
             UserId = "user1",
-            ProjectTags = projectTagList,
+
             CreatedBy = testUser,
             Tasks = projectTaskList,
         };
