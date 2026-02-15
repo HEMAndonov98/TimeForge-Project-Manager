@@ -4,9 +4,9 @@ using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Configurations;
 
-public class UserConnectionConfiguration : IEntityTypeConfiguration<UserConnection>
+public class UserConnectionConfiguration : IEntityTypeConfiguration<Friendship>
 {
-    public void Configure(EntityTypeBuilder<UserConnection> builder)
+    public void Configure(EntityTypeBuilder<Friendship> builder)
     {
         builder.HasKey(uc => new { uc.FromUserId, uc.ToUserId });
 

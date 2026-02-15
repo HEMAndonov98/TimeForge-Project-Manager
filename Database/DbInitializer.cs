@@ -1,9 +1,10 @@
+using Database.Seeders;
 using Microsoft.EntityFrameworkCore;
-
+using TimeForge.Infrastructure;
 using TimeForge.Infrastructure.Seeders;
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure;
+namespace Database;
 
 public static class DbInitializer
 {

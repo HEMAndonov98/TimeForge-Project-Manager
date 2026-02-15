@@ -1,3 +1,4 @@
+using Database;
 using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Seeders;
@@ -13,12 +14,6 @@ public static class ProjectSeeder
         {
             var project = new Project
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = $"Project Nebula {i}",
-                IsPublic = i % 3 == 0, // Some public, some private
-                DueDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30 * (i % 5)).AddDays(random.Next(0, 15))), 
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow.AddDays(-i * 5).AddHours(random.Next(0, 24))
             };
             projects.Add(project);
         }

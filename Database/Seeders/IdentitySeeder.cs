@@ -35,7 +35,6 @@ public static class IdentitySeeder
                 UserName = managerEmail,
                 Email = managerEmail,
                 EmailConfirmed = true,
-                IsManager = true
             };
 
             var result = await userManager.CreateAsync(manager, managerPassword);
@@ -57,8 +56,6 @@ public static class IdentitySeeder
                 UserName = testUserEmail,
                 Email = testUserEmail,
                 EmailConfirmed = true,
-                IsManager = false,
-                Manager = manager
             };
             
             var result = await userManager.CreateAsync(testUser, testPassword);

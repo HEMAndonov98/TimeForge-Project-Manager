@@ -1,6 +1,7 @@
+using TimeForge.Infrastructure;
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure.Seeders;
+namespace Database.Seeders;
 
 public static class ProjectTaskSeeder
 {
@@ -15,13 +16,6 @@ public static class ProjectTaskSeeder
             {
                 var task = new ProjectTask
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    Name = $"Task {j} for {project.Name.Replace("Project Nebula ", "P")}",
-                    IsBillable = random.Next(0, 2) == 0, // 50/50 billable
-                    IsCompleted = random.Next(0, 3) == 0, // ~33% completed
-                    CompletionDate = random.Next(0, 3) == 0 ? DateTime.UtcNow.AddDays(-random.Next(5, 30)) : (DateTime?)null,
-                    ProjectId = project.Id,
-                    CreatedAt = project.CreatedAt.AddHours(random.Next(1, 48))
                 };
                 projectTasks.Add(task);
             }

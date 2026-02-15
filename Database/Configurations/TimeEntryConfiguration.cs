@@ -5,9 +5,9 @@ using TimeForge.Models;
 
 namespace TimeForge.Infrastructure.Configurations;
 
-public class TimeEntryConfiguration : IEntityTypeConfiguration<TimeEntry>
+public class TimeEntryConfiguration : IEntityTypeConfiguration<TimerSession>
 {
-    public void Configure(EntityTypeBuilder<TimeEntry> builder)
+    public void Configure(EntityTypeBuilder<TimerSession> builder)
     {
 
         // Relationships
