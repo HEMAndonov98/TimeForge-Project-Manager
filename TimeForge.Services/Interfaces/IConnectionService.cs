@@ -8,9 +8,9 @@ public interface IConnectionService
 {
     Task SendConnectionAsync(string fromUserId, string toUserEmail);
     
-    Task UpdateConnectionAsync(UserConnection userConnection, ConnectionStatus status);
+    Task UpdateConnectionAsync(Friendship friendship, FriendshipStatus status);
     
     Task<UserConnectionViewModel> GetConnectionsByUserIdAsync(string userId);
     
-    Task<UserConnection> GetConnectionByIdAsync(string fromUserId, string toUserId);
+    Task<Friendship> GetConnectionByIdAsync(string fromUserId, string toUserId);
 }

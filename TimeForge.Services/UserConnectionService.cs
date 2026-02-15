@@ -43,8 +43,8 @@ public class UserConnectionService : IConnectionService
             throw new ArgumentException("to user not found, invalid email or non existent user");
         }
 
-        UserConnection userConnection = this.CreateConnection(fromUserId, toUserId);
-        await this.timeForgeRepository.AddAsync(userConnection);
+        Friendship friendship = this.CreateConnection(fromUserId, toUserId);
+        await this.timeForgeRepository.AddAsync(friendship);
         await this.timeForgeRepository.SaveChangesAsync();
         this.logger.LogInformation("New user connection added to database");
     }
@@ -54,11 +54,11 @@ public class UserConnectionService : IConnectionService
     /// </summary>
     /// <param name="fromUserId">The ID of the user initiating the connection.</param>
     /// <param name="toUserId">The ID of the user receiving the connection request.</param>
-    /// <returns>A new instance of <see cref="UserConnection"/>.</returns>
+    /// <returns>A new instance of <see cref="Friendship"/>.</returns>
     /// <exception cref="InvalidOperationException">
     /// Thrown when a connection already exists or when input parameters are invalid.
     /// </exception>
-    public UserConnection CreateConnection(string fromUserId, string toUserId)
+    public Friendship CreateConnection(string fromUserId, string toUserId)
     {
         this.logger.LogInformation("Creating a new connection");
 
@@ -71,29 +71,29 @@ public class UserConnectionService : IConnectionService
         }
 
         this.logger.LogInformation("this connection does not exist and parameters are valid");
-        UserConnection newUserConnection = new UserConnection()
+        Friendship newFriendship = new Friendship()
         {
             FromUserId = fromUserId,
             ToUserId = toUserId,
-            Status = ConnectionStatus.Pending
+            Status = FriendshipStatus.Pending
         };
         this.logger.LogInformation("New connection created");
-        return newUserConnection;
+        return newFriendship;
     }
     
     /// <summary>
     /// Updates the status of a user connection
     /// </summary>
-    /// <param name="userConnection">The user connection that will be updated</param>
+    /// <param name="friendship">The user connection that will be updated</param>
     /// <param name="status">The new status of the user connection</param>
-    /// <exception cref="ArgumentException">Throws an ArgumentException if UserConnection does not exist in the database</exception>
-    public async Task UpdateConnectionAsync(UserConnection userConnection, ConnectionStatus status)
+    /// <exception cref="ArgumentException">Throws an ArgumentException if Friendship does not exist in the database</exception>
+    public async Task UpdateConnectionAsync(Friendship friendship, FriendshipStatus status)
     {
-        this.logger.LogInformation($"Updating user connection with composite key: {{ {userConnection.ToUserId} , {userConnection.FromUserId} }}");
-        UserConnection? foundUserConnection = await this.timeForgeRepository.All<UserConnection>()
+        this.logger.LogInformation($"Updating user connection with composite key: {{ {friendship.ToUserId} , {friendship.FromUserId} }}");
+        Friendship? foundUserConnection = await this.timeForgeRepository.All<Friendship>()
             .Where(uc =>
-                uc.ToUserId == userConnection.ToUserId &&
-                uc.FromUserId == userConnection.FromUserId)
+                uc.ToUserId == friendship.ToUserId &&
+                uc.FromUserId == friendship.FromUserId)
             .FirstOrDefaultAsync();
 
         if (foundUserConnection == null)
@@ -103,7 +103,7 @@ public class UserConnectionService : IConnectionService
         }
 
         foundUserConnection.Status = status;
-        this.logger.LogInformation("User connection status property updated to:  {ConnectionStatus}", status);
+        this.logger.LogInformation("User connection status property updated to:  {FriendshipStatus}", status);
         
         this.timeForgeRepository.Update(foundUserConnection);
         await this.timeForgeRepository.SaveChangesAsync();
@@ -133,8 +133,8 @@ public class UserConnectionService : IConnectionService
         return userConnectionViewModel;
     }
 
-    public async Task<UserConnection> GetConnectionByIdAsync(string fromUserId, string toUserId)
-    => await this.timeForgeRepository.All<UserConnection>()
+    public async Task<Friendship> GetConnectionByIdAsync(string fromUserId, string toUserId)
+    => await this.timeForgeRepository.All<Friendship>()
         .Where(uc => uc.FromUserId == fromUserId && uc.ToUserId == toUserId)
         .FirstAsync();
     
@@ -180,8 +180,8 @@ public class UserConnectionService : IConnectionService
     /// </returns>
     private async Task<List<GetUserConnectionDto>> GetAcceptedUserConnectionsAsync(string userId)
     { 
-        var acceptedUserConnections = await this.timeForgeRepository.All<UserConnection>(uc => uc.ToUserId == userId ||
-            uc.FromUserId == userId && uc.Status == ConnectionStatus.Accepted)
+        var acceptedUserConnections = await this.timeForgeRepository.All<Friendship>(uc => uc.ToUserId == userId ||
+            uc.FromUserId == userId && uc.Status == FriendshipStatus.Accepted)
             .Include(uc => uc.FromUser)
             .Include(uc => uc.ToUser)
             .AsNoTracking()
@@ -207,8 +207,8 @@ public class UserConnectionService : IConnectionService
     /// </returns>
     private async Task<List<GetUserConnectionDto>> GetPendingReceivedUserConnectionsAsync(string userId)
     {
-        var pendingReceivedConnections = await this.timeForgeRepository.All<UserConnection>(uc => uc.ToUserId == userId 
-                && uc.Status == ConnectionStatus.Pending)
+        var pendingReceivedConnections = await this.timeForgeRepository.All<Friendship>(uc => uc.ToUserId == userId 
+                && uc.Status == FriendshipStatus.Pending)
             .Include(uc => uc.FromUser)
             .Include(uc => uc.ToUser)
             .AsNoTracking()
@@ -233,8 +233,8 @@ public class UserConnectionService : IConnectionService
     /// </returns>
     private async Task<List<GetUserConnectionDto>> GetPendingSentUserConnectionsAsync(string userId)
     { 
-        var pendingSentUserConnections = await this.timeForgeRepository.All<UserConnection>(uc => uc.FromUserId == userId &&
-                uc.Status == ConnectionStatus.Pending)
+        var pendingSentUserConnections = await this.timeForgeRepository.All<Friendship>(uc => uc.FromUserId == userId &&
+                uc.Status == FriendshipStatus.Pending)
             .Include(uc => uc.FromUser)
             .Include(uc => uc.ToUser)
             .AsNoTracking()

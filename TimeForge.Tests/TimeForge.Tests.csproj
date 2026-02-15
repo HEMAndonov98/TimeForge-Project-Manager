@@ -24,7 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TimeForge.Infrastructure\TimeForge.Infrastructure.csproj" />
       <ProjectReference Include="..\TimeForge.Services\TimeForge.Services.csproj" />
       <ProjectReference Include="..\TimeForge.Web\TimeForge.Web.csproj" />
 

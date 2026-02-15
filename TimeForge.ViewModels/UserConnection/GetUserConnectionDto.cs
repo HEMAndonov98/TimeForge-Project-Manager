@@ -12,5 +12,5 @@ public class GetUserConnectionDto
 
     public string ToUsername { get; set; }
 
-    public ConnectionStatus Status { get; set; }
+    public FriendshipStatus Status { get; set; }
 }

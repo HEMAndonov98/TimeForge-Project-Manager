@@ -69,7 +69,7 @@ public async Task StartEntryAsync(string taskId, string userId)
             
             //Sanity check: if there are any currently running Timers for this user
             var runningTimer = await this.timeForgeRepository
-                .All<TimeEntry>(te => te.UserId == userId && te.State == TimeEntryState.Running)
+                .All<TimerSession>(te => te.UserId == userId && te.State == TimeEntryState.Running)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -79,9 +79,9 @@ public async Task StartEntryAsync(string taskId, string userId)
             }
             
 
-            //Create a TimeEntry class and populate with data
+            //Create a TimerSession class and populate with data
 
-            TimeEntry newTimeEntry = new TimeEntry()
+            TimerSession newTimerSession = new TimerSession()
             {
                 Start = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
@@ -90,9 +90,9 @@ public async Task StartEntryAsync(string taskId, string userId)
                 UserId = userId
             };
 
-            //Add TimeEntry to the database
+            //Add TimerSession to the database
 
-            await this.timeForgeRepository.AddAsync(newTimeEntry);
+            await this.timeForgeRepository.AddAsync(newTimerSession);
             await this.timeForgeRepository.SaveChangesAsync();
             this.logger.LogInformation("Successfully created a new time entry for task with ID: {TaskId}", taskId);
         }
@@ -121,8 +121,8 @@ public async Task ResumeEntryAsync(string entryId, string userId)
             //Check if the Timer was paused before resuming
             if (timeEntry.State != TimeEntryState.Paused || !timeEntry.LastPausedAt.HasValue)
             {
-                this.logger.LogError("TimeEntry with ID: {EntryId} is not paused", entryId);
-                throw new InvalidOperationException("TimeEntry with ID is not paused");
+                this.logger.LogError("TimerSession with ID: {EntryId} is not paused", entryId);
+                throw new InvalidOperationException("TimerSession with ID is not paused");
             }
             
             this.logger.LogInformation("Resuming time entry with ID: {EntryId}", entryId);
@@ -130,7 +130,7 @@ public async Task ResumeEntryAsync(string entryId, string userId)
 
             //Sanity check: if there are any currently running Timers for this user
             var runningTimer = await this.timeForgeRepository
-                .All<TimeEntry>(te => te.UserId == userId && te.State == TimeEntryState.Running)
+                .All<TimerSession>(te => te.UserId == userId && te.State == TimeEntryState.Running)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
 
@@ -176,11 +176,11 @@ public async Task PauseEntryAsync(string entryId)
         {
             var timeEntry = await this.ValidateTimeEntryAsync(entryId);
             
-            //Check if TimeEntry is currently running
+            //Check if TimerSession is currently running
             if (timeEntry.State != TimeEntryState.Running)
             {
-                this.logger.LogError("TimeEntry with ID: {EntryId} is not running", entryId);
-                throw new InvalidOperationException("TimeEntry with ID is not running");
+                this.logger.LogError("TimerSession with ID: {EntryId} is not running", entryId);
+                throw new InvalidOperationException("TimerSession with ID is not running");
             }
             this.logger.LogInformation("Pausing time entry with ID: {EntryId}", entryId);
             
@@ -259,7 +259,7 @@ public async Task<TimeEntryViewModel?> GetCurrentRunningTimeEntryByUserIdAsync(s
         string createdBy = (await this.userManager.FindByIdAsync(userId))?.UserName ?? string.Empty;
 
         var timeEntry = await this.timeForgeRepository
-            .All<TimeEntry>(te => te.UserId == userId &&
+            .All<TimerSession>(te => te.UserId == userId &&
                                   te.State == TimeEntryState.Running)
             .Include(te => te.ProjectTask)
             .AsNoTracking()
@@ -302,7 +302,7 @@ public async Task<IEnumerable<TimeEntryViewModel>> GetCurrentPausedTimeEntryByUs
             
             var userName = (await this.userManager.FindByIdAsync(userId))?.UserName ?? string.Empty;
             var pausedTimeEntries = await this.timeForgeRepository
-                .All<TimeEntry>(te => te.UserId == userId &&
+                .All<TimerSession>(te => te.UserId == userId &&
                                       te.State == TimeEntryState.Paused)
                 .Include(te => te.ProjectTask)
                 .AsNoTracking()
@@ -334,7 +334,7 @@ public async Task<IEnumerable<TimeEntryViewModel>> GetCurrentPausedTimeEntryByUs
         }
     }
 
-    private async Task<TimeEntry> ValidateTimeEntryAsync(string entryId)
+    private async Task<TimerSession> ValidateTimeEntryAsync(string entryId)
     {
         //Check if ID is valid
         if (string.IsNullOrEmpty(entryId))
@@ -343,16 +343,16 @@ public async Task<IEnumerable<TimeEntryViewModel>> GetCurrentPausedTimeEntryByUs
             throw new ArgumentNullException(entryId, "Entry ID cannot be null or empty");
         }
             
-        //Check if the TimeEntry exists
+        //Check if the TimerSession exists
         var timeEntry = await this.timeForgeRepository
-            .All<TimeEntry>(te => te.Id == entryId)
+            .All<TimerSession>(te => te.Id == entryId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (timeEntry == null)
         {
-            this.logger.LogError("TimeEntry with ID: {EntryId} does not exist", entryId);
-            throw new InvalidOperationException("TimeEntry with ID does not exist");
+            this.logger.LogError("TimerSession with ID: {EntryId} does not exist", entryId);
+            throw new InvalidOperationException("TimerSession with ID does not exist");
         }
 
         return timeEntry;
