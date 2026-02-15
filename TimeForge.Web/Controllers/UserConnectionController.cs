@@ -6,83 +6,92 @@ using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.UserConnection;
 
 namespace TimeForge.Web.Controllers;
+[ApiController]
+[Route("api/[controller]")]
 [Authorize]
-public class UserConnectionController : Controller
+public class UserConnectionController : ControllerBase
 {
     private readonly IConnectionService connectionService;
-    
-    public UserConnectionController(IConnectionService connectionService)
+    private readonly ILogger<UserConnectionController> logger;
+
+    public UserConnectionController(IConnectionService connectionService, ILogger<UserConnectionController> logger)
     {
         this.connectionService = connectionService;
+        this.logger = logger;
     }
     [HttpGet]
-    public async Task<IActionResult> FriendsOverview()
+    public async Task<ActionResult<UserConnectionViewModel>> FriendsOverview()
     {
         try
         {
             var userId = this.GetUserId();
             
-            if (String.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException();
+                return Unauthorized();
             }
 
             var userConnectionsDto = await this.connectionService.GetConnectionsByUserIdAsync(userId);
             
-            return View(userConnectionsDto);
+            return Ok(userConnectionsDto);
         }
-        catch (ArgumentNullException)
+        catch (Exception ex)
         {
-            return BadRequest("Required parameter is null");
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error getting friends overview");
+            return StatusCode(500, "An error occurred while retrieving friends overview.");
         }
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddFriends(AddFriendInputModel inputModel)
     {
         try
         {
             if (!ModelState.IsValid)
             {
-                return View(inputModel);
+                return BadRequest(ModelState);
             }
 
             string? userId = this.GetUserId();
 
-            if (String.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new ArgumentNullException("User ID is null or empty");
+                return Unauthorized();
             }
 
             inputModel.SenderId = userId;
 
             await this.connectionService.SendConnectionAsync(inputModel.SenderId, inputModel.Email);
 
-            return RedirectToAction("FriendsOverview", "UserConnection");
+            return Ok(new { message = "Friend request sent successfully." });
         }
-        catch (ArgumentNullException)
+        catch (Exception ex)
         {
-            return BadRequest("Required parameter is null");
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            logger.LogError(ex, "Error adding friend");
+            return StatusCode(500, "An error occurred while sending friend request.");
         }
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost("accept")]
     public async Task<IActionResult> AcceptFriendRequest(string fromUserId, string toUserId)
     {
-        var friendRequest = await this.connectionService.GetConnectionByIdAsync(fromUserId, toUserId);
+        try
+        {
+            var friendRequest = await this.connectionService.GetConnectionByIdAsync(fromUserId, toUserId);
 
-        await this.connectionService.UpdateConnectionAsync(friendRequest, ConnectionStatus.Accepted);
-        return RedirectToAction("FriendsOverview", "UserConnection");
+            if (friendRequest == null)
+            {
+                return NotFound("Friend request not found.");
+            }
+
+            await this.connectionService.UpdateConnectionAsync(friendRequest, FriendshipStatus.Accepted);
+            return Ok(new { message = "Friend request accepted." });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error accepting friend request from {From} to {To}", fromUserId, toUserId);
+            return StatusCode(500, "An error occurred while accepting friend request.");
+        }
     }
     
     /// <summary>

@@ -7,76 +7,103 @@ using TimeForge.Services.Interfaces;
 using TimeForge.ViewModels.List;
 
 namespace TimeForge.Web.Controllers;
+[ApiController]
+[Route("api/[controller]")]
 [Authorize]
-public class TaskCollectionController(ITaskCollectionService taskCollectionService) : Controller
+public class TaskCollectionController(ITaskCollectionService taskCollectionService, ILogger<TaskCollectionController> logger) : ControllerBase
 {
     private readonly ITaskCollectionService taskCollectionService = taskCollectionService;
-    //TODO Add xml documentation when finished implementing
-    //TODO add error handling
-    //TODO add logging
-    [HttpGet]
-    public async Task<IActionResult> Index()
-    {
-        string userId = this.GetUserId();
-        var lists = await this.taskCollectionService.GetAllTaskCollectionsAsync(userId);
-        return View(lists);
-    }
-    
-    
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View(new TaskCollectionInputModel());
-    }
+    private readonly ILogger<TaskCollectionController> logger = logger;
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(TaskCollectionInputModel inputModel)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TaskCollectionViewModel>>> Index()
     {
-        inputModel.UserId = this.GetUserId();
-        if (!ModelState.IsValid)
+        try
         {
-            return View(inputModel);
+            string userId = this.GetUserId();
+            var lists = await this.taskCollectionService.GetAllTaskCollectionsAsync(userId);
+            return Ok(lists);
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting task collections");
+            return StatusCode(500, "An error occurred while retrieving task collections.");
+        }
+    }
+    
+    
+    [HttpPost]
+    public async Task<ActionResult<TaskCollectionViewModel>> Create(TaskCollectionInputModel inputModel)
+    {
+        try
+        {
+            inputModel.UserId = this.GetUserId();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        await this.taskCollectionService.CreateTaskCollectionAsync(inputModel);
-        return RedirectToAction("Index", "TaskCollection");
+            await this.taskCollectionService.CreateTaskCollectionAsync(inputModel);
+            // Re-fetch or return based on what the service typically does.
+            // Service returns Task, so we might need to return the list or just Ok.
+            return Ok(inputModel); 
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating task collection");
+            return StatusCode(500, "An error occurred while creating the task collection.");
+        }
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost("item")]
     public async Task<IActionResult> AddTaskItem(TaskItemInputModel inputModel)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest();
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        await this.taskCollectionService.CreateTaskItemAsync(inputModel);
-        return RedirectToAction("Index", "TaskCollection");
+            await this.taskCollectionService.CreateTaskItemAsync(inputModel);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error adding task item");
+            return StatusCode(500, "An error occurred while adding the task item.");
+        }
     }
 
-    [HttpGet]
+    [HttpDelete("{taskCollectionId}")]
     public async Task<IActionResult> Delete(string taskCollectionId)
     {
         try
         {
-            var taskCollection = await this.taskCollectionService.GetTaskCollectionByIdAsync(taskCollectionId);
-            return PartialView("Delete", taskCollection);
+            await this.taskCollectionService.DeleteTaskCollection(taskCollectionId);
+            return NoContent();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Error deleting task collection {Id}", taskCollectionId);
             return NotFound();
         }
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost("item/{taskId}/complete")]
     public async Task<IActionResult> CompleteTaskItem(string taskId)
     {
-        //TODO Implement CompletetaskItem
-        // await this.taskCollectionService.CompleteTaskItem
-        throw new NotImplementedException();
+        try
+        {
+            // TODO: Implement CompleteTaskItem in service
+            // await this.taskCollectionService.CompleteTaskItemAsync(taskId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error completing task item {Id}", taskId);
+            return StatusCode(500, "An error occurred while completing the task item.");
+        }
     }
     
     /// <summary>

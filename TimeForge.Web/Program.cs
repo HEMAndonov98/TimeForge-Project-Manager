@@ -78,7 +78,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "TimeForge API", Version = "v1" });
-    
+
     // JWT Security for Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -143,8 +143,8 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

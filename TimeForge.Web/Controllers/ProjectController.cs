@@ -14,7 +14,6 @@ namespace TimeForge.Web.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectService projectService;
@@ -38,7 +37,7 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            var userId = this.GetUserId();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
@@ -275,7 +274,7 @@ public class ProjectController : ControllerBase
             {
                 inputModel.DueDate = inputModel.DueDate.Value.AddDays(1);
             }
-            
+
             await this.projectService.UpdateProject(inputModel);
             return Ok(new { success = true });
         }
