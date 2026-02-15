@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
 namespace TimeForge.Models;
@@ -8,63 +7,68 @@ namespace TimeForge.Models;
 /// </summary>
 public class User : IdentityUser
 {
-    /// <summary>
-    /// Gets or sets the list of projects created by the user.
-    /// </summary>
-    [InverseProperty(nameof(Project.CreatedBy))]
-    public virtual List<Project> Projects { get; set; } = new();
+   public string FirstName { get; private set; } = String.Empty;
+
+   public string LastName { get; private set; } = String.Empty;
+
+   public string? AvatarUrl { get; private set; }
+
+   public DateTime CreatedAt { get; private set; }
+
+   public DateTime? LastModified { get; private set; }
 
 
+   //Soft delete properties
+   public bool IsDeleted { get; private set; } = false;
+   public DateTime? DeletedAt { get; private set; }
 
-    /// <summary>
-    /// Gets or sets the list of time entries created by the user.
-    /// </summary>
-    [InverseProperty(nameof(TimeEntry.CreatedBy))]
-    public virtual List<TimeEntry> TimeEntries { get; set; } = new();
+   //Properties for UI
+   public string FullName => $"{FirstName} {LastName}";
+   public string AvatarInitials => $"{FirstName[0]}{LastName[0]}".ToUpper();
 
-    /// <summary>
-    /// Gets or sets the list of projects assigned to the user.
-    /// </summary>
-    [InverseProperty(nameof(Project.AssignedTo))]
-    public virtual List<Project> AssignedProjects { get; set; } = new();
-    
-    /// <summary>
-    /// Gets or sets the list of friend requests sent to another user
-    /// </summary>
-    [InverseProperty(nameof(UserConnection.FromUser))]
-    public List<UserConnection> SentConnections { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the list of friend requests received by another user
-    /// </summary>
-    [InverseProperty(nameof(UserConnection.ToUser))]
-    public List<UserConnection> ReceivedConnections { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the list of tasks assigned to the user.
-    /// </summary>
-    [InverseProperty(nameof(TaskCollection.User))]
-    public virtual List<TaskCollection> TaskCollections { get; set; } = new();
+   //Relationships
+   public ICollection<Project> OwnedProjects { get; private set; } = new List<Project>();
+   public ICollection<CalendarEvent> CalendarEvents { get; private set; } = new List<CalendarEvent>();
+   public ICollection<TimerSession> TimerSessions { get; private set; } = new List<TimerSession>();
+   public ICollection<TeamMember> TeamMemberships { get; set; } = new List<TeamMember>();
 
-    // Manager properties
 
-    /// <summary>
-    /// Gets or sets a value indicating whether the user is a manager.
-    /// </summary>
-    public bool IsManager { get; set; }
+   //Friendships
+   public ICollection<Friendship> ReceivedFriendships { get; private set; } = new List<Friendship>();
+   public ICollection<Friendship> SentFriendships { get; private set; } = new List<Friendship>();
 
-    /// <summary>
-    /// Gets or sets the list of users managed by this user.
-    /// </summary>
-    public virtual List<User> ManagedUsers { get; set; } = new();
+   //Chat messages
+   public ICollection<ChatMessage> SentMessages { get; private set; } = new List<ChatMessage>();
+   public ICollection<ChatMessage> ReceivedMessages { get; private set; } = new List<ChatMessage>();
 
-    /// <summary>
-    /// Gets or sets the manager's user ID, if applicable.
-    /// </summary>
-    public string? ManagerId { get; set; } = null!;
+   //business logic
+   public static User CreateCustomUser(string firstName, string lastName, string email)
+   {
+      //validate email
+      if (string.IsNullOrEmpty(email))
+         throw new ArgumentException("Email is required");
 
-    /// <summary>
-    /// Gets or sets the manager user entity, if applicable.
-    /// </summary>
-    public User? Manager { get; set; } = null!;
+      return new User()
+      {
+         FirstName = firstName,
+         LastName = lastName,
+         Email = email.ToLowerInvariant(),
+         CreatedAt = DateTime.UtcNow
+      };
+   }
+
+   public void UpdateProfile(string firstName, string lastName, string? avatarUrl)
+   {
+      FirstName = firstName;
+      LastName = lastName;
+      AvatarUrl = avatarUrl;
+      LastModified = DateTime.UtcNow;
+   }
+
+   public void MarkAsDeleted()
+   {
+      IsDeleted = true;
+      DeletedAt = DateTime.UtcNow;
+      LastModified = DateTime.UtcNow;
+   }
 }
