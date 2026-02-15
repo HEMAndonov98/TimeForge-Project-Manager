@@ -1,6 +1,6 @@
 namespace TimeForge.Common.Enums;
 
-public enum ConnectionStatus
+public enum FriendshipStatus
 {
     Pending,
     Accepted,
