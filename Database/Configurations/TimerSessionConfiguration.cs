@@ -1,31 +1,28 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure.Configurations;
+namespace TimeForge.Database.Configurations;
 
-public class TimeEntryConfiguration : IEntityTypeConfiguration<TimerSession>
+public class TimerSessionConfiguration : IEntityTypeConfiguration<TimerSession>
 {
     public void Configure(EntityTypeBuilder<TimerSession> builder)
     {
-
         // Relationships
         builder
-            .HasOne(te => te.ProjectTask)
-            .WithMany(t => t.TimeEntries)
+            .HasOne(te => te.Task)
+            .WithMany(t => t.TimerSessions)
             .HasForeignKey(te => te.TaskId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
-            .HasOne(te => te.CreatedBy)
-            .WithMany(u => u.TimeEntries)
+            .HasOne(te => te.User)
+            .WithMany(u => u.TimerSessions)
             .HasForeignKey(te => te.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(te => new { te.UserId, te.State })
+        builder.HasIndex(te => new { te.UserId, te.IsActive })
             .IsUnique()
-            .HasFilter("[State] = 0")
-            .IncludeProperties(te => new { te.TaskId, te.Start });
+            .HasFilter("[State] = 0");
     }
 }

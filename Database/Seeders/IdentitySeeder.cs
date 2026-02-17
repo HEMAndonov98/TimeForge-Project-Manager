@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure.Seeders;
+namespace TimeForge.Database.Seeders;
 
 public static class IdentitySeeder
 {

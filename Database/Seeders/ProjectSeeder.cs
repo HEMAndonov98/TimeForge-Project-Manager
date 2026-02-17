@@ -1,7 +1,7 @@
-using Database;
+using TimeForge.Database;
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure.Seeders;
+namespace TimeForge.Database.Seeders;
 
 public static class ProjectSeeder
 { 

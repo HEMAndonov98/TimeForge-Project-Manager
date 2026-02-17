@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TimeForge.Models;
 
-namespace TimeForge.Infrastructure.Configurations;
+namespace TimeForge.Database.Configurations;
 
 public class ProjectTaskConfiguration : IEntityTypeConfiguration<ProjectTask>
 {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Models;
 
-namespace Database.Configurations;
+namespace TimeForge.Database.Configurations;
 
 public class FirendshipConfiguration : IEntityTypeConfiguration<Friendship>
 {

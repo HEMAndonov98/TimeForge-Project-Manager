@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-
 using TimeForge.Models.Common;
 
-namespace TimeForge.Infrastructure.Interceptors;
+namespace TimeForge.Database.Interceptors;
 
 public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
 {
@@ -27,8 +26,7 @@ public sealed class SoftDeleteInterceptor : SaveChangesInterceptor
         foreach (EntityEntry<BaseDeletableModel<string>> deletable in entries)
         {
             deletable.State = EntityState.Modified;
-            deletable.Entity.IsDeleted = true;
-            deletable.Entity.DeletedAt = DateTime.UtcNow;
+            deletable.Entity.MarkDeleted();
         }
         
         return base.SavingChangesAsync(

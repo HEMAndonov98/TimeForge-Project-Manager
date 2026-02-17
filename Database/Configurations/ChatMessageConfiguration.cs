@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TimeForge.Models;
 
-namespace Database.Configurations;
+namespace TimeForge.Database.Configurations;
 
 public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
 {
