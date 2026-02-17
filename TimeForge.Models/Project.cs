@@ -65,9 +65,9 @@ public class Project : BaseDeletableModel<string>
     public void Update(
         string name,
          DateTime? dueDate,
-         string? description = null,
-         string? color = null,
-         List<ProjectTask> tasks)
+         List<ProjectTask> tasks,
+        string? description,
+        string? color)
     {
 
         if (string.IsNullOrEmpty(name))

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ValueGeneration;
 using TimeForge.Models;
 using TimeForge.Models.Common;
 
-namespace Database;
+namespace TimeForge.Database;
 
 public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : IdentityDbContext<User>(options)
 {

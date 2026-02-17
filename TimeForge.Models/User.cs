@@ -42,7 +42,7 @@ public class User : IdentityUser
    public ICollection<ChatMessage> ReceivedMessages { get; private set; } = new List<ChatMessage>();
 
    //business logic
-   public static User CreateCustomUser(string firstName, string lastName, string email)
+   public static User CreateCustomUser(string firstName, string lastName, string email, string? username = null)
    {
       //validate email
       if (string.IsNullOrEmpty(email))
@@ -53,6 +53,7 @@ public class User : IdentityUser
          FirstName = firstName,
          LastName = lastName,
          Email = email.ToLowerInvariant(),
+         UserName = string.IsNullOrWhiteSpace(username) ? email.ToLowerInvariant() : username,
          CreatedAt = DateTime.UtcNow
       };
    }
