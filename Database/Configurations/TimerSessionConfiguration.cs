@@ -21,8 +21,10 @@ public class TimerSessionConfiguration : IEntityTypeConfiguration<TimerSession>
             .HasForeignKey(te => te.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(te => new { te.UserId, te.IsActive })
+        builder.Ignore(ts => ts.IsActive);
+        
+        builder.HasIndex(te => new { te.UserId })
             .IsUnique()
-            .HasFilter("[State] = 0");
+            .HasFilter("[EndTime] IS NULL");
     }
 }

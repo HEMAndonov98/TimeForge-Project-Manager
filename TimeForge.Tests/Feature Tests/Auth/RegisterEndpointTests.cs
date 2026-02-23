@@ -1,17 +1,18 @@
 using System.Net;
 using FastEndpoints;
-using Xunit.v3;
-using FluentAssertions;
+using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Identity.Data;
+using Shouldly;
 using TimeForge.Api.Features.Auth.Register;
 using TimeForge.Api.ToMigrate.Features.Auth.Register;
+using TimeForge.Models;
 
 namespace TimeForge.Tests.Feature_Tests.Auth;
 
 // TimeForge.Tests/Features/Auth/RegisterEndpointTests.cs
-public class RegisterEndpointTests(TimeForgeFixture fixture)
+public class RegisterEndpointTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
 {
-    [Fact]
+    [Fact, Priority(0)]
     public async Task Register_ValidData_ReturnsCreated()
     {
         // Arrange
@@ -24,26 +25,27 @@ public class RegisterEndpointTests(TimeForgeFixture fixture)
         };
 
         // Act
-        var (response, result) = await fixture.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(request);
+        var (response, result) = await app.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(request);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        result.Email.Should().Be(request.Email);
-        result.Id.Should().NotBeNullOrEmpty();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        result.Email.ShouldBe(request.Email);
+        result.Id.ShouldNotBeNullOrEmpty(result.Id);
     }
-
-    [Fact]
+    
+    [Fact, Priority(1)]
     public async Task Register_DuplicateEmail_ReturnsConflict()
     {
         // Arrange
         var email = "duplicate@example.com";
-        await Fixture.CreateTestUser(email); // Setup existing user
-        var request = new RegisterRequest { Email = email, Password = "Password123!", FirstName = "Err", LastName = "User" };
+        var request = new RegisterUserRequest { Email = email, Password = "Password123!", FirstName = "Err", LastName = "User" };
 
         // Act
-        var (response, _) = await Fixture.Client.POSTAsync<RegisterEndpoint, RegisterRequest, RegisterResponse>(request);
+        var (create, _) = await app.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(request);
+        var (response, _) = await app.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(request);
+
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
 }

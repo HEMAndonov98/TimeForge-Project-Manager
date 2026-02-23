@@ -1,3 +1,3 @@
-namespace TimeForge.Api.ToMigrate.Features.Conversations;
+namespace TimeForge.Api.Features.Conversations;
 
 public class GetAll { }

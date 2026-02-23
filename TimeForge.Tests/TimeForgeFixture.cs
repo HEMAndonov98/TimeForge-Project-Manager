@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using TimeForge.Database;
 using TimeForge.Models;
 
 namespace TimeForge.Tests;
 
-public class TimeForgeTests : AppFixture<Program>
+public class TimeForgeFixture : AppFixture<Program>
 {
     
     protected TimeForgeDbContext Db { get; private set; } = null!;
@@ -40,6 +39,14 @@ public class TimeForgeTests : AppFixture<Program>
         {
             options.UseInMemoryDatabase("TimeForgeTestDb");
         });
+        
+        s.AddIdentityCore<User>(opt =>
+                opt.User.RequireUniqueEmail = true)
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<TimeForgeDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
+        
         base.ConfigureServices(s);
     }
 

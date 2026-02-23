@@ -31,42 +31,42 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne(e => e.Owner)
             .HasForeignKey(e => e.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         // One-to-many: User -> TeamMemberships
         builder.HasMany(u => u.TeamMemberships)
             .WithOne(tm => tm.User)
             .HasForeignKey(tm => tm.UserId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         // One-to-many: User -> TimerSessions
         builder.HasMany(u => u.TimerSessions)
             .WithOne(ts => ts.User)
             .HasForeignKey(ts => ts.UserId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         // // One-to-many: User -> Tags
         // builder.HasMany(u => u.Tags)
         //     .WithOne(t => t.Owner)
         //     .HasForeignKey(t => t.OwnerId)
         //     .OnDelete(DeleteBehavior.Restrict);
-
+        
         // CRITICAL: Friendship multiple FKs (User1 and User2)
         builder.HasMany(u => u.SentFriendships)
             .WithOne(f => f.User1)
             .HasForeignKey(f => f.User1Id)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasMany(u => u.ReceivedFriendships)
             .WithOne(f => f.User2)
             .HasForeignKey(f => f.User2Id)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         // CRITICAL: ChatMessage multiple FKs (Sender and Recipient)
         builder.HasMany(u => u.SentMessages)
             .WithOne(m => m.Sender)
             .HasForeignKey(m => m.SenderId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasMany(u => u.ReceivedMessages)
             .WithOne(m => m.Recipient)
             .HasForeignKey(m => m.RecipientId)

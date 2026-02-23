@@ -1,3 +1,3 @@
-namespace TimeForge.Api.ToMigrate.Features.Timer;
+namespace TimeForge.Api.Features.Timer;
 
 public class Stop { }

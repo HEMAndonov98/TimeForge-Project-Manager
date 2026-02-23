@@ -11,13 +11,19 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+        <PackageReference Include="FastEndpoints.Testing" Version="7.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-        <PackageReference Include="xunit" Version="2.5.3"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
+        <PackageReference Include="Shouldly" Version="4.3.0" />
+        <PackageReference Include="xunit.v3" Version="3.2.2" />
     </ItemGroup>
 
     <ItemGroup>
         <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Database\TimeForge.Database.csproj" />
+      <ProjectReference Include="..\TimeForge.Api\TimeForge.Api.csproj" />
     </ItemGroup>
 
 </Project>

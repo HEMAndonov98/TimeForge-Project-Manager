@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace TimeForge.Api.ToMigrate.Hubs;
+namespace TimeForge.Api.Hubs;
 
 public class ChatHub : Hub { }

@@ -2,9 +2,10 @@ using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity;
+using TimeForge.Api.ToMigrate.Features.Auth.Login;
 using TimeForge.Models;
 
-namespace TimeForge.Api.ToMigrate.Features.Auth.Login;
+namespace TimeForge.Api.Features.Auth.Login;
 
 public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
 {
@@ -28,7 +29,7 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         AllowAnonymous();
 
         Description(d => d
-            .WithTags("Authentication")
+            .WithTags("Auth")
             .WithSummary("Authenticate user and receive JWT token")
             .Produces<LoginResponse>(200)
             .ProducesProblemDetails(401)); // Unauthorized
@@ -63,6 +64,9 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         var jwtToken = JwtBearer.CreateToken(
             o =>
             {
+                var key = configuration["Jwt:Key"];
+                if (string.IsNullOrEmpty(key))
+                    throw new InvalidOperationException("Jwt:Key is missing from configuration");
                 // Token expiration
                 var expirationHours = configuration.GetValue<int>("Jwt:ExpirationHours", 24);
                 o.ExpireAt = DateTime.UtcNow.AddHours(expirationHours);
@@ -83,6 +87,7 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
                 // Issuer and Audience (must match configuration)
                 o.Issuer = configuration["Jwt:Issuer"];
                 o.Audience = configuration["Jwt:Audience"];
+                o.SigningKey = key;
             });
 
         logger.LogInformation("User {Email} logged in successfully", user.Email);
