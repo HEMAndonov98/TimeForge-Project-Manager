@@ -7,7 +7,7 @@ public class CalendarEvent : BaseDeletableModel<string>
     public CalendarEvent() : base()
     {
     }
-    public int OwnerId { get; private set; }
+    public string OwnerId { get; private set; }
     public User Owner { get; private set; } = null!;
     public string? ProjectId { get; private set; }
     public Project? Project { get; private set; }
@@ -17,7 +17,7 @@ public class CalendarEvent : BaseDeletableModel<string>
     // NEW: Computed property for UI
     public string ProjectColor => Project?.Color ?? "gray";
 
-    public static CalendarEvent Create(int ownerId, string title, DateTime eventDate, string? projectId = null)
+    public static CalendarEvent Create(string ownerId, string title, DateTime eventDate, string? projectId = null)
     {
         if (string.IsNullOrWhiteSpace(title))
         {

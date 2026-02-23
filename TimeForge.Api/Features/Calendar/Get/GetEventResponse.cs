@@ -1,6 +1,6 @@
-namespace TimeForge.Api.Features.Calendar.Create;
+namespace TimeForge.Api.Features.Calendar.Get;
 
-public class CalendarEventResponse
+public class GetEventResponse
 {
     public string Id { get; set; } = String.Empty;
 
