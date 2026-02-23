@@ -72,9 +72,10 @@ TimeForge.Tests/
 | :--- | :--- | :--- |
 | **1. Auth** | ✅ DONE | Register, Login, GetMe. (FastEndpoints.Tests implemented) |
 | **2. Projects** | ✅ DONE | CRUD for Projects. Soft delete support. (VSA slices & tests implemented) |
-| **3. Tasks** | 🔜 NEXT | Update Task Status. |
-| **4. Calendar**| 🔜 TODO | Get/Create Calendar Events. |
+| **3. Tasks** | ✅ DONE | Update Task Status. (VSA slice & tests implemented) |
+| **4. Calendar**| 🔜 NEXT | Get/Create Calendar Events. |
 | **5. Teams** | 🔜 TODO | Team management, Roles (Manager/Member). |
+
 | **6. Timer** | 🔜 TODO | Start/Stop tracking, One active timer per user. |
 | **7. Chat** | 🔜 TODO | Conversations, DM vs Team, Friendships. |
 | **8. Realtime**| 🔜 TODO | SignalR Hub for Chat & Presence. |
@@ -102,3 +103,7 @@ During the implementation of Feature 2 (Projects), several architectural refinem
 3.  **Future-Proofing Responses**:
     - **Principle**: Even if a `Create` and `GetById` response look identical initially, they should use separate DTOs.
     - **Reasoning**: Allows each slice to evolve independently without unintended side effects on other features.
+
+4.  **TaskStatus Ambiguity**:
+    - **Principle**: `TaskStatus` ALWAYS refers to the domain enum `TimeForge.Common.Enums.TaskStatus`.
+    - **Reasoning**: Avoids confusion with `System.Threading.Tasks.TaskStatus`. This is purely for project task states (Todo, InProgress, Done) and not related to asynchronous task states.
