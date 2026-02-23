@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TimeForge.Api.Features.Auth.Register;
+namespace TimeForge.Api.ToMigrate.Features.Auth.Register;
 
 public class RegisterUserRequest
 {

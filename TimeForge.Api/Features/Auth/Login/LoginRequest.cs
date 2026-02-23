@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TimeForge.Api.Features.Auth.Login;
+namespace TimeForge.Api.ToMigrate.Features.Auth.Login;
 
 public class LoginRequest
 {

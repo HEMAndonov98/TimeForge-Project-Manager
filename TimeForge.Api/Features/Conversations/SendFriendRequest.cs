@@ -1,3 +1,3 @@
-namespace TimeForge.Api.Features.Conversations;
+namespace TimeForge.Api.ToMigrate.Features.Conversations;
 
 public class SendFriendRequest { }

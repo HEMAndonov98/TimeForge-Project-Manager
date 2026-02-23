@@ -1,10 +1,10 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using TimeForge.Api.Features.Auth.GetMe;
+using TimeForge.Api.ToMigrate.Features.Auth.GetMe;
 using TimeForge.Models;
 using UserEntity = TimeForge.Models.User;
 
-namespace TimeForge.Api.Features.Auth.Register;
+namespace TimeForge.Api.ToMigrate.Features.Auth.Register;
 
 public class RegisterUserEndpoint : Endpoint<RegisterUserRequest, RegisterUserResponse>
 {
@@ -22,12 +22,12 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequest, RegisterUserRe
         Post("/auth/register");
         AllowAnonymous();
 
-        Description(d => d
-            .WithTags("Authentication")
-            .WithSummary("Register a new user")
-            .Produces<RegisterUserResponse>(201)
-            .ProducesProblemDetails(400)
-            .ProducesProblemDetails(409)); // Conflict - email already exist
+        // Description(d => d
+        //     .WithTags("Authentication")
+        //     .WithSummary("Register a new user")
+        //     .Produces<RegisterUserResponse>(201)
+        //     .ProducesProblemDetails(400)
+        //     .ProducesProblemDetails(409)); // Conflict - email already exist
     }
 
     public override async Task HandleAsync(RegisterUserRequest req, CancellationToken ct)

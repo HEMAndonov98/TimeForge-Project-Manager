@@ -4,7 +4,7 @@ using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity;
 using TimeForge.Models;
 
-namespace TimeForge.Api.Features.Auth.Login;
+namespace TimeForge.Api.ToMigrate.Features.Auth.Login;
 
 public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
 {

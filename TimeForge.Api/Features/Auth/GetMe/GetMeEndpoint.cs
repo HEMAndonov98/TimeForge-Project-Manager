@@ -3,7 +3,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using TimeForge.Models;
 
-namespace TimeForge.Api.Features.Auth.GetMe;
+namespace TimeForge.Api.ToMigrate.Features.Auth.GetMe;
 
 public class GetMeEndpoint : EndpointWithoutRequest<GetMeResponse>
 {

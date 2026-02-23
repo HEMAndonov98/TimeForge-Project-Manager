@@ -1,3 +1,3 @@
-namespace TimeForge.Api.Features.Teams;
+namespace TimeForge.Api.ToMigrate.Features.Teams;
 
 public class UpdateMemberRole { }

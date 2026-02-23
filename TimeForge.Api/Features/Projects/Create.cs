@@ -1,3 +1,3 @@
-namespace TimeForge.Api.Features.Projects;
+namespace TimeForge.Api.ToMigrate.Features.Projects;
 
 public class Create { }

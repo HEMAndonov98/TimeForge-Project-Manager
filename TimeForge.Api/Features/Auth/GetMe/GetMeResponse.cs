@@ -1,4 +1,4 @@
-namespace TimeForge.Api.Features.Auth.GetMe;
+namespace TimeForge.Api.ToMigrate.Features.Auth.GetMe;
 
 public class GetMeResponse
 {
