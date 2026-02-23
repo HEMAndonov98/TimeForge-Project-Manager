@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
@@ -31,8 +32,8 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         Description(d => d
             .WithTags("Auth")
             .WithSummary("Authenticate user and receive JWT token")
-            .Produces<LoginResponse>(200)
-            .ProducesProblemDetails(401)); // Unauthorized
+            .Produces<LoginResponse>((int)HttpStatusCode.OK)
+            .ProducesProblemDetails((int)HttpStatusCode.Unauthorized)); // Unauthorized
     }
 
     public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
@@ -42,8 +43,7 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         if (user == null || user.IsDeleted)
         {
             logger.LogWarning("Login attempt with non-existent email: {Email}", req.Email);
-            HttpContext.Response.StatusCode = 401;
-            ThrowError("Invalid email or password");
+            ThrowError("Invalid email or password", statusCode: (int)HttpStatusCode.Unauthorized);
             return;
         }
 
@@ -52,8 +52,7 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         if (!result.Succeeded)
         {
             logger.LogWarning("Failed login attempt for email: {Email}", req.Email);
-            HttpContext.Response.StatusCode = 401;
-            ThrowError("Invalid email or password");
+            ThrowError("Invalid email or password", statusCode: (int)HttpStatusCode.Unauthorized);
             return;
         }
 

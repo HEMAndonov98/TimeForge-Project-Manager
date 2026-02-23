@@ -71,8 +71,8 @@ TimeForge.Tests/
 | Feature | Status | Description |
 | :--- | :--- | :--- |
 | **1. Auth** | ✅ DONE | Register, Login, GetMe. (FastEndpoints.Tests implemented) |
-| **2. Projects** | 🔜 NEXT | CRUD for Projects. Soft delete support. |
-| **3. Tasks** | 🔜 TODO | Update Task Status. |
+| **2. Projects** | ✅ DONE | CRUD for Projects. Soft delete support. (VSA slices & tests implemented) |
+| **3. Tasks** | 🔜 NEXT | Update Task Status. |
 | **4. Calendar**| 🔜 TODO | Get/Create Calendar Events. |
 | **5. Teams** | 🔜 TODO | Team management, Roles (Manager/Member). |
 | **6. Timer** | 🔜 TODO | Start/Stop tracking, One active timer per user. |
@@ -86,3 +86,19 @@ TimeForge.Tests/
 - **Soft Delete**: Global query filter is active. `_db.Remove(entity)` triggers soft delete via interceptor.
 - **Computed Properties**: Use domain properties like `Project.Progress` or `User.FullName` for logic.
 - **Database**: Currently using `UseInMemoryDatabase("TimeForgeDb")` in `Program.cs`.
+
+---
+
+## 💡 Lessons Learned (Reworks)
+
+During the implementation of Feature 2 (Projects), several architectural refinements were made to ensure strict adherence to VSA and FastEndpoints best practices:
+
+1.  **Dedicated DTOs Over Anonymous Objects**:
+    - **Principle**: Every endpoint MUST have a dedicated `Request` and `Response` object.
+    - **Reasoning**: Avoids `EndpointWithoutRequest` even for GET requests. Standardizes how route parameters (e.g., `{id}`) are bound to the request object, improving maintainability and Swagger documentation.
+2.  **Concrete Test Instantiations**:
+    - **Principle**: In integration tests, always instantiate the concrete `Request` object instead of using anonymous types.
+    - **Reasoning**: Ensures type safety and aligns the test code with the actual API contract.
+3.  **Future-Proofing Responses**:
+    - **Principle**: Even if a `Create` and `GetById` response look identical initially, they should use separate DTOs.
+    - **Reasoning**: Allows each slice to evolve independently without unintended side effects on other features.

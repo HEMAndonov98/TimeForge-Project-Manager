@@ -80,7 +80,7 @@ public class LoginEndpointTests(TimeForgeFixture app) : TestBase<TimeForgeFixtur
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<TimeForgeDbContext>();
-            var dbUser = await db.Users.FindAsync(Guid.Parse(user.Id));
+            var dbUser = await db.Users.FindAsync(user.Id);
             if (dbUser != null)
             {
                 db.Remove(dbUser);
