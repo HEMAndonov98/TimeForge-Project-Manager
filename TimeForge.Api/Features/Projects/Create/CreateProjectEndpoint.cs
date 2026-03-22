@@ -1,9 +1,41 @@
 using FastEndpoints;
+using FluentValidation;
 using TimeForge.Api.Common.Extensions;
 using TimeForge.Database;
 using TimeForge.Models;
 
 namespace TimeForge.Api.Features.Projects.Create;
+
+public class CreateProjectRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime? DueDate { get; set; }
+    public string Color { get; set; } = "blue";
+}
+
+public class CreateProjectResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime? DueDate { get; set; }
+    public string Color { get; set; } = string.Empty;
+    public int Progress { get; set; }
+}
+
+public class CreateProjectValidator : Validator<CreateProjectRequest>
+{
+    public CreateProjectValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Project name is required")
+            .MaximumLength(100).WithMessage("Project name is too long");
+            
+        RuleFor(x => x.Description)
+            .MaximumLength(500).WithMessage("Description is too long");
+    }
+}
 
 public class CreateProjectEndpoint(TimeForgeDbContext db) : Endpoint<CreateProjectRequest, CreateProjectResponse>
 {

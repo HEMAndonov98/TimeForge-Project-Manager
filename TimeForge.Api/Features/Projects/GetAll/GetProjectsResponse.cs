@@ -13,6 +13,7 @@ public class ProjectSummaryDto
     public DateTime? DueDate { get; set; }
     public string Color { get; set; } = string.Empty;
     public int Progress { get; set; }
+    public List<ProjectTaskDto> Tasks { get; set; } = new();
     public int TasksDone { get; set; }
     public int TasksTotal { get; set; }
 }

@@ -27,6 +27,8 @@ public class GetProjectsEndpoint(TimeForgeDbContext db) : EndpointWithoutRequest
         }
 
         var projects = await db.Projects
+            .AsNoTracking()
+            .Include(p => p.Tasks)
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(ct);
@@ -42,7 +44,13 @@ public class GetProjectsEndpoint(TimeForgeDbContext db) : EndpointWithoutRequest
                 Color = p.Color,
                 Progress = p.Progress,
                 TasksDone = p.TasksDone,
-                TasksTotal = p.TasksTotal
+                TasksTotal = p.TasksTotal,
+                Tasks = p.Tasks.Select(t => new ProjectTaskDto
+                {
+                    Id = t.Id,
+                    Name = t.TaskName,
+                    Status = t.Status.ToString()
+                }).ToList()
             }).ToList()
         };
 

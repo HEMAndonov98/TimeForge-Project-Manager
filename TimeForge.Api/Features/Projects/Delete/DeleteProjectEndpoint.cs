@@ -5,6 +5,11 @@ using TimeForge.Database;
 
 namespace TimeForge.Api.Features.Projects.Delete;
 
+public class DeleteProjectRequest
+{
+    public string Id { get; set; } = string.Empty;
+}
+
 public class DeleteProjectEndpoint(TimeForgeDbContext db) : Endpoint<DeleteProjectRequest>
 {
     public override void Configure()

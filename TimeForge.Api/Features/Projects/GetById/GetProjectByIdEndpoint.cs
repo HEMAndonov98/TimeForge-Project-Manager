@@ -1,10 +1,28 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Api.Common.Extensions;
-using TimeForge.Api.Features.Projects.Create; // Using CreateProjectResponse for consistency or define a specific one
 using TimeForge.Database;
 
 namespace TimeForge.Api.Features.Projects.GetById;
+
+public class GetProjectByIdRequest
+{
+    public string Id { get; set; } = string.Empty;
+}
+
+public class GetProjectByIdResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime? DueDate { get; set; }
+    public string Color { get; set; } = string.Empty;
+    public int Progress { get; set; }
+    public int TasksDone { get; set; }
+    public int TasksTotal { get; set; }
+
+    public List<ProjectTaskDto> Tasks { get; set; } = new List<ProjectTaskDto>();
+}
 
 public class GetProjectByIdEndpoint(TimeForgeDbContext db) : Endpoint<GetProjectByIdRequest, GetProjectByIdResponse>
 {
@@ -30,6 +48,7 @@ public class GetProjectByIdEndpoint(TimeForgeDbContext db) : Endpoint<GetProject
         }
 
         var project = await db.Projects
+            .Include(p => p.Tasks)
             .FirstOrDefaultAsync(p => p.Id == req.Id && p.UserId == userId, ct);
 
         if (project == null)
@@ -47,7 +66,13 @@ public class GetProjectByIdEndpoint(TimeForgeDbContext db) : Endpoint<GetProject
             Color = project.Color,
             Progress = project.Progress,
             TasksDone = project.TasksDone,
-            TasksTotal = project.TasksTotal
+            TasksTotal = project.TasksTotal,
+            Tasks = project.Tasks.Select(t => new ProjectTaskDto
+            {
+                Id = t.Id,
+                Name = t.TaskName,
+                Status = t.Status.ToString()
+            }).ToList()
         };
 
         await Send.OkAsync(response, ct);
