@@ -1,10 +1,37 @@
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Api.Common.Extensions;
 using TimeForge.Database;
 using TimeForge.Models;
+using TaskStatus = TimeForge.Common.Enums.TaskStatus;
 
 namespace TimeForge.Api.Features.Tasks.UpdateStatus;
+
+public class UpdateTaskStatusRequest
+{
+    public string TaskId { get; set; } = string.Empty;
+    public TaskStatus NewStatus { get; set; }
+}
+
+public class UpdateTaskStatusResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string TaskName { get; set; } = string.Empty;
+    public TaskStatus Status { get; set; }
+}
+
+public class UpdateTaskStatusValidator : Validator<UpdateTaskStatusRequest>
+{
+    public UpdateTaskStatusValidator()
+    {
+        RuleFor(x => x.TaskId)
+            .NotEmpty().WithMessage("Task ID is required.");
+
+        RuleFor(x => x.NewStatus)
+            .IsInEnum().WithMessage("A valid status is required.");
+    }
+}
 
 public class UpdateTaskStatusEndpoint(TimeForgeDbContext db) 
     : Endpoint<UpdateTaskStatusRequest, UpdateTaskStatusResponse>
@@ -12,9 +39,6 @@ public class UpdateTaskStatusEndpoint(TimeForgeDbContext db)
     public override void Configure()
     {
         Patch("tasks/{TaskId}/status");
-        AllowAnonymous(); // Temporarily for dev or if the project doesn't have strict auth yet? 
-        // Actually, the context says "Authentication: JWT Bearer Tokens". 
-        // Let's use it.
     }
 
     public override async Task HandleAsync(UpdateTaskStatusRequest req, CancellationToken ct)
