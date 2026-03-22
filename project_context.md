@@ -73,10 +73,10 @@ TimeForge.Tests/
 | **1. Auth** | ✅ DONE | Register, Login, GetMe. (FastEndpoints.Tests implemented) |
 | **2. Projects** | ✅ DONE | CRUD for Projects. Soft delete support. (VSA slices & tests implemented) |
 | **3. Tasks** | ✅ DONE | Update Task Status. (VSA slice & tests implemented) |
-| **4. Calendar**| 🔜 NEXT | Get/Create Calendar Events. |
-| **5. Teams** | 🔜 TODO | Team management, Roles (Manager/Member). |
+| **4. Calendar**| ✅ DONE | Get/Create/Update/Delete Calendar Events. |
+| **5. Teams** | ✅ DONE | Team management, Roles (Owner/Manager/Member). |
 
-| **6. Timer** | 🔜 TODO | Start/Stop tracking, One active timer per user. |
+| **6. Timer** | ✅ DONE | Start/Stop tracking, One active timer per user. |
 | **7. Chat** | 🔜 TODO | Conversations, DM vs Team, Friendships. |
 | **8. Realtime**| 🔜 TODO | SignalR Hub for Chat & Presence. |
 

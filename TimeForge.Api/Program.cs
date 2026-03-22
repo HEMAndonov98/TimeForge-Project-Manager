@@ -64,7 +64,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ------------------ FastEndpoints & Swagger ------------------
+// ------------------ FastEndpoints & SignalR & Swagger ------------------
+builder.Services.AddSignalR();
 builder.Services.AddFastEndpoints()
 .SwaggerDocument(o =>
 {
@@ -88,15 +89,17 @@ else
     app.UseHsts();
 }
 
-// Uncomment if you want HTTPS redirection
-// app.UseHttpsRedirection();
-
 app.UseCors("DevPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// FastEndpoints + Swagger (Docs recommend UseFastEndpoints first)
-app.UseFastEndpoints()
+app.MapHub<TimeForge.Api.Hubs.ChatHub>("/chathub");
+
+// FastEndpoints + Swagger
+app.UseFastEndpoints(c =>
+{
+    c.Endpoints.RoutePrefix = "api";
+})
 .UseSwaggerGen();
 
 app.Run();
