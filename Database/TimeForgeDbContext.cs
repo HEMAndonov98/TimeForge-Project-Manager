@@ -16,6 +16,7 @@ public class TimeForgeDbContext(DbContextOptions<TimeForgeDbContext> options) : 
     public DbSet<User> Users { get; set; }
     public DbSet<CalendarEvent> CalendarEvents { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<Conversation> Conversations { get; set; }
     public DbSet<Friendship> Friendships { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }

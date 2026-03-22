@@ -23,8 +23,10 @@ public class TimerSessionConfiguration : IEntityTypeConfiguration<TimerSession>
 
         builder.Ignore(ts => ts.IsActive);
         
-        builder.HasIndex(te => new { te.UserId })
+        builder.HasIndex(te => te.State);
+
+        builder.HasIndex(te => te.UserId)
             .IsUnique()
-            .HasFilter("[EndTime] IS NULL");
+            .HasFilter("[State] = 0"); // 0 is Running
     }
 }
