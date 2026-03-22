@@ -30,6 +30,7 @@ public class GetFriendsEndpoint(TimeForgeDbContext db) : EndpointWithoutRequest<
             return;
         }
 
+        // [TODO] Optimize this query possible split into two queries
         var friends = await db.Friendships
             .Where(f => (f.User1Id == currentUserId || f.User2Id == currentUserId) && f.Status == FriendshipStatus.Accepted)
             .Select(f => new FriendDto
