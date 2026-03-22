@@ -43,7 +43,7 @@ public class RegisterUserEndpoint : Endpoint<RegisterUserRequest, RegisterUserRe
         }
 
         // Create new user
-        var user = UserEntity.CreateCustomUser(req.FirstName, req.LastName, req.Email);
+        var user = UserEntity.CreateCustomUser(req.FirstName, req.LastName, req.Email, req.Gender);
         var result = await userManager.CreateAsync(user, req.Password);
 
         if (!result.Succeeded)

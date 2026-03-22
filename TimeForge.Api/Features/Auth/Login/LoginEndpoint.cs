@@ -76,6 +76,7 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
                 o.User.Claims.Add((ClaimTypes.Name, user.FullName));
                 o.User.Claims.Add(("FirstName", user.FirstName));
                 o.User.Claims.Add(("LastName", user.LastName));
+                o.User.Claims.Add(("Gender", user.Gender));
 
                 // Add roles if any
                 foreach (var role in roles)
@@ -97,7 +98,8 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
             UserId = user.Id,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Email = user.Email
+            Email = user.Email,
+            Gender = user.Gender
         }, cancellation: ct);
     }
 }

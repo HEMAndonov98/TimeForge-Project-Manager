@@ -50,7 +50,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         //     .HasForeignKey(t => t.OwnerId)
         //     .OnDelete(DeleteBehavior.Restrict);
         
-        // CRITICAL: Friendship multiple FKs (User1 and User2)
         builder.HasMany(u => u.SentFriendships)
             .WithOne(f => f.User1)
             .HasForeignKey(f => f.User1Id)
@@ -61,15 +60,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(f => f.User2Id)
             .OnDelete(DeleteBehavior.Restrict);
         
-        // CRITICAL: ChatMessage multiple FKs (Sender and Recipient)
+        // ChatMessage relationships
         builder.HasMany(u => u.SentMessages)
             .WithOne(m => m.Sender)
             .HasForeignKey(m => m.SenderId)
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        builder.HasMany(u => u.ReceivedMessages)
-            .WithOne(m => m.Recipient)
-            .HasForeignKey(m => m.RecipientId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Ignore computed properties
