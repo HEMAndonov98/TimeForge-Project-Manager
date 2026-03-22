@@ -8,15 +8,12 @@ namespace TimeForge.Models;
 public class User : IdentityUser
 {
    public string FirstName { get; private set; } = String.Empty;
-
    public string LastName { get; private set; } = String.Empty;
-
+   public string Gender { get; private set; } = String.Empty;
    public string? AvatarUrl { get; private set; }
 
    public DateTime CreatedAt { get; private set; }
-
    public DateTime? LastModified { get; private set; }
-
 
    //Soft delete properties
    public bool IsDeleted { get; private set; } = false;
@@ -32,17 +29,15 @@ public class User : IdentityUser
    public ICollection<TimerSession> TimerSessions { get; private set; } = new List<TimerSession>();
    public ICollection<TeamMember> TeamMemberships { get; set; } = new List<TeamMember>();
 
-
    //Friendships
    public ICollection<Friendship> ReceivedFriendships { get; private set; } = new List<Friendship>();
    public ICollection<Friendship> SentFriendships { get; private set; } = new List<Friendship>();
 
    //Chat messages
    public ICollection<ChatMessage> SentMessages { get; private set; } = new List<ChatMessage>();
-   public ICollection<ChatMessage> ReceivedMessages { get; private set; } = new List<ChatMessage>();
 
    //business logic
-   public static User CreateCustomUser(string firstName, string lastName, string email, string? username = null)
+   public static User CreateCustomUser(string firstName, string lastName, string email, string gender, string? username = null)
    {
       //validate email
       if (string.IsNullOrEmpty(email))
@@ -53,6 +48,7 @@ public class User : IdentityUser
          FirstName = firstName,
          LastName = lastName,
          Email = email.ToLowerInvariant(),
+         Gender = gender,
          UserName = string.IsNullOrWhiteSpace(username) ? email.ToLowerInvariant() : username,
          CreatedAt = DateTime.UtcNow
       };
