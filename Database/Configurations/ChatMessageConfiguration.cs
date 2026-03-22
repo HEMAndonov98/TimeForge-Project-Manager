@@ -15,18 +15,12 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
             .HasMaxLength(36)
             .IsRequired();
 
-        builder.Property(m => m.SenderId)
-            .HasMaxLength(450)
-            .IsRequired();
-
-        builder.Property(m => m.Content)
-            .HasMaxLength(5000)
+        builder.Property(m => m.ConversationId)
+            .HasMaxLength(36)
             .IsRequired();
 
         // Indexes for conversation queries
-        builder.HasIndex(m => new { m.SenderId, m.RecipientId });
-
-        // CHECK constraint added in migration:
-        // Either RecipientId OR TeamId must be set, not both
+        builder.HasIndex(m => m.ConversationId);
+        builder.HasIndex(m => m.SenderId);
     }
 }
