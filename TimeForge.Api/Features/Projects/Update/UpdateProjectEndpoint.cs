@@ -1,10 +1,44 @@
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Api.Common.Extensions;
-using TimeForge.Api.Features.Projects.Create;
 using TimeForge.Database;
 
 namespace TimeForge.Api.Features.Projects.Update;
+
+public class UpdateProjectRequest
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime? DueDate { get; set; }
+    public string Color { get; set; } = string.Empty;
+}
+
+public class UpdateProjectResponse
+{
+    public string Id { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime? DueDate { get; set; }
+    public string Color { get; set; } = string.Empty;
+    public int Progress { get; set; }
+    public int TasksDone { get; set; }
+    public int TasksTotal { get; set; }
+}
+
+public class UpdateProjectValidator : Validator<UpdateProjectRequest>
+{
+    public UpdateProjectValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Project name is required")
+            .MaximumLength(100).WithMessage("Project name is too long");
+            
+        RuleFor(x => x.Description)
+            .MaximumLength(500).WithMessage("Description is too long");
+    }
+}
 
 public class UpdateProjectEndpoint(TimeForgeDbContext db) : Endpoint<UpdateProjectRequest, UpdateProjectResponse>
 {

@@ -26,7 +26,7 @@ public class ProjectTask : BaseDeletableModel<string>
     public TimeSpan TotalTimeSpent => TimeSpan.FromSeconds(
         TimerSessions
             .Where(ts => ts.EndTime.HasValue && !ts.IsDeleted)
-            .Sum(ts => ts.DurationInSeconds));
+            .Sum(ts => ts.TotalSeconds));
 
     public static ProjectTask Create(string projectId, string taskName)
     {
