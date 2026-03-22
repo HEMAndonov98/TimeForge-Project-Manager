@@ -13,13 +13,10 @@ public class ChatMessage : BaseDeletableModel<string>
     public string Content { get; private set; } = string.Empty;
     public bool IsRead { get; private set; }
 
-    public string? RecipientId { get; private set; } = String.Empty;
-    public User? Recipient { get; private set; }
+    public string ConversationId { get; private set; } = String.Empty;
+    public Conversation Conversation { get; private set; } = null!;
 
-    public string? TeamId { get; private set; } = String.Empty;
-    public Team? Team { get; private set; }
-
-    public static ChatMessage CreateDirectMessage(string senderId, string recipientId, string content)
+    public static ChatMessage Create(string senderId, string conversationId, string content)
     {
         if (string.IsNullOrWhiteSpace(content))
             throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
@@ -27,22 +24,7 @@ public class ChatMessage : BaseDeletableModel<string>
         return new ChatMessage
         {
             SenderId = senderId,
-            RecipientId = recipientId,
-            Content = content,
-            IsRead = false
-        };
-    }
-
-    public static ChatMessage CreateTeamMessage(string senderId, string teamId, string content)
-    {
-
-        if (string.IsNullOrWhiteSpace(content))
-            throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
-
-        return new ChatMessage
-        {
-            SenderId = senderId,
-            TeamId = teamId,
+            ConversationId = conversationId,
             Content = content,
             IsRead = false
         };
