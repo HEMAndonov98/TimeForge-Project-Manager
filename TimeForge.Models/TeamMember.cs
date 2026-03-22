@@ -1,3 +1,4 @@
+using TimeForge.Common.Enums;
 using TimeForge.Models.Common;
 
 namespace TimeForge.Models;
@@ -12,15 +13,10 @@ public class TeamMember : BaseDeletableModel<string>
 
     public string UserId { get; private set; } = string.Empty;
     public User User { get; private set; } = null!;
-    public string Role { get; private set; } = "Member";
+    public TeamRole Role { get; private set; } = TeamRole.Member;
 
-    internal void UpdateRole(string newRole)
+    internal void UpdateRole(TeamRole newRole)
     {
-        if (string.IsNullOrWhiteSpace(newRole))
-        {
-            throw new ArgumentException("Role cannot be null or whitespace.", nameof(newRole));
-        }
-
         Role = newRole;
         this.MarkModified();
     }
@@ -28,7 +24,7 @@ public class TeamMember : BaseDeletableModel<string>
     public static TeamMember Create(
         string teamId,
         string userId,
-        string role = "Member")
+        TeamRole role = TeamRole.Member)
     {
         return new TeamMember
         {
