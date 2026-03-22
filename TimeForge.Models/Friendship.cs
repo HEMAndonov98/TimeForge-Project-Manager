@@ -38,6 +38,9 @@ public class Friendship : BaseDeletableModel<string>
 
     public void Reject()
     {
+        if (Status != FriendshipStatus.Pending)
+            throw new ArgumentException("Can only reject pending friend requests");
+
         Status = FriendshipStatus.Rejected;
         this.MarkModified();
     }
