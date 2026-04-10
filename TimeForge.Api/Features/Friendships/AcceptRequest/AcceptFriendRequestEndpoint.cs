@@ -48,7 +48,9 @@ public class AcceptFriendRequestEndpoint(TimeForgeDbContext db) : Endpoint<Accep
 
         if (!existingConversation)
         {
-            var conversation = Conversation.CreateDM(friendship.User1, friendship.User2);
+            var conversation = Conversation.CreateDm($"{friendship.User1.FirstName} - {friendship.User2.FirstName}");
+            conversation.AddParticipant(ConversationParticipant.Create(conversation.Id, friendship.User1Id));
+            conversation.AddParticipant(ConversationParticipant.Create(conversation.Id, friendship.User2Id));
             await db.Conversations.AddAsync(conversation, ct);
         }
 

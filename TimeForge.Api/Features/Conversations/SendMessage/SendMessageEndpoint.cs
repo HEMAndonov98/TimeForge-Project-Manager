@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TimeForge.Api.Common.Extensions;
@@ -7,6 +8,20 @@ using TimeForge.Database;
 using TimeForge.Models;
 
 namespace TimeForge.Api.Features.Conversations.SendMessage;
+
+public class SendMessageValidator : Validator<SendMessageRequest>
+{
+    public SendMessageValidator()
+    {
+        RuleFor(req => req.ConversationId)
+            .NotEmpty()
+            .WithMessage("ConversationId is required.");
+        
+        RuleFor(req => req.Content)
+            .NotEmpty()
+            .WithMessage("Content is required.");
+    }
+}
 
 public class SendMessageEndpoint(TimeForgeDbContext db, IHubContext<ChatHub> hubContext) : Endpoint<SendMessageRequest>
 {
@@ -31,23 +46,13 @@ public class SendMessageEndpoint(TimeForgeDbContext db, IHubContext<ChatHub> hub
 
         if (conversation == null)
         {
-            ThrowError("Conversation not found.", 404);
+            ThrowError("Conversation not found.", StatusCodes.Status404NotFound);
         }
 
         // Authorization check
-        if (!conversation.IsTeamChat && !conversation.Participants.Any(p => p.Id == senderId))
+        if (conversation.Participants.Any(p => p.UserId != senderId))
         {
-            ThrowError("You are not part of this conversation.", 403);
-        }
-        
-        // If it's a team chat, we should check if user is a member of the team
-        if (conversation.IsTeamChat)
-        {
-            var isMember = await db.TeamMembers.AnyAsync(m => m.TeamId == conversation.TeamId && m.UserId == senderId, ct);
-            if (!isMember)
-            {
-                ThrowError("You are not a member of this team.", 403);
-            }
+            ThrowError("You are not part of this conversation.", StatusCodes.Status403Forbidden);
         }
 
         var message = ChatMessage.Create(senderId, conversation.Id, req.Content);

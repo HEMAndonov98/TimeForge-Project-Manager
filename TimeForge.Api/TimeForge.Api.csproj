@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\Chat\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Database\TimeForge.Database.csproj" />
     </ItemGroup>
 

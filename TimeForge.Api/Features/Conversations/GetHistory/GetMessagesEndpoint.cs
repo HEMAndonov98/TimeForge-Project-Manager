@@ -46,6 +46,7 @@ public class GetMessagesEndpoint(TimeForgeDbContext db) : Endpoint<GetMessagesRe
             ThrowError("Access Denied", 403);
         }
 
+        // [TODO] Optimize this query possible error if not eagerly loading sender and conversation, possible split query for efficiency
         var messages = await db.ChatMessages
             .Where(m => m.ConversationId == req.ConversationId)
             .OrderByDescending(m => m.CreatedAt)

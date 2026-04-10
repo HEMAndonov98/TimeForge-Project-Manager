@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using TimeForge.Models.Common;
 
 namespace TimeForge.Models;
@@ -13,22 +14,23 @@ public class Conversation : BaseDeletableModel<string>
     public string? TeamId { get; private set; }
     public Team? Team { get; private set; }
 
-    private readonly List<User> _participants = new();
-    public IReadOnlyList<User> Participants => _participants.AsReadOnly();
+    private readonly List<ConversationParticipant> _participants = new();
+    public IReadOnlyList<ConversationParticipant> Participants => _participants.AsReadOnly();
 
     public ICollection<ChatMessage> Messages { get; private set; } = new List<ChatMessage>();
 
-    public static Conversation CreateDM(User user1, User user2)
+    public static Conversation CreateDm(string title)
     {
         var conversation = new Conversation
         {
             IsTeamChat = false,
-            Title = $"{user1.UserName} & {user2.UserName}"
+            Title = title
         };
-        conversation._participants.Add(user1);
-        conversation._participants.Add(user2);
         return conversation;
     }
+
+    public void AddParticipant(ConversationParticipant participant)
+    => this._participants.Add(participant);
 
     public static Conversation CreateTeamChat(Team team)
     {
@@ -38,9 +40,6 @@ public class Conversation : BaseDeletableModel<string>
             TeamId = team.Id,
             Title = team.Name
         };
-        // Participants for team chat are managed via Team members logic typically,
-        // but for querying convenience we might sync them or just rely on TeamId.
-        // Let's rely on TeamId for now to avoid duplication.
         return conversation;
     }
 }

@@ -28,6 +28,7 @@ public class User : IdentityUser
    public ICollection<CalendarEvent> CalendarEvents { get; private set; } = new List<CalendarEvent>();
    public ICollection<TimerSession> TimerSessions { get; private set; } = new List<TimerSession>();
    public ICollection<TeamMember> TeamMemberships { get; set; } = new List<TeamMember>();
+   public ICollection<ConversationParticipant> ConversationParticipations { get; private set; } = new List<ConversationParticipant>();
 
    //Friendships
    public ICollection<Friendship> ReceivedFriendships { get; private set; } = new List<Friendship>();

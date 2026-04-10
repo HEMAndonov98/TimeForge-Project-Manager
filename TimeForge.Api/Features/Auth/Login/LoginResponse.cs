@@ -1,6 +1,6 @@
 using System;
 
-namespace TimeForge.Api.ToMigrate.Features.Auth.Login;
+namespace TimeForge.Api.Features.Auth.Login;
 
 public class LoginResponse
 {
