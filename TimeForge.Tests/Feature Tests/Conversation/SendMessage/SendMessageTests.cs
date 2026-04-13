@@ -21,13 +21,14 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
     private async Task<RegisterUserResponse> CreateUser(string email)
     {
         var password = "SecurePassword123!";
-        var (_, result) = await app.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(new()
-        {
-            FirstName = "Test",
-            LastName = "User",
-            Email = email,
-            Password = password
-        });
+        var (_, result) = await app.Client.POSTAsync<RegisterUserEndpoint, RegisterUserRequest, RegisterUserResponse>(
+            new()
+            {
+                FirstName = "Test",
+                LastName = "User",
+                Email = email,
+                Password = password
+            });
 
         return result;
     }
@@ -60,20 +61,23 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
     {
         //Arrange
         //1. Create a user
-        var user = await CreateUser("sender@example.com");
+        var email = "sender_success@example.com";
+        var user = await CreateUser(email);
 
         //2. Authenticate
-        var (token, userId) = await AuthenticateUserAsync("sender@example.com");
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var (token, userId) = await AuthenticateUserAsync(email);
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         //3. Create a Team (Creator is automatically an owner/member)
         var team = await CreateTeam("Test Team");
 
         //4. Create a team conversation
-        var (conversationResponse, conversationResult) = await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
-        {
-            TeamId = team.Id
-        });
+        var (conversationResponse, conversationResult) =
+            await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
+            {
+                TeamId = team.Id
+            });
 
         conversationResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         var conversationId = conversationResult.ConversationId;
@@ -95,33 +99,40 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
     {
         //Arrange
         //1. Create unauthenticated user
-        var user = await CreateUser("testUser@test.com");
-        
+        var email = "unauth_sender@example.com";
+        var user = await CreateUser(email);
+
         //2. Authenticate
-        var (token, userId) = await AuthenticateUserAsync("testUser@test.com");
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
+        var (token, userId) = await AuthenticateUserAsync(email);
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
         //2. Create Team
-        var team = await CreateTeam("Test Team");
-        
-        
+        var team = await CreateTeam("Test Team Unauth");
+
+
         //3. Create Team Conversation
-        var (conversationResponse, conversationResult) = await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
-        {
-            TeamId = team.Id
-        });
-        
+        var (conversationResponse, conversationResult) =
+            await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
+            {
+                TeamId = team.Id
+            });
+
         //4. Unauthenticate
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", String.Empty);
-        
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", String.Empty);
+
         conversationResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
-        var conversationId = conversationResult.ConversationId;
+        // We can't get conversationId from conversationResult anymore if we use the 2-generic version, 
+        // but for this test we actually need the ID to send a message.
+        // Let's use a workaround: for the setup phase, we use the 3-generic version but ensure unique data.
+        // I will revert the setup part to 3rd generic but change the EMAIL to be unique.
         //Act
-        
+
         //5. Send a message
         var messageResponse = await app.Client.POSTAsync<SendMessageEndpoint, SendMessageRequest>(new()
         {
-            ConversationId = conversationId,
+            ConversationId = conversationResult.ConversationId,
             Content = "Hello Team!"
         });
         //Assert
@@ -133,31 +144,36 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
     {
         //Arrange
         //1. Create 2 users
-        var user = await CreateUser("testUser@test.com");
-        var user2 = await CreateUser("testUser2@test.com");
-        
+        var email1 = "forbidden_sender_1@example.com";
+        var email2 = "forbidden_sender_2@example.com";
+        await CreateUser(email1);
+        await CreateUser(email2);
+
         //2. Authenticate
-        var (token, userId) = await AuthenticateUserAsync("testUser@test.com");
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
+        var (token, userId) = await AuthenticateUserAsync(email1);
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
         //2. Create Team
-        var team = await CreateTeam("Test Team");
-        
-        
+        var team = await CreateTeam("Forbidden Test Team");
+
+
         //3. Create Team Conversation
-        var (conversationResponse, conversationResult) = await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
-        {
-            TeamId = team.Id
-        });
-        
+        var (conversationResponse, conversationResult) =
+            await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new()
+            {
+                TeamId = team.Id
+            });
+
         conversationResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         var conversationId = conversationResult.ConversationId;
-        
+
         //4. authenticate secondary user
-        (token, userId) = await AuthenticateUserAsync("testUser2@test.com");
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
-        
+        (token, userId) = await AuthenticateUserAsync(email2);
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+
         //Act
         //5. Send a message
         var messageResponse = await app.Client.POSTAsync<SendMessageEndpoint, SendMessageRequest>(new()
@@ -165,7 +181,7 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
             ConversationId = conversationId,
             Content = "Hello Team!"
         });
-        
+
         //Assert
         messageResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
@@ -175,22 +191,68 @@ public class SendMessageTests(TimeForgeFixture app) : TestBase<TimeForgeFixture>
     {
         //Arrange
         //1. Create unauthenticated user
-        var user = await CreateUser("testUser@test.com");
-        
+        var email = "notfound_sender@example.com";
+        await CreateUser(email);
+
         //2. Authenticate
-        var (token, userId) = await AuthenticateUserAsync("testUser@test.com");
-        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
+        var (token, userId) = await AuthenticateUserAsync(email);
+        app.Client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
         //Act
-        
+
         //3. Send Message
         var messageResponse = await app.Client.POSTAsync<SendMessageEndpoint, SendMessageRequest>(new()
         {
             ConversationId = "testConversationId",
             Content = "Hello Team!"
         });
-        
+
         //Assert
         messageResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+    [Fact]
+    public async Task SendMessage_Empty_Content_Returns_400BadRequest()
+    {
+        //Arrange
+        await CreateUser("empty@test.com");
+        var (token, _) = await AuthenticateUserAsync("empty@test.com");
+        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        var team = await CreateTeam("Empty Msg Team");
+        var (_, conv) = await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new() { TeamId = team.Id });
+
+        //Act
+        var messageResponse = await app.Client.POSTAsync<SendMessageEndpoint, SendMessageRequest>(new()
+        {
+            ConversationId = conv.ConversationId,
+            Content = "" // Empty
+        });
+        
+        //Assert
+        messageResponse.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    
+    [Fact]
+    public async Task SendMessage_Special_Characters_Success()
+    {
+        //Arrange
+        await CreateUser("emoji@test.com");
+        var (token, _) = await AuthenticateUserAsync("emoji@test.com");
+        app.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        var team = await CreateTeam("Emoji Team");
+        var (_, conv) = await app.Client.POSTAsync<CreateTeamChatEndpoint, CreateTeamChatRequest, CreateTeamChatResponse>(new() { TeamId = team.Id });
+
+        //Act
+        var messageResponse = await app.Client.POSTAsync<SendMessageEndpoint, SendMessageRequest>(new()
+        {
+            ConversationId = conv.ConversationId,
+            Content = "Hello! 🚀 🌎 \n New line \t Tab <script>alert('xss')</script>"
+        });
+        
+        //Assert
+        messageResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }
