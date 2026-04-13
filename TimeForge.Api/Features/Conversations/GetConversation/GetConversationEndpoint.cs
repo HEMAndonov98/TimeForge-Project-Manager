@@ -1,6 +1,8 @@
+using System.Net;
 using FastEndpoints;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using TimeForge.Api.Common.Extensions;
 using TimeForge.Database;
 
 namespace TimeForge.Api.Features.Conversations.GetConversation;
@@ -17,7 +19,8 @@ public class GetConversationValidator : Validator<GetConversationRequest>
         RuleFor(x => x.Id)
             .NotEmpty()
             .NotNull()
-            .WithMessage("Conversation id cannot be empty");
+            .WithMessage("Conversation id cannot be empty")
+            .WithErrorCode(StatusCodes.Status400BadRequest.ToString());
     }
 }
 
@@ -34,7 +37,7 @@ public class GetConversationEndpoint : Endpoint<GetConversationRequest, GetConve
 
     public override void Configure()
     {
-        Get("/conversations/{id}");
+        Get("/conversation/{id}");
         Description(d => d
             .WithTags("Conversation")
             .WithSummary("Gets a conversation")
@@ -48,13 +51,23 @@ public class GetConversationEndpoint : Endpoint<GetConversationRequest, GetConve
     {
         var conversation = await this._context
             .Conversations
+            .Include(x => x.Participants)
             .AsNoTracking()
             .FirstOrDefaultAsync(cv => cv.Id == req.Id, ct);
 
         if (conversation == null)
         {
             this._logger.LogError($"Conversation with id {req.Id} not found");
-            ThrowError($"Conversation with id {req.Id} not found");
+            ThrowError($"Conversation with id {req.Id} not found", StatusCodes.Status404NotFound);
+        }
+        
+        //Check if caller is member of conversation
+        var userId = User.GetUserId();
+
+        if (!conversation.Participants.Any(p => p.UserId == userId))
+        {
+            this._logger.LogError($"User with id {userId} not found");
+            ThrowError($"User with id {userId} is not a member of this conversation", StatusCodes.Status403Forbidden);
         }
 
         await Send.OkAsync(new GetConversationResponse()

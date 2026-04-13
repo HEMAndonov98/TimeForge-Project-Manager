@@ -1,5 +1,20 @@
+# .NET
 bin/
 obj/
 /packages/
-riderModule.iml
 /_ReSharper.Caches/
+*.user
+*.DotSettings.user
+
+# IDEs
+.idea/
+.vscode/
+riderModule.iml
+
+# Environment & Runtime
+.dotnet/
+.local/
+Library/
+
+# OS Files
+.DS_Store

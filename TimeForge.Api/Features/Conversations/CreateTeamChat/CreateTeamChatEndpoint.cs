@@ -29,7 +29,7 @@ public class CreateTeamChatEndpoint(
 {
     public override void Configure()
     {
-        Post("/conversations/team");
+        Post("/conversation/team");
         Description(d => d
             .WithTags("conversation")
             .WithSummary("Creates a team conversation for the specified team")

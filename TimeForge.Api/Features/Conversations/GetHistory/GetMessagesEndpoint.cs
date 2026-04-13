@@ -19,7 +19,7 @@ public class GetMessagesEndpoint(TimeForgeDbContext db) : Endpoint<GetMessagesRe
 {
     public override void Configure()
     {
-        Get("conversations/{ConversationId}/messages");
+        Get("conversation/{ConversationId}/messages");
     }
 
     public override async Task HandleAsync(GetMessagesRequest req, CancellationToken ct)

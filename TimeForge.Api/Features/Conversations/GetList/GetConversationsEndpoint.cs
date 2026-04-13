@@ -23,7 +23,8 @@ public class GetConversationsEndpoint(TimeForgeDbContext db) : EndpointWithoutRe
         }
 
         var conversations = await db.Conversations
-            .Where(c => c.Participants.Any(p => p.Id == currentUserId))
+            .Include(c => c.Participants)
+            .Where(c => c.Participants.Any(p => p.UserId == currentUserId))
             .Select(c => new ConversationListItemDto
             {
                 Id = c.Id,

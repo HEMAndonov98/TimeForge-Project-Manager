@@ -27,7 +27,7 @@ public class SendMessageEndpoint(TimeForgeDbContext db, IHubContext<ChatHub> hub
 {
     public override void Configure()
     {
-        Post("conversations/{ConversationId}/messages");
+        Post("conversation/{ConversationId}/messages");
     }
 
     public override async Task HandleAsync(SendMessageRequest req, CancellationToken ct)
